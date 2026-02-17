@@ -1,0 +1,243 @@
+diff --git a/me/casperge/realisticseasons/runnables/WinterBlockTicker.java b/me/casperge/realisticseasons/runnables/WinterBlockTicker.java
+index bdb1d31..a4c7a31 100644
+--- a/me/casperge/realisticseasons/runnables/WinterBlockTicker.java
++++ b/me/casperge/realisticseasons/runnables/WinterBlockTicker.java
+@@ -156,128 +156,135 @@ public class WinterBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                         Integer[] var8 = SnowPatterns.getArray(var7.getX(), var7.getZ());
+                         int var9 = (int)Math.floor(var8[this.currentIndexSnow] / 16);
+                         int var10 = var8[this.currentIndexSnow] % 16;
+-                        Block var11 = finalPlayer.getWorld().getHighestBlockAt(var7.getX() * 16 + var9, var7.getZ() * 16 + var10);
+-                        Chunk var12 = var11.getChunk();
+-                        if (this.main.getBlockUtils().affectBlockInWinter(var11) && var11.getLightFromBlocks() < 11) {
+-                           if (var11.getType() != Material.WATER) {
+-                              if (this.main.getBlockUtils().isSnowable(var11) && var1.hasStorm() && !this.main.getSeasonManager().refreshers.containsKey(var1)) {
+-                                 boolean var21 = false;
+-                                 if (!this.checkedAtleastOnce.contains(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L))) {
+-                                    if (this.main.getSettings().spawnEntities
+-                                            && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
+-                                       this.main.getAnimalUtils().updateAnimalSpawns(Season.WINTER, var7);
+-                                    }
+-
+-                                    this.checkedAtleastOnce.add(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L));
+-                                    var21 = true;
+-                                 }
++                        // Luma start - Folia
++                        int blockX = var7.getX() * 16 + var9;
++                        int blockZ = var7.getZ() * 16 + var10;
++                        int chunkX = blockX >> 4;
++                        int chunkZ = blockZ >> 4;
++                        finalPlayer.getWorld().getChunkAtAsync(chunkX, chunkZ).thenAccept(var12 -> {
++                           Block var11 = finalPlayer.getWorld().getHighestBlockAt(blockX, blockZ);
++                           if (this.main.getBlockUtils().affectBlockInWinter(var11) && var11.getLightFromBlocks() < 11) {
++                              if (var11.getType() != Material.WATER) {
++                                 if (this.main.getBlockUtils().isSnowable(var11) && var1.hasStorm() && !this.main.getSeasonManager().refreshers.containsKey(var1)) {
++                                    boolean var21 = false;
++                                    if (!this.checkedAtleastOnce.contains(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L))) {
++                                       if (this.main.getSettings().spawnEntities
++                                               && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
++                                          this.main.getAnimalUtils().updateAnimalSpawns(Season.WINTER, var7);
++                                       }
+ 
+-                                 if (this.main.hasBlockChanges(var12.getX(), var12.getZ(), var12.getWorld())
+-                                         && this.main.getSettings().snowPlacement
+-                                         && var18 >= this.firstSnowfall) {
+-                                    this.main
+-                                            .getNMSUtils()
+-                                            .setBlockInNMSChunk(var11.getWorld(), var11.getX(), var11.getY() + 1, var11.getZ(), this.snowID, (byte)0, false);
+-                                    if (var21) {
+-                                       this.main.getAsyncChunkHandler().logChunk(new SeasonChunk(var12.getWorld().getName(), var12.getX(), var12.getZ(), 0L));
++                                       this.checkedAtleastOnce.add(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L));
++                                       var21 = true;
+                                     }
+-                                 }
+-                              } else if (this.destroyForSnow.contains(var11.getRelative(0, 1, 0).getType())
+-                                      && var1.hasStorm()
+-                                      && !this.main.getSeasonManager().refreshers.containsKey(var1)) {
+-                                 boolean var20 = false;
+-                                 if (!this.checkedAtleastOnce.contains(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L))) {
+-                                    if (this.main.getSettings().spawnEntities
+-                                            && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
+-                                       this.main.getAnimalUtils().updateAnimalSpawns(Season.WINTER, var7);
++
++                                    if (this.main.hasBlockChanges(var12.getX(), var12.getZ(), var12.getWorld())
++                                            && this.main.getSettings().snowPlacement
++                                            && var18 >= this.firstSnowfall) {
++                                       this.main
++                                               .getNMSUtils()
++                                               .setBlockInNMSChunk(var11.getWorld(), var11.getX(), var11.getY() + 1, var11.getZ(), this.snowID, (byte)0, false);
++                                       if (var21) {
++                                          this.main.getAsyncChunkHandler().logChunk(new SeasonChunk(var12.getWorld().getName(), var12.getX(), var12.getZ(), 0L));
++                                       }
+                                     }
++                                 } else if (this.destroyForSnow.contains(var11.getRelative(0, 1, 0).getType())
++                                         && var1.hasStorm()
++                                         && !this.main.getSeasonManager().refreshers.containsKey(var1)) {
++                                    boolean var20 = false;
++                                    if (!this.checkedAtleastOnce.contains(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L))) {
++                                       if (this.main.getSettings().spawnEntities
++                                               && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
++                                          this.main.getAnimalUtils().updateAnimalSpawns(Season.WINTER, var7);
++                                       }
+ 
+-                                    this.checkedAtleastOnce.add(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L));
+-                                    var20 = true;
+-                                 }
++                                       this.checkedAtleastOnce.add(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L));
++                                       var20 = true;
++                                    }
+ 
+-                                 if (this.main.hasBlockChanges(var12.getX(), var12.getZ(), var12.getWorld())
+-                                         && var18 >= this.firstSnowfall
+-                                         && this.main.getBlockUtils().affectFlora(var11)
+-                                         && this.main.getSettings().snowPlacement
+-                                         && !this.main.getBlockStorage().isStored(var11.getRelative(0, 1, 0).getLocation(), StoredBlockType.FLOWER)) {
+-                                    this.main
+-                                            .getNMSUtils()
+-                                            .setBlockInNMSChunk(var11.getWorld(), var11.getX(), var11.getY() + 1, var11.getZ(), this.snowID, (byte)0, false);
+-                                    this.main.getNMSUtils().setBlockInNMSChunk(var11.getWorld(), var11.getX(), var11.getY() + 2, var11.getZ(), 0, (byte)0, false);
+-                                    if (var20) {
+-                                       this.main.getAsyncChunkHandler().logChunk(new SeasonChunk(var12.getWorld().getName(), var12.getX(), var12.getZ(), 0L));
++                                    if (this.main.hasBlockChanges(var12.getX(), var12.getZ(), var12.getWorld())
++                                            && var18 >= this.firstSnowfall
++                                            && this.main.getBlockUtils().affectFlora(var11)
++                                            && this.main.getSettings().snowPlacement
++                                            && !this.main.getBlockStorage().isStored(var11.getRelative(0, 1, 0).getLocation(), StoredBlockType.FLOWER)) {
++                                       this.main
++                                               .getNMSUtils()
++                                               .setBlockInNMSChunk(var11.getWorld(), var11.getX(), var11.getY() + 1, var11.getZ(), this.snowID, (byte)0, false);
++                                       this.main.getNMSUtils().setBlockInNMSChunk(var11.getWorld(), var11.getX(), var11.getY() + 2, var11.getZ(), 0, (byte)0, false);
++                                       if (var20) {
++                                          this.main.getAsyncChunkHandler().logChunk(new SeasonChunk(var12.getWorld().getName(), var12.getX(), var12.getZ(), 0L));
++                                       }
+                                     }
+-                                 }
+-                              } else if (var11.getRelative(0, 1, 0).getType() == Material.SNOW
+-                                      && var1.hasStorm()
+-                                      && !this.main.getSeasonManager().refreshers.containsKey(var1)
+-                                      && this.snowLayers > 1) {
+-                                 if (!this.checkedAtleastOnce.contains(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L))) {
+-                                    if (this.main.getSettings().spawnEntities
+-                                            && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
+-                                       this.main.getAnimalUtils().updateAnimalSpawns(Season.WINTER, var7);
++                                 } else if (var11.getRelative(0, 1, 0).getType() == Material.SNOW
++                                         && var1.hasStorm()
++                                         && !this.main.getSeasonManager().refreshers.containsKey(var1)
++                                         && this.snowLayers > 1) {
++                                    if (!this.checkedAtleastOnce.contains(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L))) {
++                                       if (this.main.getSettings().spawnEntities
++                                               && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
++                                          this.main.getAnimalUtils().updateAnimalSpawns(Season.WINTER, var7);
++                                       }
++
++                                       this.checkedAtleastOnce.add(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L));
+                                     }
+ 
+-                                    this.checkedAtleastOnce.add(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L));
+-                                 }
++                                    if (this.main.hasBlockChanges(var12.getX(), var12.getZ(), var12.getWorld())
++                                            && var18 >= this.firstSnowfall
++                                            && this.main.getBlockUtils().affectFlora(var11)
++                                            && this.main.getSettings().snowPlacement) {
++                                       Snow var19 = (Snow)var11.getRelative(0, 1, 0).getBlockData();
++                                       if (var19.getLayers() < var19.getMaximumLayers() && var19.getLayers() < this.snowLayers) {
++                                          var19.setLayers(var19.getLayers() + 1);
++                                       }
+ 
+-                                 if (this.main.hasBlockChanges(var12.getX(), var12.getZ(), var12.getWorld())
+-                                         && var18 >= this.firstSnowfall
+-                                         && this.main.getBlockUtils().affectFlora(var11)
+-                                         && this.main.getSettings().snowPlacement) {
+-                                    Snow var19 = (Snow)var11.getRelative(0, 1, 0).getBlockData();
+-                                    if (var19.getLayers() < var19.getMaximumLayers() && var19.getLayers() < this.snowLayers) {
+-                                       var19.setLayers(var19.getLayers() + 1);
++                                       var11.getRelative(0, 1, 0).setBlockData(var19);
+                                     }
+-
+-                                    var11.getRelative(0, 1, 0).setBlockData(var19);
+-                                 }
+-                              }
+-                           } else if (((Levelled)var11.getBlockData()).getLevel() == 0
+-                                   && this.main.hasBlockChanges(var12.getX(), var12.getZ(), var12.getWorld())
+-                                   && this.main.getSettings().spawnIceInWinter) {
+-                              if (var18 >= 2) {
+-                                 this.main
+-                                         .getNMSUtils()
+-                                         .setBlockInNMSChunk(var11.getWorld(), var11.getX(), var11.getY(), var11.getZ(), this.iceID, (byte)0, false);
+-                                 this.main.getAsyncChunkHandler().logChunk(new SeasonChunk(var12.getWorld().getName(), var12.getX(), var12.getZ(), 0L));
+-                              } else {
+-                                 byte var13 = 2;
+-                                 if (var18 == 0) {
+-                                    var13 = 4;
+                                  }
++                              } else if (((Levelled)var11.getBlockData()).getLevel() == 0
++                                      && this.main.hasBlockChanges(var12.getX(), var12.getZ(), var12.getWorld())
++                                      && this.main.getSettings().spawnIceInWinter) {
++                                 if (var18 >= 2) {
++                                    this.main
++                                            .getNMSUtils()
++                                            .setBlockInNMSChunk(var11.getWorld(), var11.getX(), var11.getY(), var11.getZ(), this.iceID, (byte)0, false);
++                                    this.main.getAsyncChunkHandler().logChunk(new SeasonChunk(var12.getWorld().getName(), var12.getX(), var12.getZ(), 0L));
++                                 } else {
++                                    byte var13 = 2;
++                                    if (var18 == 0) {
++                                       var13 = 4;
++                                    }
+ 
+-                                 if (JavaUtils.getRandom().nextInt(var13) == 0) {
+-                                    boolean var14 = false;
+-                                    int var15 = 0;
+-
+-                                    while (true) {
+-                                       if (var15 < this.sideFaces.length) {
+-                                          Material var16 = var11.getRelative(this.sideFaces[var15]).getType();
+-                                          if (var16 == Material.WATER
+-                                                  || var16 == Material.SEAGRASS
+-                                                  || var16 == Material.TALL_SEAGRASS
+-                                                  || var16 == Material.KELP_PLANT) {
+-                                             var15++;
+-                                             continue;
++                                    if (JavaUtils.getRandom().nextInt(var13) == 0) {
++                                       boolean var14 = false;
++                                       int var15 = 0;
++
++                                       while (true) {
++                                          if (var15 < this.sideFaces.length) {
++                                             Material var16 = var11.getRelative(this.sideFaces[var15]).getType();
++                                             if (var16 == Material.WATER
++                                                     || var16 == Material.SEAGRASS
++                                                     || var16 == Material.TALL_SEAGRASS
++                                                     || var16 == Material.KELP_PLANT) {
++                                                var15++;
++                                                continue;
++                                             }
++
++                                             var14 = true;
+                                           }
+ 
+-                                          var14 = true;
+-                                       }
+-
+-                                       if (var14) {
+-                                          this.main
+-                                                  .getNMSUtils()
+-                                                  .setBlockInNMSChunk(var11.getWorld(), var11.getX(), var11.getY(), var11.getZ(), this.iceID, (byte)0, false);
+-                                          this.main.getAsyncChunkHandler().logChunk(new SeasonChunk(var12.getWorld().getName(), var12.getX(), var12.getZ(), 0L));
++                                          if (var14) {
++                                             this.main
++                                                     .getNMSUtils()
++                                                     .setBlockInNMSChunk(var11.getWorld(), var11.getX(), var11.getY(), var11.getZ(), this.iceID, (byte)0, false);
++                                             this.main.getAsyncChunkHandler().logChunk(new SeasonChunk(var12.getWorld().getName(), var12.getX(), var12.getZ(), 0L));
++                                          }
++                                          break;
+                                        }
+-                                       break;
+                                     }
+                                  }
+                               }
+                            }
+-                        }
++                        });
++                        // Luma end - Folia
+                      } else if (!this.checkedAtleastOnce.contains(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L))) {
+                         this.checkedAtleastOnce.add(new SeasonChunk(var7.getWorld().getName(), var7.getX(), var7.getZ(), 0L));
+                      }
