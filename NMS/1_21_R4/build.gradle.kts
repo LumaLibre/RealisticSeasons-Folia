@@ -1,0 +1,7 @@
+group = "me.casperge.realisticseasons1_21_R4"
+
+dependencies {
+    compileOnly("org.spigotmc:spigot:1.21.5-R0.1-SNAPSHOT")
+    implementation(project(":common"))
+
+}

@@ -22,9 +22,15 @@ build/decompiler/
 
 
 # Source code
-common/
-core/
-nms/
+common/*.java
+common/**/*.java
+core/*.java
+core/**/*.java
+core/*.yml
+core/**/*.yml
+NMS/*.java
+NMS/**/*.java
+temp/
 
 # OS files
 .DS_Store

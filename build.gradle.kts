@@ -15,7 +15,6 @@ plugins {
 
 
 group = "me.casperge.realisticseasons"
-version = "11.10.3"
 
 allprojects {
     apply(plugin = "java-library")
