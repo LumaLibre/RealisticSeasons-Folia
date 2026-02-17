@@ -42,15 +42,28 @@ repositories {
     mavenCentral()
 }
 
+val nms = project(":NMS")
+    .subprojects
+    .map { it.name }
+
 dependencies {
-    // TODO: Configure
+    implementation(project(":core"))
+    for (project in nms) {
+        implementation(project(path = ":NMS:${project}"))
+    }
+
+    implementation("commons-io:commons-io:2.18.0")
+    implementation("org.bstats:bstats-bukkit:3.1.0")
 }
 
-// TODO: Configure
+
 tasks {
     shadowJar {
         archiveClassifier.set("")
         archiveBaseName.set(rootProject.name)
+
+        relocate("org.bstats", "me.casperge.realisticseasons.bstats")
+        relocate("org.papermc.lib", "me.casperge.realisticseasons.paperlib")
 
         manifest {
             attributes(
