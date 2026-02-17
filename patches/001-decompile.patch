@@ -1,0 +1,4374 @@
+diff --git a/me/casperge/realisticseasons/RealisticSeasons.java b/me/casperge/realisticseasons/RealisticSeasons.java
+index 11ec1b8..8172a8a 100644
+--- a/me/casperge/realisticseasons/RealisticSeasons.java
++++ b/me/casperge/realisticseasons/RealisticSeasons.java
+@@ -53,8 +53,12 @@ import me.casperge.realisticseasons.event.BlockEvents;
+ import me.casperge.realisticseasons.event.ChunkLoadManager;
+ import me.casperge.realisticseasons.event.EntityEvents;
+ import me.casperge.realisticseasons.event.WorldEvents;
+-import me.casperge.realisticseasons.metrics.bukkit.Metrics;
+-import me.casperge.realisticseasons.metrics.charts.SimplePie;
++// Luma start - decompile
++//import me.casperge.realisticseasons.metrics.bukkit.Metrics;
++//import me.casperge.realisticseasons.metrics.charts.SimplePie;
++import org.bstats.bukkit.Metrics;
++import org.bstats.charts.SimplePie;
++// Luma end - decompile
+ import me.casperge.realisticseasons.particle.ParticleManager;
+ import me.casperge.realisticseasons.season.Season;
+ import me.casperge.realisticseasons.season.SeasonCycle;
+@@ -137,7 +141,7 @@ public class RealisticSeasons extends JavaPlugin {
+    }
+ 
+    public void onEnable() {
+-      loadConfig0();
++      //loadConfig0(); // Luma - decompile
+       this.dumpCreator = new DumpCreator(this);
+       this.getCommand("seasondump").setExecutor(new DumpCommand(this));
+       Version.version = Version.craftBukkitVersionFromMinecraftRelease(Bukkit.getServer().getBukkitVersion().split("-")[0]);
+@@ -294,9 +298,9 @@ public class RealisticSeasons extends JavaPlugin {
+                new Runnable() {
+                   @Override
+                   public void run() {
+-                     List var1 = RealisticSeasons.this.getActiveAsyncTasks();
++                     List<String> var1 = RealisticSeasons.this.getActiveAsyncTasks(); // Luma - decompile
+                      if (var1.size() > 200) {
+-                        HashMap var2 = new HashMap();
++                        HashMap<String, Integer> var2 = new HashMap<>(); // Luma - decompile
+ 
+                         for (String var4 : var1) {
+                            boolean var5 = false;
+diff --git a/me/casperge/realisticseasons/Version.java b/me/casperge/realisticseasons/Version.java
+index 8d9cb62..a76097a 100644
+--- a/me/casperge/realisticseasons/Version.java
++++ b/me/casperge/realisticseasons/Version.java
+@@ -136,93 +136,93 @@ public class Version {
+ 
+    public static boolean is_1_17_or_up() {
+       return version.equals("v1_17_R1")
+-         || version.equals("v1_18_R1")
+-         || version.equals("v1_18_R2")
+-         || version.equals("v1_19_R1")
+-         || version.equals("v1_19_R2")
+-         || version.equals("v1_19_R3")
+-         || version.equals("v1_20_R1")
+-         || version.equals("v1_20_R2")
+-         || version.equals("v1_20_R3")
+-         || version.equals("v1_20_R4")
+-         || version.equals("v1_21_R1")
+-         || version.equals("v1_21_R2")
+-         || version.equals("v1_21_R3")
+-         || version.equals("v1_21_R4")
+-         || version.equals("v1_21_R5")
+-         || version.equals("v1_21_R6")
+-         || version.equals("v1_21_R7");
++              || version.equals("v1_18_R1")
++              || version.equals("v1_18_R2")
++              || version.equals("v1_19_R1")
++              || version.equals("v1_19_R2")
++              || version.equals("v1_19_R3")
++              || version.equals("v1_20_R1")
++              || version.equals("v1_20_R2")
++              || version.equals("v1_20_R3")
++              || version.equals("v1_20_R4")
++              || version.equals("v1_21_R1")
++              || version.equals("v1_21_R2")
++              || version.equals("v1_21_R3")
++              || version.equals("v1_21_R4")
++              || version.equals("v1_21_R5")
++              || version.equals("v1_21_R6")
++              || version.equals("v1_21_R7");
+    }
+ 
+    public static boolean is_1_19_or_up() {
+       return version.equals("v1_19_R1")
+-         || version.equals("v1_19_R2")
+-         || version.equals("v1_19_R3")
+-         || version.equals("v1_20_R1")
+-         || version.equals("v1_20_R2")
+-         || version.equals("v1_20_R3")
+-         || version.equals("v1_20_R4")
+-         || version.equals("v1_21_R1")
+-         || version.equals("v1_21_R2")
+-         || version.equals("v1_21_R3")
+-         || version.equals("v1_21_R4")
+-         || version.equals("v1_21_R5")
+-         || version.equals("v1_21_R6")
+-         || version.equals("v1_21_R7");
++              || version.equals("v1_19_R2")
++              || version.equals("v1_19_R3")
++              || version.equals("v1_20_R1")
++              || version.equals("v1_20_R2")
++              || version.equals("v1_20_R3")
++              || version.equals("v1_20_R4")
++              || version.equals("v1_21_R1")
++              || version.equals("v1_21_R2")
++              || version.equals("v1_21_R3")
++              || version.equals("v1_21_R4")
++              || version.equals("v1_21_R5")
++              || version.equals("v1_21_R6")
++              || version.equals("v1_21_R7");
+    }
+ 
+    public static boolean is_1_19_3_or_up() {
+       return version.equals("v1_19_R2")
+-         || version.equals("v1_19_R3")
+-         || version.equals("v1_20_R1")
+-         || version.equals("v1_20_R2")
+-         || version.equals("v1_20_R3")
+-         || version.equals("v1_20_R4")
+-         || version.equals("v1_21_R1")
+-         || version.equals("v1_21_R2")
+-         || version.equals("v1_21_R3")
+-         || version.equals("v1_21_R4")
+-         || version.equals("v1_21_R5")
+-         || version.equals("v1_21_R6")
+-         || version.equals("v1_21_R7");
++              || version.equals("v1_19_R3")
++              || version.equals("v1_20_R1")
++              || version.equals("v1_20_R2")
++              || version.equals("v1_20_R3")
++              || version.equals("v1_20_R4")
++              || version.equals("v1_21_R1")
++              || version.equals("v1_21_R2")
++              || version.equals("v1_21_R3")
++              || version.equals("v1_21_R4")
++              || version.equals("v1_21_R5")
++              || version.equals("v1_21_R6")
++              || version.equals("v1_21_R7");
+    }
+ 
+    public static boolean is_1_19_4_or_up() {
+       return version.equals("v1_19_R3")
+-         || version.equals("v1_20_R1")
+-         || version.equals("v1_20_R2")
+-         || version.equals("v1_20_R3")
+-         || version.equals("v1_20_R4")
+-         || version.equals("v1_21_R1")
+-         || version.equals("v1_21_R2")
+-         || version.equals("v1_21_R3")
+-         || version.equals("v1_21_R4")
+-         || version.equals("v1_21_R5")
+-         || version.equals("v1_21_R6")
+-         || version.equals("v1_21_R7");
++              || version.equals("v1_20_R1")
++              || version.equals("v1_20_R2")
++              || version.equals("v1_20_R3")
++              || version.equals("v1_20_R4")
++              || version.equals("v1_21_R1")
++              || version.equals("v1_21_R2")
++              || version.equals("v1_21_R3")
++              || version.equals("v1_21_R4")
++              || version.equals("v1_21_R5")
++              || version.equals("v1_21_R6")
++              || version.equals("v1_21_R7");
+    }
+ 
+    public static boolean is_1_20_or_up() {
+       return version.equals("v1_20_R1")
+-         || version.equals("v1_20_R2")
+-         || version.equals("v1_20_R3")
+-         || version.equals("v1_20_R4")
+-         || version.equals("v1_21_R1")
+-         || version.equals("v1_21_R2")
+-         || version.equals("v1_21_R3")
+-         || version.equals("v1_21_R4")
+-         || version.equals("v1_21_R5")
+-         || version.equals("v1_21_R6")
+-         || version.equals("v1_21_R7");
++              || version.equals("v1_20_R2")
++              || version.equals("v1_20_R3")
++              || version.equals("v1_20_R4")
++              || version.equals("v1_21_R1")
++              || version.equals("v1_21_R2")
++              || version.equals("v1_21_R3")
++              || version.equals("v1_21_R4")
++              || version.equals("v1_21_R5")
++              || version.equals("v1_21_R6")
++              || version.equals("v1_21_R7");
+    }
+ 
+    public static boolean is_1_21_2_or_up() {
+       return version.equals("v1_21_R2")
+-         || version.equals("v1_21_R3")
+-         || version.equals("v1_21_R4")
+-         || version.equals("v1_21_R5")
+-         || version.equals("v1_21_R6")
+-         || version.equals("v1_21_R7");
++              || version.equals("v1_21_R3")
++              || version.equals("v1_21_R4")
++              || version.equals("v1_21_R5")
++              || version.equals("v1_21_R6")
++              || version.equals("v1_21_R7");
+    }
+ 
+    public static boolean is_1_21_4_or_up() {
+@@ -399,7 +399,7 @@ public class Version {
+    }
+ 
+    public static FakeArmorStand createFakeArmorStand(
+-      World var0, double var1, double var3, double var5, double var7, boolean var9, boolean var10, boolean var11, boolean var12
++           World var0, double var1, double var3, double var5, double var7, boolean var9, boolean var10, boolean var11, boolean var12
+    ) {
+       if (version.equals("v1_16_R3")) {
+          return new FakeArmorStand_1_16_R3(var0, var1, var3, var5, var7, var9, var10, var11, var12);
+diff --git a/me/casperge/realisticseasons/api/CustomBiomeFileLoader.java b/me/casperge/realisticseasons/api/CustomBiomeFileLoader.java
+index 9acc91e..3a10473 100644
+--- a/me/casperge/realisticseasons/api/CustomBiomeFileLoader.java
++++ b/me/casperge/realisticseasons/api/CustomBiomeFileLoader.java
+@@ -42,7 +42,7 @@ public class CustomBiomeFileLoader {
+    private static String[] getResources(Class var0, String var1) {
+       RealisticSeasons var2 = RealisticSeasons.getInstance();
+       URL var3 = var0.getClassLoader().getResource(var1);
+-      ArrayList var4 = new ArrayList();
++      ArrayList<String> var4 = new ArrayList<>(); // Luma - decompile
+       String var5 = var3.getPath().substring(5, var3.getPath().indexOf("!"));
+       JarFile var6 = null;
+ 
+diff --git a/me/casperge/realisticseasons/api/landplugins/Factions.java b/me/casperge/realisticseasons/api/landplugins/Factions.java
+index 1f281f9..8c8a020 100644
+--- a/me/casperge/realisticseasons/api/landplugins/Factions.java
++++ b/me/casperge/realisticseasons/api/landplugins/Factions.java
+@@ -1,8 +1,10 @@
+ package me.casperge.realisticseasons.api.landplugins;
+ 
+-import com.massivecraft.factions.Board;
+-import com.massivecraft.factions.FLocation;
+-import com.massivecraft.factions.Faction;
++// Luma start - decompile: can't find dependency
++//import com.massivecraft.factions.Board;
++//import com.massivecraft.factions.FLocation;
++//import com.massivecraft.factions.Faction;
++// Luma end - decompile
+ import java.io.File;
+ import java.io.IOException;
+ import java.io.InputStream;
+@@ -53,100 +55,111 @@ public class Factions implements LandPlugin {
+ 
+    @Override
+    public boolean hasBlockChanges(int var1, int var2, World var3) {
+-      FLocation var4 = new FLocation(var3.getName(), var1, var2);
+-      Faction var5 = Board.getInstance().getFactionAt(var4);
+-      if (var5 != null) {
+-         if (var5.isWarZone()) {
+-            if (!this.hasBlockChanges.get(Factions.Zones.WARZONE)) {
+-               return false;
+-            }
+-         } else if (var5.isSafeZone()) {
+-            if (!this.hasBlockChanges.get(Factions.Zones.SAFEZONE)) {
+-               return false;
+-            }
+-         } else if (var5.isWilderness()) {
+-            if (!this.hasBlockChanges.get(Factions.Zones.WILDERNESS)) {
+-               return false;
+-            }
+-         } else if (!this.hasBlockChanges.get(Factions.Zones.FACTION)) {
+-            return false;
+-         }
+-      }
+-
+-      return true;
++      // Luma start - decompile: can't find dependency
++//      FLocation var4 = new FLocation(var3.getName(), var1, var2);
++//      Faction var5 = Board.getInstance().getFactionAt(var4);
++//      if (var5 != null) {
++//         if (var5.isWarZone()) {
++//            if (!this.hasBlockChanges.get(Factions.Zones.WARZONE)) {
++//               return false;
++//            }
++//         } else if (var5.isSafeZone()) {
++//            if (!this.hasBlockChanges.get(Factions.Zones.SAFEZONE)) {
++//               return false;
++//            }
++//         } else if (var5.isWilderness()) {
++//            if (!this.hasBlockChanges.get(Factions.Zones.WILDERNESS)) {
++//               return false;
++//            }
++//         } else if (!this.hasBlockChanges.get(Factions.Zones.FACTION)) {
++//            return false;
++//         }
++//      }
++//
++//      return true;
++        return false;
++      // Luma end - decompile
+    }
+ 
+    @Override
+    public boolean hasMobSpawns(int var1, int var2, World var3) {
+-      FLocation var4 = new FLocation(var3.getName(), var1, var2);
+-      Faction var5 = Board.getInstance().getFactionAt(var4);
+-      if (var5 != null) {
+-         if (var5.isWarZone()) {
+-            if (!this.mobSpawns.get(Factions.Zones.WARZONE)) {
+-               return false;
+-            }
+-         } else if (var5.isSafeZone()) {
+-            if (!this.mobSpawns.get(Factions.Zones.SAFEZONE)) {
+-               return false;
+-            }
+-         } else if (var5.isWilderness()) {
+-            if (!this.mobSpawns.get(Factions.Zones.WILDERNESS)) {
+-               return false;
+-            }
+-         } else if (!this.mobSpawns.get(Factions.Zones.FACTION)) {
+-            return false;
+-         }
+-      }
+-
+-      return true;
++      // Luma start - decompile: can't find dependency
++//      FLocation var4 = new FLocation(var3.getName(), var1, var2);
++//      Faction var5 = Board.getInstance().getFactionAt(var4);
++//      if (var5 != null) {
++//         if (var5.isWarZone()) {
++//            if (!this.mobSpawns.get(Factions.Zones.WARZONE)) {
++//               return false;
++//            }
++//         } else if (var5.isSafeZone()) {
++//            if (!this.mobSpawns.get(Factions.Zones.SAFEZONE)) {
++//               return false;
++//            }
++//         } else if (var5.isWilderness()) {
++//            if (!this.mobSpawns.get(Factions.Zones.WILDERNESS)) {
++//               return false;
++//            }
++//         } else if (!this.mobSpawns.get(Factions.Zones.FACTION)) {
++//            return false;
++//         }
++//      }
++//
++//      return true;
++      return false;
++      // Luma end - decompile
+    }
+ 
+    @Override
+    public boolean hasSeasonEffects(int var1, int var2, World var3) {
+-      FLocation var4 = new FLocation(var3.getName(), var1, var2);
+-      Faction var5 = Board.getInstance().getFactionAt(var4);
+-      if (var5 != null) {
+-         if (var5.isWarZone()) {
+-            if (!this.seasons.get(Factions.Zones.WARZONE)) {
+-               return false;
+-            }
+-         } else if (var5.isSafeZone()) {
+-            if (!this.seasons.get(Factions.Zones.SAFEZONE)) {
+-               return false;
+-            }
+-         } else if (var5.isWilderness()) {
+-            if (!this.seasons.get(Factions.Zones.WILDERNESS)) {
+-               return false;
+-            }
+-         } else if (!this.seasons.get(Factions.Zones.FACTION)) {
+-            return false;
+-         }
+-      }
+-
+-      return true;
++      // Luma start - decompile: can't find dependency
++//      FLocation var4 = new FLocation(var3.getName(), var1, var2);
++//      Faction var5 = Board.getInstance().getFactionAt(var4);
++//      if (var5 != null) {
++//         if (var5.isWarZone()) {
++//            if (!this.seasons.get(Factions.Zones.WARZONE)) {
++//               return false;
++//            }
++//         } else if (var5.isSafeZone()) {
++//            if (!this.seasons.get(Factions.Zones.SAFEZONE)) {
++//               return false;
++//            }
++//         } else if (var5.isWilderness()) {
++//            if (!this.seasons.get(Factions.Zones.WILDERNESS)) {
++//               return false;
++//            }
++//         } else if (!this.seasons.get(Factions.Zones.FACTION)) {
++//            return false;
++//         }
++//      }
++//
++//      return true;
++      return false;
++      // Luma end - decompile
+    }
+ 
+    @Override
+    public Integer getPermanentTemperature(int var1, int var2, World var3) {
+-      FLocation var4 = new FLocation(var3.getName(), var1, var2);
+-      Faction var5 = Board.getInstance().getFactionAt(var4);
+-      if (var5 != null) {
+-         if (var5.isWarZone()) {
+-            if (this.fixedTemp.get(Factions.Zones.WARZONE)) {
+-               return this.fixedTempValues.get(Factions.Zones.WARZONE);
+-            }
+-         } else if (var5.isSafeZone()) {
+-            if (this.fixedTemp.get(Factions.Zones.SAFEZONE)) {
+-               return this.fixedTempValues.get(Factions.Zones.SAFEZONE);
+-            }
+-         } else if (var5.isWilderness()) {
+-            if (this.fixedTemp.get(Factions.Zones.WILDERNESS)) {
+-               return this.fixedTempValues.get(Factions.Zones.WILDERNESS);
+-            }
+-         } else if (this.fixedTemp.get(Factions.Zones.FACTION)) {
+-            return this.fixedTempValues.get(Factions.Zones.FACTION);
+-         }
+-      }
++      // Luma start - decompile: can't find dependency
++//      FLocation var4 = new FLocation(var3.getName(), var1, var2);
++//      Faction var5 = Board.getInstance().getFactionAt(var4);
++//      if (var5 != null) {
++//         if (var5.isWarZone()) {
++//            if (this.fixedTemp.get(Factions.Zones.WARZONE)) {
++//               return this.fixedTempValues.get(Factions.Zones.WARZONE);
++//            }
++//         } else if (var5.isSafeZone()) {
++//            if (this.fixedTemp.get(Factions.Zones.SAFEZONE)) {
++//               return this.fixedTempValues.get(Factions.Zones.SAFEZONE);
++//            }
++//         } else if (var5.isWilderness()) {
++//            if (this.fixedTemp.get(Factions.Zones.WILDERNESS)) {
++//               return this.fixedTempValues.get(Factions.Zones.WILDERNESS);
++//            }
++//         } else if (this.fixedTemp.get(Factions.Zones.FACTION)) {
++//            return this.fixedTempValues.get(Factions.Zones.FACTION);
++//         }
++//      }
++      // Luma end - decompile
+ 
+       return null;
+    }
+diff --git a/me/casperge/realisticseasons/biome/BiomeRegister.java b/me/casperge/realisticseasons/biome/BiomeRegister.java
+deleted file mode 100644
+index db49dbd..0000000
+--- a/me/casperge/realisticseasons/biome/BiomeRegister.java
++++ /dev/null
+@@ -1,108 +0,0 @@
+-package me.casperge.realisticseasons.biome;
+-
+-import java.util.ArrayList;
+-import java.util.HashMap;
+-import java.util.List;
+-
+-public class BiomeRegister {
+-   public static List<int[]> preGeneratedFallpackets = new ArrayList<>();
+-   public static int kaas;
+-   public static HashMap<Integer, Integer> springreplacements = new HashMap<>();
+-   public static HashMap<Integer, Integer> summerreplacements = new HashMap<>();
+-   public static HashMap<Integer, Integer> winterreplacements = new HashMap<>();
+-   public static HashMap<Integer, List<Integer>> fallreplacements = new HashMap<>();
+-   public static HashMap<Integer, HashMap<Integer, Integer>> mixspringreplacements = new HashMap<>();
+-   public static HashMap<Integer, HashMap<Integer, Integer>> mixsummerreplacements = new HashMap<>();
+-   public static HashMap<Integer, HashMap<Integer, Integer>> mixwinterreplacements = new HashMap<>();
+-   public static HashMap<Integer, HashMap<Integer, Integer>> mixfallreplacements = new HashMap<>();
+-   public static List<Integer> frozeninwinter = new ArrayList<>();
+-   private static int biomeOverride;
+-   private static boolean isBiomeOverride = false;
+-
+-   public static int getWinterReplacement(int var0) {
+-      if (isBiomeOverride) {
+-         return biomeOverride;
+-      } else {
+-         return winterreplacements.containsKey(var0) ? winterreplacements.get(var0) : 5555;
+-      }
+-   }
+-
+-   public static int getMixWinterReplacement(int var0, int var1) {
+-      if (isBiomeOverride) {
+-         return biomeOverride;
+-      } else {
+-         return mixwinterreplacements.get(var1).containsKey(var0) ? mixwinterreplacements.get(var1).get(var0) : 5555;
+-      }
+-   }
+-
+-   public static void update1_18BlockParticleColor() {
+-      setBiomeOverride(kaas);
+-   }
+-
+-   public static int getSpringReplacement(int var0) {
+-      if (isBiomeOverride) {
+-         return biomeOverride;
+-      } else {
+-         return springreplacements.containsKey(var0) ? springreplacements.get(var0) : 5555;
+-      }
+-   }
+-
+-   public static int getMixSpringReplacement(int var0, int var1) {
+-      if (isBiomeOverride) {
+-         return biomeOverride;
+-      } else {
+-         return mixspringreplacements.get(var1).containsKey(var0) ? mixspringreplacements.get(var1).get(var0) : 5555;
+-      }
+-   }
+-
+-   public static int getSummerReplacement(int var0) {
+-      if (isBiomeOverride) {
+-         return biomeOverride;
+-      } else {
+-         return summerreplacements.containsKey(var0) ? summerreplacements.get(var0) : 5555;
+-      }
+-   }
+-
+-   public static int getMixSummerReplacement(int var0, int var1) {
+-      if (isBiomeOverride) {
+-         return biomeOverride;
+-      } else {
+-         return mixsummerreplacements.get(var1).containsKey(var0) ? mixsummerreplacements.get(var1).get(var0) : 5555;
+-      }
+-   }
+-
+-   public static List<Integer> getFallReplacements(int var0) {
+-      if (isBiomeOverride) {
+-         ArrayList var2 = new ArrayList();
+-         var2.add(biomeOverride);
+-         return var2;
+-      } else if (fallreplacements.containsKey(var0)) {
+-         return fallreplacements.get(var0);
+-      } else {
+-         ArrayList var1 = new ArrayList();
+-         var1.add(5555);
+-         return var1;
+-      }
+-   }
+-
+-   public static int getMixFallReplacement(int var0, int var1) {
+-      if (isBiomeOverride) {
+-         return biomeOverride;
+-      } else {
+-         return mixfallreplacements.get(var1).containsKey(var0) ? mixfallreplacements.get(var1).get(var0) : 5555;
+-      }
+-   }
+-
+-   public static void setBiomeOverride(int var0) {
+-      biomeOverride = var0;
+-      isBiomeOverride = true;
+-   }
+-
+-   public static boolean isBiomeOverride() {
+-      return isBiomeOverride;
+-   }
+-
+-   public static void disableBiomeOverride() {
+-      isBiomeOverride = false;
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/biome/BiomeUtils.java b/me/casperge/realisticseasons/biome/BiomeUtils.java
+deleted file mode 100644
+index 7f11ee7..0000000
+--- a/me/casperge/realisticseasons/biome/BiomeUtils.java
++++ /dev/null
+@@ -1,152 +0,0 @@
+-package me.casperge.realisticseasons.biome;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-import java.util.Random;
+-
+-public class BiomeUtils {
+-   public static List<int[]> treeFallpackets = new ArrayList<>();
+-   public static Random r = new Random();
+-
+-   public static int getSeasonsTemperature(float var0) {
+-      if (var0 <= 0.1) {
+-         return -12;
+-      } else if (var0 > 0.1 && var0 <= 0.3) {
+-         return -4;
+-      } else if (var0 > 0.3 && var0 <= 1.0) {
+-         return 0;
+-      } else {
+-         return var0 > 1.0 && var0 <= 1.4 ? 10 : 15;
+-      }
+-   }
+-
+-   public static int[] updateBiomes(int[] var0, int var1, int var2, int var3, int var4) {
+-      boolean var5 = false;
+-      if (var2 != 2) {
+-         var5 = true;
+-         if (var2 > 2) {
+-            var2--;
+-         }
+-      }
+-
+-      switch (var1) {
+-         case 0:
+-            if (var5) {
+-               for (int var17 = 0; var17 < var0.length; var17++) {
+-                  if (BiomeRegister.getMixWinterReplacement(var0[var17], var2) != 5555) {
+-                     var0[var17] = BiomeRegister.getMixWinterReplacement(var0[var17], var2);
+-                  }
+-               }
+-            } else {
+-               for (int var18 = 0; var18 < var0.length; var18++) {
+-                  if (BiomeRegister.getWinterReplacement(var0[var18]) != 5555) {
+-                     var0[var18] = BiomeRegister.getWinterReplacement(var0[var18]);
+-                  }
+-               }
+-            }
+-
+-            return var0;
+-         case 1:
+-            if (var5) {
+-               for (int var15 = 0; var15 < var0.length; var15++) {
+-                  if (BiomeRegister.getMixSummerReplacement(var0[var15], var2) != 5555) {
+-                     var0[var15] = BiomeRegister.getMixSummerReplacement(var0[var15], var2);
+-                  }
+-               }
+-            } else {
+-               for (int var16 = 0; var16 < var0.length; var16++) {
+-                  if (BiomeRegister.getSummerReplacement(var0[var16]) != 5555) {
+-                     var0[var16] = BiomeRegister.getSummerReplacement(var0[var16]);
+-                  }
+-               }
+-            }
+-
+-            return var0;
+-         case 2:
+-            if (var5) {
+-               for (int var13 = 0; var13 < var0.length; var13++) {
+-                  if (BiomeRegister.getMixSpringReplacement(var0[var13], var2) != 5555) {
+-                     var0[var13] = BiomeRegister.getMixSpringReplacement(var0[var13], var2);
+-                  }
+-               }
+-            } else {
+-               for (int var14 = 0; var14 < var0.length; var14++) {
+-                  if (BiomeRegister.getSpringReplacement(var0[var14]) != 5555) {
+-                     var0[var14] = BiomeRegister.getSpringReplacement(var0[var14]);
+-                  }
+-               }
+-            }
+-
+-            return var0;
+-         case 3:
+-            if (var5) {
+-               for (int var6 = 0; var6 < var0.length; var6++) {
+-                  if (BiomeRegister.getMixFallReplacement(var0[var6], var2) != 5555) {
+-                     var0[var6] = BiomeRegister.getMixFallReplacement(var0[var6], var2);
+-                  }
+-               }
+-            } else {
+-               long var11 = var4;
+-               var11 = var3 + (var11 << 32);
+-               Random var8 = new Random(var11);
+-               int var9 = var8.nextInt(5);
+-
+-               for (int var10 = 0; var10 < var0.length; var10++) {
+-                  if (BiomeRegister.getFallReplacements(var0[var10]).size() == 1) {
+-                     if (BiomeRegister.getFallReplacements(var0[var10]).get(0) != 5555) {
+-                        var0[var10] = BiomeRegister.getFallReplacements(var0[var10]).get(0);
+-                     }
+-                  } else if (var10 < 1024) {
+-                     var0[var10] = BiomeRegister.getFallReplacements(var0[var10]).get(treeFallpackets.get(var9)[var10]);
+-                  } else {
+-                     var0[var10] = BiomeRegister.getFallReplacements(var0[var10]).get(treeFallpackets.get(var9)[var10 % 1024]);
+-                  }
+-               }
+-            }
+-
+-            return var0;
+-         default:
+-            return var0;
+-      }
+-   }
+-
+-   public static int getDefaultBiomeTemperature(String var0) {
+-      if (var0.equals("BADLANDS")) {
+-         return 15;
+-      } else if (var0.equals("JUNGLE")) {
+-         return 12;
+-      } else if (var0.equals("BEACH")) {
+-         return 0;
+-      } else if (var0.equals("BIRCH_FOREST")) {
+-         return 0;
+-      } else if (var0.equals("OCEAN")) {
+-         return 0;
+-      } else if (var0.equals("DARK_FOREST")) {
+-         return 0;
+-      } else if (var0.equals("DESERT")) {
+-         return 15;
+-      } else if (var0.equals("FLOWER_FOREST")) {
+-         return 0;
+-      } else if (var0.equals("FOREST")) {
+-         return 0;
+-      } else if (var0.equals("TAIGA")) {
+-         return -4;
+-      } else if (var0.equals("MOUNTAINS")) {
+-         return -4;
+-      } else if (var0.equals("MUSHROOM_FIELDS")) {
+-         return 0;
+-      } else if (var0.equals("PLAINS")) {
+-         return 0;
+-      } else if (var0.equals("RIVER")) {
+-         return 0;
+-      } else if (var0.equals("SAVANNA")) {
+-         return 10;
+-      } else if (var0.equals("CAVES")) {
+-         return 5;
+-      } else if (var0.equals("FROZEN_BIOMES") || var0.equals("FROZEN_MOUNTAINS")) {
+-         return -12;
+-      } else {
+-         return var0.equals("SWAMP") ? 0 : 0;
+-      }
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/biome/BlockReplacement.java b/me/casperge/realisticseasons/biome/BlockReplacement.java
+deleted file mode 100644
+index 50ae1fa..0000000
+--- a/me/casperge/realisticseasons/biome/BlockReplacement.java
++++ /dev/null
+@@ -1,34 +0,0 @@
+-package me.casperge.realisticseasons.biome;
+-
+-import java.util.List;
+-import org.bukkit.Material;
+-
+-public class BlockReplacement {
+-   private List<Integer> seasons;
+-   private List<Integer> phases;
+-   private Material original;
+-   private Material replacent;
+-
+-   public Material getReplacent() {
+-      return this.replacent;
+-   }
+-
+-   public List<Integer> getPhases() {
+-      return this.phases;
+-   }
+-
+-   public List<Integer> getSeasons() {
+-      return this.seasons;
+-   }
+-
+-   public BlockReplacement(List<Integer> var1, List<Integer> var2, Material var3, Material var4) {
+-      this.seasons = var1;
+-      this.phases = var2;
+-      this.replacent = var4;
+-      this.original = var3;
+-   }
+-
+-   public Material getOriginal() {
+-      return this.original;
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/biome/BlockReplacements.java b/me/casperge/realisticseasons/biome/BlockReplacements.java
+deleted file mode 100644
+index 726a001..0000000
+--- a/me/casperge/realisticseasons/biome/BlockReplacements.java
++++ /dev/null
+@@ -1,12 +0,0 @@
+-package me.casperge.realisticseasons.biome;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-public class BlockReplacements {
+-   public static List<BlockReplacement> replacements = new ArrayList<>();
+-
+-   public static void addBlockReplacement(BlockReplacement var0) {
+-      replacements.add(var0);
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/biome/HeightAccessor.java b/me/casperge/realisticseasons/biome/HeightAccessor.java
+deleted file mode 100644
+index 9e0ce79..0000000
+--- a/me/casperge/realisticseasons/biome/HeightAccessor.java
++++ /dev/null
+@@ -1,15 +0,0 @@
+-package me.casperge.realisticseasons.biome;
+-
+-import java.util.HashMap;
+-
+-public class HeightAccessor {
+-   private HashMap<Integer, Integer> heights = new HashMap<>();
+-
+-   public Integer getSectionYFromSectionIndex(Integer var1) {
+-      return this.heights.get(var1);
+-   }
+-
+-   public void add(Integer var1, Integer var2) {
+-      this.heights.put(var1, var2);
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/blockscanner/BlockProcessor.java b/me/casperge/realisticseasons/blockscanner/BlockProcessor.java
+index 94d5058..37a1802 100644
+--- a/me/casperge/realisticseasons/blockscanner/BlockProcessor.java
++++ b/me/casperge/realisticseasons/blockscanner/BlockProcessor.java
+@@ -28,8 +28,8 @@ public class BlockProcessor {
+ 
+    public void process(HashMap<UUID, ChunkSystem> var1, HashMap<UUID, SimpleLocation> var2) {
+       this.isProcessing = true;
+-      HashMap var3 = new HashMap();
+-      HashMap var4 = new HashMap();
++      HashMap<UUID, List<SimpleLocation>> var3 = new HashMap<>(); // Luma - decompile
++      HashMap<UUID, Integer> var4 = new HashMap<>(); // Luma - decompile
+       this.positiveEffects.clear();
+       this.negativeEffects.clear();
+ 
+diff --git a/me/casperge/realisticseasons/blockscanner/ChunkSystem.java b/me/casperge/realisticseasons/blockscanner/ChunkSystem.java
+index 5eb84ba..705c9bc 100644
+--- a/me/casperge/realisticseasons/blockscanner/ChunkSystem.java
++++ b/me/casperge/realisticseasons/blockscanner/ChunkSystem.java
+@@ -4,7 +4,8 @@ import java.util.concurrent.CompletableFuture;
+ import java.util.concurrent.atomic.AtomicBoolean;
+ import java.util.concurrent.atomic.AtomicInteger;
+ import me.casperge.realisticseasons.RealisticSeasons;
+-import me.casperge.realisticseasons.paperlib.PaperLib;
++//import me.casperge.realisticseasons.paperlib.PaperLib; // Luma - decompile
++import io.papermc.lib.PaperLib; // Luma - decompile
+ import org.bukkit.Bukkit;
+ import org.bukkit.Chunk;
+ import org.bukkit.ChunkSnapshot;
+@@ -49,7 +50,7 @@ public class ChunkSystem {
+             if (var10 >= 1875000 || var11 >= 1875000 || var10 <= -1875000 || var11 <= -1875000) {
+                this.sections[var7] = null;
+             } else if (var6.isChunkLoaded(var10, var11)) {
+-               CompletableFuture var12 = PaperLib.getChunkAtAsync(var6, this.middleX + var8 - var2, this.middleZ + var9 - var2);
++               CompletableFuture<Chunk> var12 = PaperLib.getChunkAtAsync(var6, this.middleX + var8 - var2, this.middleZ + var9 - var2); // Luma - decompile
+                int var13 = var7;
+                this.required.getAndIncrement();
+                long var14 = System.currentTimeMillis();
+diff --git a/me/casperge/realisticseasons/calendar/Calendar.java b/me/casperge/realisticseasons/calendar/Calendar.java
+index 6e866e4..95ae640 100644
+--- a/me/casperge/realisticseasons/calendar/Calendar.java
++++ b/me/casperge/realisticseasons/calendar/Calendar.java
+@@ -50,8 +50,8 @@ public class Calendar {
+    }
+ 
+    public Season getSeason(Date var1) {
+-      HashMap var2 = new HashMap();
+-      ArrayList var3 = new ArrayList();
++      HashMap<Date, Integer> var2 = new HashMap<>(); // Luma - decompile
++      ArrayList<Date> var3 = new ArrayList<>(); // Luma - decompile
+       var3.add(this.summerstart);
+       var3.add(this.winterstart);
+       var3.add(this.fallstart);
+diff --git a/me/casperge/realisticseasons/commands/RealisticSeasonsCommand.java b/me/casperge/realisticseasons/commands/RealisticSeasonsCommand.java
+index db3a25d..9b5b21f 100644
+--- a/me/casperge/realisticseasons/commands/RealisticSeasonsCommand.java
++++ b/me/casperge/realisticseasons/commands/RealisticSeasonsCommand.java
+@@ -66,7 +66,7 @@ public class RealisticSeasonsCommand implements CommandExecutor {
+                      );
+                   }
+                } else if (var4[0].equalsIgnoreCase("install")) {
+-                  List var6 = CustomWorldGenerator.getAllGenerators();
++                  List<String> var6 = CustomWorldGenerator.getAllGenerators(); // Luma - decompile
+                   boolean var7 = true;
+                   String var8 = "";
+ 
+@@ -201,7 +201,7 @@ public class RealisticSeasonsCommand implements CommandExecutor {
+                         var5.sendMessage(ChatColor.RED + var34.toString() + " is currently not installed on your server. Please install it first.");
+                      }
+                   } else {
+-                     List var35 = CustomWorldGenerator.getAllGenerators();
++                     List<String> var35 = CustomWorldGenerator.getAllGenerators(); // Luma - decompile
+                      boolean var48 = true;
+                      String var60 = "";
+ 
+@@ -284,7 +284,7 @@ public class RealisticSeasonsCommand implements CommandExecutor {
+                               ChatColor.GREEN + "Successfully applied a temperature change of " + var4[3] + " to " + var36 + " for " + var4[4] + "s"
+                            );
+                         } else {
+-                           final int var72 = Integer.parseInt(var4[3]);
++                           int var72 = Integer.parseInt(var4[3]); // Luma - decompile
+                            String[] var79 = var4[4].replaceAll("FIXED\\(", "").replaceAll("\\)", "").split(",");
+                            final int var11 = Integer.valueOf(var79[0]);
+                            final int var12 = Integer.valueOf(var79[1]);
+@@ -338,12 +338,14 @@ public class RealisticSeasonsCommand implements CommandExecutor {
+                                     this.tempEffects.put(var49.getUniqueId(), var18);
+                                  }
+ 
++                                 // Luma start - decompile
++                                 final int finalVar7 = var72;
+                                  Bukkit.getScheduler().scheduleSyncDelayedTask(this.main, new Runnable() {
+                                     @Override
+                                     public void run() {
+                                        TemperatureEffect var1x = RealisticSeasonsCommand.this.tempEffects.get(var49.getUniqueId());
+                                        int var2x = var1x.getModifier();
+-                                       int var3x = var2x - var72;
++                                       int var3x = var2x - finalVar7;
+                                        if (var3x > var12) {
+                                           var3x = var12;
+                                        }
+@@ -352,11 +354,11 @@ public class RealisticSeasonsCommand implements CommandExecutor {
+                                           var3x = var11;
+                                        }
+ 
+-                                       if (var72 > 0 && var3x < 0) {
++                                       if (finalVar7 > 0 && var3x < 0) {
+                                           var3x = 0;
+                                        }
+ 
+-                                       if (var72 < 0 && var3x > 0) {
++                                       if (finalVar7 < 0 && var3x > 0) {
+                                           var3x = 0;
+                                        }
+ 
+@@ -378,12 +380,13 @@ public class RealisticSeasonsCommand implements CommandExecutor {
+ 
+                                  TemperatureEffect var89 = SeasonsAPI.getInstance().applyPermanentTemperatureEffect(var49, var72);
+                                  this.tempEffects.put(var49.getUniqueId(), var89);
++                                 final int finalVar8 = var72;
+                                  Bukkit.getScheduler().scheduleSyncDelayedTask(this.main, new Runnable() {
+                                     @Override
+                                     public void run() {
+                                        TemperatureEffect var1 = RealisticSeasonsCommand.this.tempEffects.get(var49.getUniqueId());
+                                        int var2 = var1.getModifier();
+-                                       int var3 = var2 - var72;
++                                       int var3 = var2 - finalVar8;
+                                        if (var3 > var12) {
+                                           var3 = var12;
+                                        }
+@@ -392,13 +395,14 @@ public class RealisticSeasonsCommand implements CommandExecutor {
+                                           var3 = var11;
+                                        }
+ 
+-                                       if (var72 > 0 && var3 < 0) {
++                                       if (finalVar8 > 0 && var3 < 0) {
+                                           var3 = 0;
+                                        }
+ 
+-                                       if (var72 < 0 && var3 > 0) {
++                                       if (finalVar8 < 0 && var3 > 0) {
+                                           var3 = 0;
+                                        }
++                                       // Luma end - decompile
+ 
+                                        if (var3 != var2) {
+                                           var1.cancel();
+@@ -428,7 +432,7 @@ public class RealisticSeasonsCommand implements CommandExecutor {
+             this.displayConsoleHelp();
+          } else if (var4.length == 1) {
+             if (var4[0].equalsIgnoreCase("install")) {
+-               List var19 = CustomWorldGenerator.getAllGenerators();
++               List<String> var19 = CustomWorldGenerator.getAllGenerators(); // Luma - decompile
+                boolean var39 = true;
+                String var51 = "";
+ 
+@@ -560,7 +564,7 @@ public class RealisticSeasonsCommand implements CommandExecutor {
+                      Bukkit.getLogger().info(var25.toString() + " is currently not installed on your server. Please install it first.");
+                   }
+                } else {
+-                  List var26 = CustomWorldGenerator.getAllGenerators();
++                  List<String> var26 = CustomWorldGenerator.getAllGenerators(); // Luma - decompile
+                   boolean var41 = true;
+                   String var53 = "";
+ 
+@@ -785,10 +789,10 @@ public class RealisticSeasonsCommand implements CommandExecutor {
+       Bukkit.getLogger().info(" ");
+       Bukkit.getLogger().info("---------------------------------------");
+       Bukkit.getLogger().info(" Biome replacements:");
+-      ArrayList var17 = new ArrayList();
++      ArrayList<String> var17 = new ArrayList<>(); // Luma - decompile
+       boolean var18 = this.main.getSettings().subSeasonsEnabled;
+       Season[] var3 = new Season[]{Season.SPRING, Season.SUMMER, Season.FALL, Season.WINTER};
+-      List var4 = this.main.getNMSUtils().getBiomes("minecraft");
++      List<String> var4 = this.main.getNMSUtils().getBiomes("minecraft"); // Luma - decompile
+       var4.addAll(this.main.getNMSUtils().getCustomBiomes(this.main.getSettings().biomeDisplayName));
+ 
+       for (String var6 : var4) {
+@@ -900,7 +904,7 @@ public class RealisticSeasonsCommand implements CommandExecutor {
+                      .info("End season: " + this.main.getNMSUtils().getBiome(BiomeRegister.getMixFallReplacement(this.main.getNMSUtils().getBiomeID(var6), 3)));
+                }
+ 
+-               List var11 = BiomeRegister.getFallReplacements(this.main.getNMSUtils().getBiomeID(var6));
++               List<Integer> var11 = BiomeRegister.getFallReplacements(this.main.getNMSUtils().getBiomeID(var6)); // Luma - decompile
+                String var12 = null;
+                boolean var13 = true;
+                if (var11.size() == 1) {
+diff --git a/me/casperge/realisticseasons/commands/RealisticSeasonsTabCompl.java b/me/casperge/realisticseasons/commands/RealisticSeasonsTabCompl.java
+index dc56199..ba63a67 100644
+--- a/me/casperge/realisticseasons/commands/RealisticSeasonsTabCompl.java
++++ b/me/casperge/realisticseasons/commands/RealisticSeasonsTabCompl.java
+@@ -106,7 +106,7 @@ public class RealisticSeasonsTabCompl implements TabCompleter {
+    }
+ 
+    private List<String> sortedResults(String var1) {
+-      ArrayList var2 = new ArrayList();
++      ArrayList<String> var2 = new ArrayList<>(); // Luma - decompile
+       StringUtil.copyPartialMatches(var1, this.results, var2);
+       Collections.sort(var2);
+       this.results.clear();
+diff --git a/me/casperge/realisticseasons/data/BiomeFileLoader.java b/me/casperge/realisticseasons/data/BiomeFileLoader.java
+index 73be093..d1fc075 100644
+--- a/me/casperge/realisticseasons/data/BiomeFileLoader.java
++++ b/me/casperge/realisticseasons/data/BiomeFileLoader.java
+@@ -991,11 +991,11 @@ public class BiomeFileLoader {
+    }
+ 
+    private BiomeFileLoader.SeasonCustomBiome findMatchingBiome(int[] var1, Season var2) {
+-      HashMap var3 = this.biomes.get(var2);
++      HashMap<int[], BiomeFileLoader.SeasonCustomBiome> var3 = this.biomes.get(var2); // Luma - decompile
+ 
+       for (int[] var5 : var3.keySet()) {
+          if (Arrays.equals(var5, var1)) {
+-            return (BiomeFileLoader.SeasonCustomBiome)var3.get(var5);
++            return var3.get(var5); // Luma - decompile
+          }
+       }
+ 
+diff --git a/me/casperge/realisticseasons/data/DataHandler.java b/me/casperge/realisticseasons/data/DataHandler.java
+index e263207..81100be 100644
+--- a/me/casperge/realisticseasons/data/DataHandler.java
++++ b/me/casperge/realisticseasons/data/DataHandler.java
+@@ -52,7 +52,7 @@ public class DataHandler {
+    }
+ 
+    public void save() {
+-      HashMap var1 = new HashMap();
++      HashMap<String, String> var1 = new HashMap<>(); // Luma - decompile
+ 
+       for (Entry var3 : this.main.getSeasonManager().worldData.entrySet()) {
+          var1.put(((World)var3.getKey()).getName(), ((Season)var3.getValue()).getConfigName());
+@@ -66,7 +66,7 @@ public class DataHandler {
+          this.data.set("last-recorded-date", this.main.getSeasonCycle().lastRecordedRealLifeTime.toString());
+       }
+ 
+-      WeakHashMap var13 = this.main.getTimeManager().getDates();
++      WeakHashMap<World, Date> var13 = this.main.getTimeManager().getDates(); // Luma - decompile
+ 
+       for (World var4 : var13.keySet()) {
+          if (var13.get(var4) != null) {
+@@ -152,7 +152,7 @@ public class DataHandler {
+    public void load() {
+       ConfigurationSection var1 = this.data.getConfigurationSection("worlds");
+       if (var1 != null) {
+-         Set var2 = var1.getKeys(false);
++         Set<String> var2 = var1.getKeys(false); // Luma - decompile
+          if (!var2.isEmpty()) {
+             for (String var4 : var2) {
+                World var5 = Bukkit.getWorld(var4);
+@@ -187,8 +187,8 @@ public class DataHandler {
+       }
+ 
+       if (this.data.contains("players.particlesdisabled")) {
+-         List var15 = this.data.getStringList("players.particlesdisabled");
+-         ArrayList var25 = new ArrayList();
++         List<String> var15 = this.data.getStringList("players.particlesdisabled"); // Luma - decompile
++         ArrayList<UUID> var25 = new ArrayList<>(); // Luma - decompile
+ 
+          for (String var41 : var15) {
+             var25.add(UUID.fromString(var41));
+@@ -209,10 +209,10 @@ public class DataHandler {
+       }
+ 
+       if (this.data.isConfigurationSection("dates")) {
+-         HashMap var18 = new HashMap();
++         HashMap<World, Date> var18 = new HashMap<>(); // Luma - decompile
+          ConfigurationSection var27 = this.data.getConfigurationSection("dates");
+          if (var27 != null) {
+-            Set var35 = this.data.getConfigurationSection("dates").getKeys(false);
++            Set<String> var35 = this.data.getConfigurationSection("dates").getKeys(false); // Luma - decompile
+             if (!var35.isEmpty()) {
+                for (String var7 : var35) {
+                   World var8 = Bukkit.getWorld(var7);
+@@ -230,10 +230,10 @@ public class DataHandler {
+       }
+ 
+       if (this.data.isConfigurationSection("temperature")) {
+-         ArrayList var19 = new ArrayList();
++         ArrayList<World> var19 = new ArrayList<>(); // Luma - decompile
+          ConfigurationSection var28 = this.data.getConfigurationSection("temperature");
+          if (var28 != null) {
+-            Set var36 = this.data.getConfigurationSection("temperature").getKeys(false);
++            Set<String> var36 = this.data.getConfigurationSection("temperature").getKeys(false); // Luma - decompile
+             if (!var36.isEmpty()) {
+                for (String var47 : var36) {
+                   World var49 = Bukkit.getWorld(var47);
+diff --git a/me/casperge/realisticseasons/data/LanguageManager.java b/me/casperge/realisticseasons/data/LanguageManager.java
+index 3b0c1ba..b004b14 100644
+--- a/me/casperge/realisticseasons/data/LanguageManager.java
++++ b/me/casperge/realisticseasons/data/LanguageManager.java
+@@ -42,7 +42,7 @@ public class LanguageManager {
+ 
+       for (String var6 : var14) {
+          if (this.translations.isList("SEASON-TO-" + var6)) {
+-            List var7 = this.translations.getStringList("SEASON-TO-" + var6);
++            List<String> var7 = this.translations.getStringList("SEASON-TO-" + var6); // Luma - decompile
+             String var8 = "";
+             boolean var9 = true;
+ 
+@@ -85,7 +85,7 @@ public class LanguageManager {
+ 
+       for (String var5 : var13) {
+          if (this.translations.isList("SEASON-TO-" + var5)) {
+-            List var6 = this.translations.getStringList("SEASON-TO-" + var5);
++            List<String> var6 = this.translations.getStringList("SEASON-TO-" + var5); // Luma - decompile
+             String var7 = "";
+             boolean var8 = true;
+ 
+diff --git a/me/casperge/realisticseasons/data/Settings.java b/me/casperge/realisticseasons/data/Settings.java
+index f1b68d8..424f13a 100644
+--- a/me/casperge/realisticseasons/data/Settings.java
++++ b/me/casperge/realisticseasons/data/Settings.java
+@@ -487,10 +487,10 @@ public class Settings {
+                      if (var16 == null) {
+                         Bukkit.getLogger().info("[RealisticSeasons] Unknown Material in config.yml: " + var39 + ". Ignoring section.");
+                      } else {
+-                        Object var17;
++                        List<Integer> var17; // Luma - decompile
+                         if (var40.contains(",")) {
+                            String[] var18 = var40.split(",");
+-                           var17 = new ArrayList();
++                           var17 = new ArrayList<>();
+ 
+                            for (int var19 = 0; var19 < var18.length; var19++) {
+                               var17.add(Season.valueOf(var18[var19].trim().toUpperCase()).intValue());
+@@ -499,10 +499,10 @@ public class Settings {
+                            var17 = Arrays.asList(Season.valueOf(var40.trim().toUpperCase()).intValue());
+                         }
+ 
+-                        Object var42;
++                        List<Integer> var42; // Luma - decompile
+                         if (var14.contains(",")) {
+                            String[] var43 = var14.split(",");
+-                           var42 = new ArrayList();
++                           var42 = new ArrayList<>(); // Luma - decompile
+ 
+                            for (int var20 = 0; var20 < var43.length; var20++) {
+                               var42.add(Integer.valueOf(var43[var20].trim()));
+diff --git a/me/casperge/realisticseasons/data/chunksaver/ChunkDataHandler.java b/me/casperge/realisticseasons/data/chunksaver/ChunkDataHandler.java
+index 845c7f6..0ecc522 100644
+--- a/me/casperge/realisticseasons/data/chunksaver/ChunkDataHandler.java
++++ b/me/casperge/realisticseasons/data/chunksaver/ChunkDataHandler.java
+@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
+ import me.casperge.realisticseasons.RealisticSeasons;
+ import me.casperge.realisticseasons.season.SeasonChunk;
+ import org.bukkit.Bukkit;
++import org.bukkit.World;
+ 
+ public class ChunkDataHandler {
+    private RealisticSeasons main;
+@@ -26,8 +27,8 @@ public class ChunkDataHandler {
+             @Override
+             public void run() {
+                ChunkDataHandler.this.saver.tick();
+-               final ArrayList var1x = new ArrayList();
+-               Set var2x = ChunkDataHandler.this.saver.getWorlds();
++               final ArrayList<SeasonChunk> var1x = new ArrayList<>(); // Luma - decompile
++               Set<String> var2x = ChunkDataHandler.this.saver.getWorlds(); // Luma - decompile
+                if (var2x != null) {
+                   for (String var4 : ChunkDataHandler.this.saver.getWorlds()) {
+                      SeasonChunk var5 = ChunkDataHandler.this.saver.getRandomChunk(var4);
+diff --git a/me/casperge/realisticseasons/dump/DumpCreator.java b/me/casperge/realisticseasons/dump/DumpCreator.java
+index baeefe0..6d576ea 100644
+--- a/me/casperge/realisticseasons/dump/DumpCreator.java
++++ b/me/casperge/realisticseasons/dump/DumpCreator.java
+@@ -1,6 +1,7 @@
+ package me.casperge.realisticseasons.dump;
+ 
+ import java.io.File;
++import java.io.IOException;
+ import java.nio.charset.Charset;
+ import java.nio.charset.StandardCharsets;
+ import java.nio.file.Files;
+@@ -8,6 +9,7 @@ import java.nio.file.Paths;
+ import java.security.SecureRandom;
+ import java.util.ArrayList;
+ import java.util.HashMap;
++import java.util.List;
+ import java.util.Random;
+ import java.util.UUID;
+ import me.casperge.realisticseasons.RealisticSeasons;
+@@ -146,7 +148,7 @@ public class DumpCreator {
+          }
+ 
+          var1.addEntry("worlds", var2);
+-         Object var12 = new ArrayList();
++         List<String> var12 = new ArrayList<>(); // Luma - decompile
+ 
+          try {
+             var12 = this.main.getNMSUtils().getCustomBiomes(this.main.getSettings().biomeDisplayName);
+@@ -171,7 +173,7 @@ public class DumpCreator {
+          var1.addEntry("server-version", Bukkit.getName() + " " + Bukkit.getVersion());
+ 
+          try {
+-            HashMap var16 = this.getFiles();
++            HashMap<String, String> var16 = this.getFiles(); // Luma - decompile
+ 
+             for (String var19 : var16.keySet()) {
+                var1.addEntry("file-" + var19, (String)var16.get(var19));
+@@ -214,7 +216,7 @@ public class DumpCreator {
+       return var1;
+    }
+ 
+-   private String readFile(String var1, Charset var2) {
++   private String readFile(String var1, Charset var2) throws IOException { // Luma - decompile
+       String var3 = this.main.getPlugin().getDataFolder().getAbsolutePath() + "/" + var1;
+       byte[] var4 = Files.readAllBytes(Paths.get(var3));
+       return new String(var4, var2);
+diff --git a/me/casperge/realisticseasons/dump/DumpProcessor.java b/me/casperge/realisticseasons/dump/DumpProcessor.java
+index 7fbd91f..c8215a7 100644
+--- a/me/casperge/realisticseasons/dump/DumpProcessor.java
++++ b/me/casperge/realisticseasons/dump/DumpProcessor.java
+@@ -9,6 +9,7 @@ import java.net.http.HttpClient;
+ import java.net.http.HttpRequest;
+ import java.net.http.HttpClient.Version;
+ import java.net.http.HttpRequest.BodyPublishers;
++import java.net.http.HttpResponse;
+ import java.net.http.HttpResponse.BodyHandlers;
+ import java.util.HashMap;
+ 
+@@ -25,7 +26,7 @@ public class DumpProcessor {
+          .uri(URI.create("http://paste.realisticseasons.com/submit.php"))
+          .header("Content-Type", "application/json")
+          .build();
+-      Object var6 = null;
++      HttpResponse<String> var6; // Luma - decompile
+ 
+       try {
+          var6 = httpClient.send(var5, BodyHandlers.ofString());
+diff --git a/me/casperge/realisticseasons/event/ChunkPacketEventProtocolLibAsync.java b/me/casperge/realisticseasons/event/ChunkPacketEventProtocolLibAsync.java
+index 1f4d88d..ce2809d 100644
+--- a/me/casperge/realisticseasons/event/ChunkPacketEventProtocolLibAsync.java
++++ b/me/casperge/realisticseasons/event/ChunkPacketEventProtocolLibAsync.java
+@@ -22,8 +22,10 @@ import me.casperge.realisticseasons.season.Season;
+ import me.casperge.realisticseasons.season.SubSeason;
+ import me.casperge.realisticseasons.seasonevent.buildin.DefaultEventType;
+ import me.casperge.realisticseasons1_19_R3.NmsCode_19_R3;
+-import me.casperge.weather.WeatherPlugin;
+-import me.casperge.weather.interfaces.BiomePrecipitation;
++// Luma start - decompile: unfound dependency
++//import me.casperge.weather.WeatherPlugin;
++//import me.casperge.weather.interfaces.BiomePrecipitation;
++// Luma end - decompile: unfound dependency
+ import org.bukkit.Bukkit;
+ import org.bukkit.Material;
+ import org.bukkit.World;
+@@ -179,20 +181,22 @@ public class ChunkPacketEventProtocolLibAsync {
+ 
+    public void processSyncPreConditions(Player var1, World var2, int var3, int var4, PacketContainer var5, PacketEvent var6) {
+       byte var7 = -1;
+-      if (this.isRealisticWeatherPresent()) {
+-         BiomePrecipitation var8 = WeatherPlugin.getInstance().getPacketEvents().getPrecipitation(var3, var4, var2);
+-         if (var8 != null) {
+-            if (var8 == BiomePrecipitation.NONE) {
+-               var7 = 0;
+-            } else if (var8 == BiomePrecipitation.RAIN) {
+-               var7 = 1;
+-            } else if (var8 == BiomePrecipitation.SNOW) {
+-               var7 = 2;
+-            } else if (var8 == BiomePrecipitation.SANDSTORM) {
+-               var7 = 3;
+-            }
+-         }
+-      }
++      // Luma start - decompile: unfound dependency
++//      if (this.isRealisticWeatherPresent()) {
++//         BiomePrecipitation var8 = WeatherPlugin.getInstance().getPacketEvents().getPrecipitation(var3, var4, var2);
++//         if (var8 != null) {
++//            if (var8 == BiomePrecipitation.NONE) {
++//               var7 = 0;
++//            } else if (var8 == BiomePrecipitation.RAIN) {
++//               var7 = 1;
++//            } else if (var8 == BiomePrecipitation.SNOW) {
++//               var7 = 2;
++//            } else if (var8 == BiomePrecipitation.SANDSTORM) {
++//               var7 = 3;
++//            }
++//         }
++//      }
++      // Luma end - decompile: unfound dependency
+ 
+       if (this.main.getSettings().affectBiomes) {
+          Season var13 = this.main.getSeasonManager().getSeason(var2);
+@@ -321,7 +325,7 @@ public class ChunkPacketEventProtocolLibAsync {
+       final boolean var9
+    ) {
+       final int var10 = this.main.getNMSUtils().getSectionCount(var3);
+-      final HeightAccessor var11 = null;
++      HeightAccessor var11; // Luma - decompile
+       if (this.accessorRequired) {
+          if (!this.heightAccessors.isEmpty()) {
+             if (this.heightAccessors.containsKey(var3.getName())) {
+@@ -334,11 +338,14 @@ public class ChunkPacketEventProtocolLibAsync {
+             var11 = this.generateAccessor(var3);
+             this.heightAccessors.put(var3.getName(), var11);
+          } else {
+-            this.accessorRequired = false;
++             var11 = null;
++             this.accessorRequired = false;
+          }
++      } else {
++          var11 = null; // Luma - decompile: effectively final
+       }
+ 
+-      Bukkit.getScheduler().runTaskAsynchronously(this.main, new Runnable() {
++       Bukkit.getScheduler().runTaskAsynchronously(this.main, new Runnable() {
+          @Override
+          public void run() {
+             ChunkPacketEventProtocolLibAsync.this.processor.addEntry(var1, var4, var5, var6, var10, var11, var7, var8, var9);
+@@ -355,7 +362,7 @@ public class ChunkPacketEventProtocolLibAsync {
+       if (!(this.main.getNMSUtils() instanceof NmsCode_19_R3)) {
+          return null;
+       } else {
+-         HashMap var2 = ((NmsCode_19_R3)this.main.getNMSUtils()).generateHeightAccessor(var1);
++         HashMap<Integer, Integer> var2 = ((NmsCode_19_R3)this.main.getNMSUtils()).generateHeightAccessor(var1);
+          HeightAccessor var3 = new HeightAccessor();
+ 
+          for (Integer var5 : var2.keySet()) {
+diff --git a/me/casperge/realisticseasons/event/EntityEvents.java b/me/casperge/realisticseasons/event/EntityEvents.java
+index 42a40d1..516d03f 100644
+--- a/me/casperge/realisticseasons/event/EntityEvents.java
++++ b/me/casperge/realisticseasons/event/EntityEvents.java
+@@ -175,9 +175,9 @@ public class EntityEvents implements Listener {
+ 
+          if (!this.alreadyMessagedForCustomGenerator.contains(var1.getPlayer().getUniqueId())) {
+             this.alreadyMessagedForCustomGenerator.add(var1.getPlayer().getUniqueId());
+-            List var2 = CustomBiomeFileLoader.getActiveGenerators();
+-            List var3 = CustomBiomeFileLoader.getAlreadyInstalledGenerators();
+-            ArrayList var4 = new ArrayList();
++            List<CustomWorldGenerator> var2 = CustomBiomeFileLoader.getActiveGenerators(); // Luma - decompile
++            List<CustomWorldGenerator> var3 = CustomBiomeFileLoader.getAlreadyInstalledGenerators(); // Luma - decompile
++            ArrayList<CustomWorldGenerator> var4 = new ArrayList<>(); // Luma - decompile
+ 
+             for (CustomWorldGenerator var6 : var2) {
+                if (!var3.contains(var6)) {
+diff --git a/me/casperge/realisticseasons/metrics/MetricsBase.java b/me/casperge/realisticseasons/metrics/MetricsBase.java
+deleted file mode 100644
+index 654a526..0000000
+--- a/me/casperge/realisticseasons/metrics/MetricsBase.java
++++ /dev/null
+@@ -1,213 +0,0 @@
+-package me.casperge.realisticseasons.metrics;
+-
+-import java.io.BufferedReader;
+-import java.io.ByteArrayOutputStream;
+-import java.io.DataOutputStream;
+-import java.io.InputStreamReader;
+-import java.net.URL;
+-import java.nio.charset.StandardCharsets;
+-import java.util.HashSet;
+-import java.util.Objects;
+-import java.util.Set;
+-import java.util.concurrent.Executors;
+-import java.util.concurrent.ScheduledExecutorService;
+-import java.util.concurrent.TimeUnit;
+-import java.util.function.BiConsumer;
+-import java.util.function.Consumer;
+-import java.util.function.Supplier;
+-import java.util.zip.GZIPOutputStream;
+-import javax.net.ssl.HttpsURLConnection;
+-import me.casperge.realisticseasons.metrics.charts.CustomChart;
+-import me.casperge.realisticseasons.metrics.json.JsonObjectBuilder;
+-
+-public class MetricsBase {
+-   public static final String METRICS_VERSION = "3.0.0";
+-   private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1, var0 -> new Thread(var0, "bStats-Metrics"));
+-   private static final String REPORT_URL = "https://bStats.org/api/v2/data/%s";
+-   private final String platform;
+-   private final String serverUuid;
+-   private final int serviceId;
+-   private final Consumer<JsonObjectBuilder> appendPlatformDataConsumer;
+-   private final Consumer<JsonObjectBuilder> appendServiceDataConsumer;
+-   private final Consumer<Runnable> submitTaskConsumer;
+-   private final Supplier<Boolean> checkServiceEnabledSupplier;
+-   private final BiConsumer<String, Throwable> errorLogger;
+-   private final Consumer<String> infoLogger;
+-   private final boolean logErrors;
+-   private final boolean logSentData;
+-   private final boolean logResponseStatusText;
+-   private final Set<CustomChart> customCharts = new HashSet<>();
+-   private final boolean enabled;
+-
+-   public MetricsBase(
+-      String var1,
+-      String var2,
+-      int var3,
+-      boolean var4,
+-      Consumer<JsonObjectBuilder> var5,
+-      Consumer<JsonObjectBuilder> var6,
+-      Consumer<Runnable> var7,
+-      Supplier<Boolean> var8,
+-      BiConsumer<String, Throwable> var9,
+-      Consumer<String> var10,
+-      boolean var11,
+-      boolean var12,
+-      boolean var13
+-   ) {
+-      this.platform = var1;
+-      this.serverUuid = var2;
+-      this.serviceId = var3;
+-      this.enabled = var4;
+-      this.appendPlatformDataConsumer = var5;
+-      this.appendServiceDataConsumer = var6;
+-      this.submitTaskConsumer = var7;
+-      this.checkServiceEnabledSupplier = var8;
+-      this.errorLogger = var9;
+-      this.infoLogger = var10;
+-      this.logErrors = var11;
+-      this.logSentData = var12;
+-      this.logResponseStatusText = var13;
+-      this.checkRelocation();
+-      if (var4) {
+-         this.startSubmitting();
+-      }
+-   }
+-
+-   public void addCustomChart(CustomChart var1) {
+-      this.customCharts.add(var1);
+-   }
+-
+-   private void startSubmitting() {
+-      Runnable var1 = () -> {
+-         if (this.enabled && this.checkServiceEnabledSupplier.get()) {
+-            if (this.submitTaskConsumer != null) {
+-               this.submitTaskConsumer.accept(this::submitData);
+-            } else {
+-               this.submitData();
+-            }
+-         } else {
+-            scheduler.shutdown();
+-         }
+-      };
+-      long var2 = (long)(60000.0 * (3.0 + Math.random() * 3.0));
+-      long var4 = (long)(60000.0 * (Math.random() * 30.0));
+-      scheduler.schedule(var1, var2, TimeUnit.MILLISECONDS);
+-      scheduler.scheduleAtFixedRate(var1, var2 + var4, 1800000L, TimeUnit.MILLISECONDS);
+-   }
+-
+-   private void submitData() {
+-      JsonObjectBuilder var1 = new JsonObjectBuilder();
+-      this.appendPlatformDataConsumer.accept(var1);
+-      JsonObjectBuilder var2 = new JsonObjectBuilder();
+-      this.appendServiceDataConsumer.accept(var2);
+-      JsonObjectBuilder.JsonObject[] var3 = this.customCharts
+-         .stream()
+-         .map(var1x -> var1x.getRequestJsonObject(this.errorLogger, this.logErrors))
+-         .filter(Objects::nonNull)
+-         .toArray(JsonObjectBuilder.JsonObject[]::new);
+-      var2.appendField("id", this.serviceId);
+-      var2.appendField("customCharts", var3);
+-      var1.appendField("service", var2.build());
+-      var1.appendField("serverUUID", this.serverUuid);
+-      var1.appendField("metricsVersion", "3.0.0");
+-      JsonObjectBuilder.JsonObject var4 = var1.build();
+-      scheduler.execute(() -> {
+-         try {
+-            this.sendData(var4);
+-         } catch (Exception var3x) {
+-            if (this.logErrors) {
+-               this.errorLogger.accept("Could not submit bStats metrics data", var3x);
+-            }
+-         }
+-      });
+-   }
+-
+-   private void sendData(JsonObjectBuilder.JsonObject var1) {
+-      if (this.logSentData) {
+-         this.infoLogger.accept("Sent bStats metrics data: " + var1.toString());
+-      }
+-
+-      String var2 = String.format("https://bStats.org/api/v2/data/%s", this.platform);
+-      HttpsURLConnection var3 = (HttpsURLConnection)new URL(var2).openConnection();
+-      byte[] var4 = compress(var1.toString());
+-      var3.setRequestMethod("POST");
+-      var3.addRequestProperty("Accept", "application/json");
+-      var3.addRequestProperty("Connection", "close");
+-      var3.addRequestProperty("Content-Encoding", "gzip");
+-      var3.addRequestProperty("Content-Length", String.valueOf(var4.length));
+-      var3.setRequestProperty("Content-Type", "application/json");
+-      var3.setRequestProperty("User-Agent", "Metrics-Service/1");
+-      var3.setDoOutput(true);
+-      DataOutputStream var5 = new DataOutputStream(var3.getOutputStream());
+-
+-      try {
+-         var5.write(var4);
+-      } catch (Throwable var11) {
+-         try {
+-            var5.close();
+-         } catch (Throwable var10) {
+-            var11.addSuppressed(var10);
+-         }
+-
+-         throw var11;
+-      }
+-
+-      var5.close();
+-      StringBuilder var13 = new StringBuilder();
+-      BufferedReader var6 = new BufferedReader(new InputStreamReader(var3.getInputStream()));
+-
+-      String var7;
+-      try {
+-         while ((var7 = var6.readLine()) != null) {
+-            var13.append(var7);
+-         }
+-      } catch (Throwable var12) {
+-         try {
+-            var6.close();
+-         } catch (Throwable var9) {
+-            var12.addSuppressed(var9);
+-         }
+-
+-         throw var12;
+-      }
+-
+-      var6.close();
+-      if (this.logResponseStatusText) {
+-         this.infoLogger.accept("Sent data to bStats and received response: " + var13);
+-      }
+-   }
+-
+-   private void checkRelocation() {
+-      if (System.getProperty("bstats.relocatecheck") == null || !System.getProperty("bstats.relocatecheck").equals("false")) {
+-         String var1 = new String(new byte[]{111, 114, 103, 46, 98, 115, 116, 97, 116, 115});
+-         String var2 = new String(new byte[]{121, 111, 117, 114, 46, 112, 97, 99, 107, 97, 103, 101});
+-         if (MetricsBase.class.getPackage().getName().startsWith(var1) || MetricsBase.class.getPackage().getName().startsWith(var2)) {
+-            throw new IllegalStateException("bStats Metrics class has not been relocated correctly!");
+-         }
+-      }
+-   }
+-
+-   private static byte[] compress(String var0) {
+-      if (var0 == null) {
+-         return null;
+-      } else {
+-         ByteArrayOutputStream var1 = new ByteArrayOutputStream();
+-         GZIPOutputStream var2 = new GZIPOutputStream(var1);
+-
+-         try {
+-            var2.write(var0.getBytes(StandardCharsets.UTF_8));
+-         } catch (Throwable var6) {
+-            try {
+-               var2.close();
+-            } catch (Throwable var5) {
+-               var6.addSuppressed(var5);
+-            }
+-
+-            throw var6;
+-         }
+-
+-         var2.close();
+-         return var1.toByteArray();
+-      }
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/metrics/bukkit/Metrics.java b/me/casperge/realisticseasons/metrics/bukkit/Metrics.java
+deleted file mode 100644
+index 5c47336..0000000
+--- a/me/casperge/realisticseasons/metrics/bukkit/Metrics.java
++++ /dev/null
+@@ -1,97 +0,0 @@
+-package me.casperge.realisticseasons.metrics.bukkit;
+-
+-import java.io.File;
+-import java.io.IOException;
+-import java.lang.reflect.Method;
+-import java.util.Collection;
+-import java.util.UUID;
+-import java.util.logging.Level;
+-import me.casperge.realisticseasons.metrics.MetricsBase;
+-import me.casperge.realisticseasons.metrics.charts.CustomChart;
+-import me.casperge.realisticseasons.metrics.json.JsonObjectBuilder;
+-import org.bukkit.Bukkit;
+-import org.bukkit.configuration.file.YamlConfiguration;
+-import org.bukkit.entity.Player;
+-import org.bukkit.plugin.Plugin;
+-import org.bukkit.plugin.java.JavaPlugin;
+-
+-public class Metrics {
+-   private final Plugin plugin;
+-   private final MetricsBase metricsBase;
+-
+-   public Metrics(JavaPlugin var1, int var2) {
+-      this.plugin = var1;
+-      File var3 = new File(var1.getDataFolder().getParentFile(), "bStats");
+-      File var4 = new File(var3, "config.yml");
+-      YamlConfiguration var5 = YamlConfiguration.loadConfiguration(var4);
+-      if (!var5.isSet("serverUuid")) {
+-         var5.addDefault("enabled", true);
+-         var5.addDefault("serverUuid", UUID.randomUUID().toString());
+-         var5.addDefault("logFailedRequests", false);
+-         var5.addDefault("logSentData", false);
+-         var5.addDefault("logResponseStatusText", false);
+-         var5.options()
+-            .header(
+-               "bStats (https://bStats.org) collects some basic information for plugin authors, like how\nmany people use their plugin and their total player count. It's recommended to keep bStats\nenabled, but if you're not comfortable with this, you can turn this setting off. There is no\nperformance penalty associated with having metrics enabled, and data sent to bStats is fully\nanonymous."
+-            )
+-            .copyDefaults(true);
+-
+-         try {
+-            var5.save(var4);
+-         } catch (IOException var11) {
+-         }
+-      }
+-
+-      boolean var6 = var5.getBoolean("enabled", true);
+-      String var7 = var5.getString("serverUuid");
+-      boolean var8 = var5.getBoolean("logFailedRequests", false);
+-      boolean var9 = var5.getBoolean("logSentData", false);
+-      boolean var10 = var5.getBoolean("logResponseStatusText", false);
+-      this.metricsBase = new MetricsBase(
+-         "bukkit",
+-         var7,
+-         var2,
+-         var6,
+-         this::appendPlatformData,
+-         this::appendServiceData,
+-         var1x -> Bukkit.getScheduler().runTask(var1, var1x),
+-         var1::isEnabled,
+-         (var1x, var2x) -> this.plugin.getLogger().log(Level.WARNING, var1x, var2x),
+-         var1x -> this.plugin.getLogger().log(Level.INFO, var1x),
+-         var8,
+-         var9,
+-         var10
+-      );
+-   }
+-
+-   public void addCustomChart(CustomChart var1) {
+-      this.metricsBase.addCustomChart(var1);
+-   }
+-
+-   private void appendPlatformData(JsonObjectBuilder var1) {
+-      var1.appendField("playerAmount", this.getPlayerAmount());
+-      var1.appendField("onlineMode", Bukkit.getOnlineMode() ? 1 : 0);
+-      var1.appendField("bukkitVersion", Bukkit.getVersion());
+-      var1.appendField("bukkitName", Bukkit.getName());
+-      var1.appendField("javaVersion", System.getProperty("java.version"));
+-      var1.appendField("osName", System.getProperty("os.name"));
+-      var1.appendField("osArch", System.getProperty("os.arch"));
+-      var1.appendField("osVersion", System.getProperty("os.version"));
+-      var1.appendField("coreCount", Runtime.getRuntime().availableProcessors());
+-   }
+-
+-   private void appendServiceData(JsonObjectBuilder var1) {
+-      var1.appendField("pluginVersion", this.plugin.getDescription().getVersion());
+-   }
+-
+-   private int getPlayerAmount() {
+-      try {
+-         Method var1 = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers");
+-         return var1.getReturnType().equals(Collection.class)
+-            ? ((Collection)var1.invoke(Bukkit.getServer())).size()
+-            : ((Player[])var1.invoke(Bukkit.getServer())).length;
+-      } catch (Exception var2) {
+-         return Bukkit.getOnlinePlayers().size();
+-      }
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/metrics/charts/AdvancedBarChart.java b/me/casperge/realisticseasons/metrics/charts/AdvancedBarChart.java
+deleted file mode 100644
+index 0b6cbba..0000000
+--- a/me/casperge/realisticseasons/metrics/charts/AdvancedBarChart.java
++++ /dev/null
+@@ -1,35 +0,0 @@
+-package me.casperge.realisticseasons.metrics.charts;
+-
+-import java.util.Map;
+-import java.util.Map.Entry;
+-import java.util.concurrent.Callable;
+-import me.casperge.realisticseasons.metrics.json.JsonObjectBuilder;
+-
+-public class AdvancedBarChart extends CustomChart {
+-   private final Callable<Map<String, int[]>> callable;
+-
+-   public AdvancedBarChart(String var1, Callable<Map<String, int[]>> var2) {
+-      super(var1);
+-      this.callable = var2;
+-   }
+-
+-   @Override
+-   protected JsonObjectBuilder.JsonObject getChartData() {
+-      JsonObjectBuilder var1 = new JsonObjectBuilder();
+-      Map var2 = this.callable.call();
+-      if (var2 != null && !var2.isEmpty()) {
+-         boolean var3 = true;
+-
+-         for (Entry var5 : var2.entrySet()) {
+-            if (((int[])var5.getValue()).length != 0) {
+-               var3 = false;
+-               var1.appendField((String)var5.getKey(), (int[])var5.getValue());
+-            }
+-         }
+-
+-         return var3 ? null : new JsonObjectBuilder().appendField("values", var1.build()).build();
+-      } else {
+-         return null;
+-      }
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/metrics/charts/AdvancedPie.java b/me/casperge/realisticseasons/metrics/charts/AdvancedPie.java
+deleted file mode 100644
+index 8c0fab6..0000000
+--- a/me/casperge/realisticseasons/metrics/charts/AdvancedPie.java
++++ /dev/null
+@@ -1,35 +0,0 @@
+-package me.casperge.realisticseasons.metrics.charts;
+-
+-import java.util.Map;
+-import java.util.Map.Entry;
+-import java.util.concurrent.Callable;
+-import me.casperge.realisticseasons.metrics.json.JsonObjectBuilder;
+-
+-public class AdvancedPie extends CustomChart {
+-   private final Callable<Map<String, Integer>> callable;
+-
+-   public AdvancedPie(String var1, Callable<Map<String, Integer>> var2) {
+-      super(var1);
+-      this.callable = var2;
+-   }
+-
+-   @Override
+-   protected JsonObjectBuilder.JsonObject getChartData() {
+-      JsonObjectBuilder var1 = new JsonObjectBuilder();
+-      Map var2 = this.callable.call();
+-      if (var2 != null && !var2.isEmpty()) {
+-         boolean var3 = true;
+-
+-         for (Entry var5 : var2.entrySet()) {
+-            if ((Integer)var5.getValue() != 0) {
+-               var3 = false;
+-               var1.appendField((String)var5.getKey(), (Integer)var5.getValue());
+-            }
+-         }
+-
+-         return var3 ? null : new JsonObjectBuilder().appendField("values", var1.build()).build();
+-      } else {
+-         return null;
+-      }
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/metrics/charts/CustomChart.java b/me/casperge/realisticseasons/metrics/charts/CustomChart.java
+deleted file mode 100644
+index 7f2e583..0000000
+--- a/me/casperge/realisticseasons/metrics/charts/CustomChart.java
++++ /dev/null
+@@ -1,40 +0,0 @@
+-package me.casperge.realisticseasons.metrics.charts;
+-
+-import java.util.function.BiConsumer;
+-import me.casperge.realisticseasons.metrics.json.JsonObjectBuilder;
+-
+-public abstract class CustomChart {
+-   private final String chartId;
+-
+-   protected CustomChart(String var1) {
+-      if (var1 == null) {
+-         throw new IllegalArgumentException("chartId must not be null");
+-      } else {
+-         this.chartId = var1;
+-      }
+-   }
+-
+-   public JsonObjectBuilder.JsonObject getRequestJsonObject(BiConsumer<String, Throwable> var1, boolean var2) {
+-      JsonObjectBuilder var3 = new JsonObjectBuilder();
+-      var3.appendField("chartId", this.chartId);
+-
+-      try {
+-         JsonObjectBuilder.JsonObject var4 = this.getChartData();
+-         if (var4 == null) {
+-            return null;
+-         }
+-
+-         var3.appendField("data", var4);
+-      } catch (Throwable var5) {
+-         if (var2) {
+-            var1.accept("Failed to get data for custom chart with id " + this.chartId, var5);
+-         }
+-
+-         return null;
+-      }
+-
+-      return var3.build();
+-   }
+-
+-   protected abstract JsonObjectBuilder.JsonObject getChartData();
+-}
+diff --git a/me/casperge/realisticseasons/metrics/charts/DrilldownPie.java b/me/casperge/realisticseasons/metrics/charts/DrilldownPie.java
+deleted file mode 100644
+index 2755b73..0000000
+--- a/me/casperge/realisticseasons/metrics/charts/DrilldownPie.java
++++ /dev/null
+@@ -1,43 +0,0 @@
+-package me.casperge.realisticseasons.metrics.charts;
+-
+-import java.util.Map;
+-import java.util.Map.Entry;
+-import java.util.concurrent.Callable;
+-import me.casperge.realisticseasons.metrics.json.JsonObjectBuilder;
+-
+-public class DrilldownPie extends CustomChart {
+-   private final Callable<Map<String, Map<String, Integer>>> callable;
+-
+-   public DrilldownPie(String var1, Callable<Map<String, Map<String, Integer>>> var2) {
+-      super(var1);
+-      this.callable = var2;
+-   }
+-
+-   @Override
+-   public JsonObjectBuilder.JsonObject getChartData() {
+-      JsonObjectBuilder var1 = new JsonObjectBuilder();
+-      Map var2 = this.callable.call();
+-      if (var2 != null && !var2.isEmpty()) {
+-         boolean var3 = true;
+-
+-         for (Entry var5 : var2.entrySet()) {
+-            JsonObjectBuilder var6 = new JsonObjectBuilder();
+-            boolean var7 = true;
+-
+-            for (Entry var9 : ((Map)var2.get(var5.getKey())).entrySet()) {
+-               var6.appendField((String)var9.getKey(), (Integer)var9.getValue());
+-               var7 = false;
+-            }
+-
+-            if (!var7) {
+-               var3 = false;
+-               var1.appendField((String)var5.getKey(), var6.build());
+-            }
+-         }
+-
+-         return var3 ? null : new JsonObjectBuilder().appendField("values", var1.build()).build();
+-      } else {
+-         return null;
+-      }
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/metrics/charts/MultiLineChart.java b/me/casperge/realisticseasons/metrics/charts/MultiLineChart.java
+deleted file mode 100644
+index 022902a..0000000
+--- a/me/casperge/realisticseasons/metrics/charts/MultiLineChart.java
++++ /dev/null
+@@ -1,35 +0,0 @@
+-package me.casperge.realisticseasons.metrics.charts;
+-
+-import java.util.Map;
+-import java.util.Map.Entry;
+-import java.util.concurrent.Callable;
+-import me.casperge.realisticseasons.metrics.json.JsonObjectBuilder;
+-
+-public class MultiLineChart extends CustomChart {
+-   private final Callable<Map<String, Integer>> callable;
+-
+-   public MultiLineChart(String var1, Callable<Map<String, Integer>> var2) {
+-      super(var1);
+-      this.callable = var2;
+-   }
+-
+-   @Override
+-   protected JsonObjectBuilder.JsonObject getChartData() {
+-      JsonObjectBuilder var1 = new JsonObjectBuilder();
+-      Map var2 = this.callable.call();
+-      if (var2 != null && !var2.isEmpty()) {
+-         boolean var3 = true;
+-
+-         for (Entry var5 : var2.entrySet()) {
+-            if ((Integer)var5.getValue() != 0) {
+-               var3 = false;
+-               var1.appendField((String)var5.getKey(), (Integer)var5.getValue());
+-            }
+-         }
+-
+-         return var3 ? null : new JsonObjectBuilder().appendField("values", var1.build()).build();
+-      } else {
+-         return null;
+-      }
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/metrics/charts/SimpleBarChart.java b/me/casperge/realisticseasons/metrics/charts/SimpleBarChart.java
+deleted file mode 100644
+index dab4dd0..0000000
+--- a/me/casperge/realisticseasons/metrics/charts/SimpleBarChart.java
++++ /dev/null
+@@ -1,30 +0,0 @@
+-package me.casperge.realisticseasons.metrics.charts;
+-
+-import java.util.Map;
+-import java.util.Map.Entry;
+-import java.util.concurrent.Callable;
+-import me.casperge.realisticseasons.metrics.json.JsonObjectBuilder;
+-
+-public class SimpleBarChart extends CustomChart {
+-   private final Callable<Map<String, Integer>> callable;
+-
+-   public SimpleBarChart(String var1, Callable<Map<String, Integer>> var2) {
+-      super(var1);
+-      this.callable = var2;
+-   }
+-
+-   @Override
+-   protected JsonObjectBuilder.JsonObject getChartData() {
+-      JsonObjectBuilder var1 = new JsonObjectBuilder();
+-      Map var2 = this.callable.call();
+-      if (var2 != null && !var2.isEmpty()) {
+-         for (Entry var4 : var2.entrySet()) {
+-            var1.appendField((String)var4.getKey(), new int[]{(Integer)var4.getValue()});
+-         }
+-
+-         return new JsonObjectBuilder().appendField("values", var1.build()).build();
+-      } else {
+-         return null;
+-      }
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/metrics/charts/SimplePie.java b/me/casperge/realisticseasons/metrics/charts/SimplePie.java
+deleted file mode 100644
+index 47b0d78..0000000
+--- a/me/casperge/realisticseasons/metrics/charts/SimplePie.java
++++ /dev/null
+@@ -1,19 +0,0 @@
+-package me.casperge.realisticseasons.metrics.charts;
+-
+-import java.util.concurrent.Callable;
+-import me.casperge.realisticseasons.metrics.json.JsonObjectBuilder;
+-
+-public class SimplePie extends CustomChart {
+-   private final Callable<String> callable;
+-
+-   public SimplePie(String var1, Callable<String> var2) {
+-      super(var1);
+-      this.callable = var2;
+-   }
+-
+-   @Override
+-   protected JsonObjectBuilder.JsonObject getChartData() {
+-      String var1 = this.callable.call();
+-      return var1 != null && !var1.isEmpty() ? new JsonObjectBuilder().appendField("value", var1).build() : null;
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/metrics/charts/SingleLineChart.java b/me/casperge/realisticseasons/metrics/charts/SingleLineChart.java
+deleted file mode 100644
+index f22929e..0000000
+--- a/me/casperge/realisticseasons/metrics/charts/SingleLineChart.java
++++ /dev/null
+@@ -1,19 +0,0 @@
+-package me.casperge.realisticseasons.metrics.charts;
+-
+-import java.util.concurrent.Callable;
+-import me.casperge.realisticseasons.metrics.json.JsonObjectBuilder;
+-
+-public class SingleLineChart extends CustomChart {
+-   private final Callable<Integer> callable;
+-
+-   public SingleLineChart(String var1, Callable<Integer> var2) {
+-      super(var1);
+-      this.callable = var2;
+-   }
+-
+-   @Override
+-   protected JsonObjectBuilder.JsonObject getChartData() {
+-      int var1 = this.callable.call();
+-      return var1 == 0 ? null : new JsonObjectBuilder().appendField("value", var1).build();
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/metrics/config/MetricsConfig.java b/me/casperge/realisticseasons/metrics/config/MetricsConfig.java
+deleted file mode 100644
+index 57ef51e..0000000
+--- a/me/casperge/realisticseasons/metrics/config/MetricsConfig.java
++++ /dev/null
+@@ -1,177 +0,0 @@
+-package me.casperge.realisticseasons.metrics.config;
+-
+-import java.io.BufferedReader;
+-import java.io.BufferedWriter;
+-import java.io.File;
+-import java.io.FileReader;
+-import java.io.FileWriter;
+-import java.util.ArrayList;
+-import java.util.List;
+-import java.util.Optional;
+-import java.util.UUID;
+-import java.util.regex.Pattern;
+-import java.util.stream.Collectors;
+-
+-public class MetricsConfig {
+-   private final File file;
+-   private final boolean defaultEnabled;
+-   private String serverUUID;
+-   private boolean enabled;
+-   private boolean logErrors;
+-   private boolean logSentData;
+-   private boolean logResponseStatusText;
+-   private boolean didExistBefore = true;
+-
+-   public MetricsConfig(File var1, boolean var2) {
+-      this.file = var1;
+-      this.defaultEnabled = var2;
+-      this.setupConfig();
+-   }
+-
+-   public String getServerUUID() {
+-      return this.serverUUID;
+-   }
+-
+-   public boolean isEnabled() {
+-      return this.enabled;
+-   }
+-
+-   public boolean isLogErrorsEnabled() {
+-      return this.logErrors;
+-   }
+-
+-   public boolean isLogSentDataEnabled() {
+-      return this.logSentData;
+-   }
+-
+-   public boolean isLogResponseStatusTextEnabled() {
+-      return this.logResponseStatusText;
+-   }
+-
+-   public boolean didExistBefore() {
+-      return this.didExistBefore;
+-   }
+-
+-   private void setupConfig() {
+-      if (!this.file.exists()) {
+-         this.didExistBefore = false;
+-         this.writeConfig();
+-      }
+-
+-      this.readConfig();
+-      if (this.serverUUID == null) {
+-         this.writeConfig();
+-         this.readConfig();
+-      }
+-   }
+-
+-   private void writeConfig() {
+-      ArrayList var1 = new ArrayList();
+-      var1.add("# bStats (https://bStats.org) collects some basic information for plugin authors, like");
+-      var1.add("# how many people use their plugin and their total player count. It's recommended to keep");
+-      var1.add("# bStats enabled, but if you're not comfortable with this, you can turn this setting off.");
+-      var1.add("# There is no performance penalty associated with having metrics enabled, and data sent to");
+-      var1.add("# bStats is fully anonymous.");
+-      var1.add("enabled=" + this.defaultEnabled);
+-      var1.add("server-uuid=" + UUID.randomUUID().toString());
+-      var1.add("log-errors=false");
+-      var1.add("log-sent-data=false");
+-      var1.add("log-response-status-text=false");
+-      this.writeFile(this.file, var1);
+-   }
+-
+-   private void readConfig() {
+-      List var1 = this.readFile(this.file);
+-      if (var1 == null) {
+-         throw new AssertionError("Content of newly created file is null");
+-      } else {
+-         this.enabled = this.getConfigValue("enabled", var1).map("true"::equals).orElse(true);
+-         this.serverUUID = this.getConfigValue("server-uuid", var1).orElse(null);
+-         this.logErrors = this.getConfigValue("log-errors", var1).map("true"::equals).orElse(false);
+-         this.logSentData = this.getConfigValue("log-sent-data", var1).map("true"::equals).orElse(false);
+-         this.logResponseStatusText = this.getConfigValue("log-response-status-text", var1).map("true"::equals).orElse(false);
+-      }
+-   }
+-
+-   private Optional<String> getConfigValue(String var1, List<String> var2) {
+-      return var2.stream().filter(var1x -> var1x.startsWith(var1 + "=")).map(var1x -> var1x.replaceFirst(Pattern.quote(var1 + "="), "")).findFirst();
+-   }
+-
+-   private List<String> readFile(File var1) {
+-      if (!var1.exists()) {
+-         return null;
+-      } else {
+-         FileReader var2 = new FileReader(var1);
+-
+-         List var4;
+-         try {
+-            BufferedReader var3 = new BufferedReader(var2);
+-
+-            try {
+-               var4 = var3.lines().collect(Collectors.toList());
+-            } catch (Throwable var8) {
+-               try {
+-                  var3.close();
+-               } catch (Throwable var7) {
+-                  var8.addSuppressed(var7);
+-               }
+-
+-               throw var8;
+-            }
+-
+-            var3.close();
+-         } catch (Throwable var9) {
+-            try {
+-               var2.close();
+-            } catch (Throwable var6) {
+-               var9.addSuppressed(var6);
+-            }
+-
+-            throw var9;
+-         }
+-
+-         var2.close();
+-         return var4;
+-      }
+-   }
+-
+-   private void writeFile(File var1, List<String> var2) {
+-      if (!var1.exists()) {
+-         var1.getParentFile().mkdirs();
+-         var1.createNewFile();
+-      }
+-
+-      FileWriter var3 = new FileWriter(var1);
+-
+-      try {
+-         BufferedWriter var4 = new BufferedWriter(var3);
+-
+-         try {
+-            for (String var6 : var2) {
+-               var4.write(var6);
+-               var4.newLine();
+-            }
+-         } catch (Throwable var9) {
+-            try {
+-               var4.close();
+-            } catch (Throwable var8) {
+-               var9.addSuppressed(var8);
+-            }
+-
+-            throw var9;
+-         }
+-
+-         var4.close();
+-      } catch (Throwable var10) {
+-         try {
+-            var3.close();
+-         } catch (Throwable var7) {
+-            var10.addSuppressed(var7);
+-         }
+-
+-         throw var10;
+-      }
+-
+-      var3.close();
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/metrics/json/JsonObjectBuilder.java b/me/casperge/realisticseasons/metrics/json/JsonObjectBuilder.java
+deleted file mode 100644
+index bba9dad..0000000
+--- a/me/casperge/realisticseasons/metrics/json/JsonObjectBuilder.java
++++ /dev/null
+@@ -1,130 +0,0 @@
+-package me.casperge.realisticseasons.metrics.json;
+-
+-import java.util.Arrays;
+-import java.util.stream.Collectors;
+-
+-public class JsonObjectBuilder {
+-   private StringBuilder builder = new StringBuilder();
+-   private boolean hasAtLeastOneField = false;
+-
+-   public JsonObjectBuilder() {
+-      this.builder.append("{");
+-   }
+-
+-   public JsonObjectBuilder appendNull(String var1) {
+-      this.appendFieldUnescaped(var1, "null");
+-      return this;
+-   }
+-
+-   public JsonObjectBuilder appendField(String var1, String var2) {
+-      if (var2 == null) {
+-         throw new IllegalArgumentException("JSON value must not be null");
+-      } else {
+-         this.appendFieldUnescaped(var1, "\"" + escape(var2) + "\"");
+-         return this;
+-      }
+-   }
+-
+-   public JsonObjectBuilder appendField(String var1, int var2) {
+-      this.appendFieldUnescaped(var1, String.valueOf(var2));
+-      return this;
+-   }
+-
+-   public JsonObjectBuilder appendField(String var1, JsonObjectBuilder.JsonObject var2) {
+-      if (var2 == null) {
+-         throw new IllegalArgumentException("JSON object must not be null");
+-      } else {
+-         this.appendFieldUnescaped(var1, var2.toString());
+-         return this;
+-      }
+-   }
+-
+-   public JsonObjectBuilder appendField(String var1, String[] var2) {
+-      if (var2 == null) {
+-         throw new IllegalArgumentException("JSON values must not be null");
+-      } else {
+-         String var3 = Arrays.stream(var2).map(var0 -> "\"" + escape(var0) + "\"").collect(Collectors.joining(","));
+-         this.appendFieldUnescaped(var1, "[" + var3 + "]");
+-         return this;
+-      }
+-   }
+-
+-   public JsonObjectBuilder appendField(String var1, int[] var2) {
+-      if (var2 == null) {
+-         throw new IllegalArgumentException("JSON values must not be null");
+-      } else {
+-         String var3 = Arrays.stream(var2).mapToObj(String::valueOf).collect(Collectors.joining(","));
+-         this.appendFieldUnescaped(var1, "[" + var3 + "]");
+-         return this;
+-      }
+-   }
+-
+-   public JsonObjectBuilder appendField(String var1, JsonObjectBuilder.JsonObject[] var2) {
+-      if (var2 == null) {
+-         throw new IllegalArgumentException("JSON values must not be null");
+-      } else {
+-         String var3 = Arrays.stream(var2).map(JsonObjectBuilder.JsonObject::toString).collect(Collectors.joining(","));
+-         this.appendFieldUnescaped(var1, "[" + var3 + "]");
+-         return this;
+-      }
+-   }
+-
+-   private void appendFieldUnescaped(String var1, String var2) {
+-      if (this.builder == null) {
+-         throw new IllegalStateException("JSON has already been built");
+-      } else if (var1 == null) {
+-         throw new IllegalArgumentException("JSON key must not be null");
+-      } else {
+-         if (this.hasAtLeastOneField) {
+-            this.builder.append(",");
+-         }
+-
+-         this.builder.append("\"").append(escape(var1)).append("\":").append(var2);
+-         this.hasAtLeastOneField = true;
+-      }
+-   }
+-
+-   public JsonObjectBuilder.JsonObject build() {
+-      if (this.builder == null) {
+-         throw new IllegalStateException("JSON has already been built");
+-      } else {
+-         JsonObjectBuilder.JsonObject var1 = new JsonObjectBuilder.JsonObject(this.builder.append("}").toString());
+-         this.builder = null;
+-         return var1;
+-      }
+-   }
+-
+-   private static String escape(String var0) {
+-      StringBuilder var1 = new StringBuilder();
+-
+-      for (int var2 = 0; var2 < var0.length(); var2++) {
+-         char var3 = var0.charAt(var2);
+-         if (var3 == '"') {
+-            var1.append("\\\"");
+-         } else if (var3 == '\\') {
+-            var1.append("\\\\");
+-         } else if (var3 <= 15) {
+-            var1.append("\\u000").append(Integer.toHexString(var3));
+-         } else if (var3 <= 31) {
+-            var1.append("\\u00").append(Integer.toHexString(var3));
+-         } else {
+-            var1.append(var3);
+-         }
+-      }
+-
+-      return var1.toString();
+-   }
+-
+-   public static class JsonObject {
+-      private final String value;
+-
+-      private JsonObject(String var1) {
+-         this.value = var1;
+-      }
+-
+-      @Override
+-      public String toString() {
+-         return this.value;
+-      }
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/PaperLib.java b/me/casperge/realisticseasons/paperlib/PaperLib.java
+deleted file mode 100644
+index d1bbbad..0000000
+--- a/me/casperge/realisticseasons/paperlib/PaperLib.java
++++ /dev/null
+@@ -1,166 +0,0 @@
+-package me.casperge.realisticseasons.paperlib;
+-
+-import java.util.concurrent.CompletableFuture;
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-import javax.annotation.Nonnull;
+-import me.casperge.realisticseasons.paperlib.environments.CraftBukkitEnvironment;
+-import me.casperge.realisticseasons.paperlib.environments.Environment;
+-import me.casperge.realisticseasons.paperlib.environments.PaperEnvironment;
+-import me.casperge.realisticseasons.paperlib.environments.SpigotEnvironment;
+-import me.casperge.realisticseasons.paperlib.features.blockstatesnapshot.BlockStateSnapshotResult;
+-import org.bukkit.Chunk;
+-import org.bukkit.Location;
+-import org.bukkit.World;
+-import org.bukkit.block.Block;
+-import org.bukkit.entity.Entity;
+-import org.bukkit.entity.Player;
+-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+-import org.bukkit.plugin.Plugin;
+-
+-public class PaperLib {
+-   private static Environment ENVIRONMENT = initialize();
+-
+-   private PaperLib() {
+-   }
+-
+-   private static Environment initialize() {
+-      try {
+-         Class.forName("com.destroystokyo.paper.PaperConfig");
+-         return new PaperEnvironment();
+-      } catch (ClassNotFoundException var3) {
+-         try {
+-            Class.forName("org.spigotmc.SpigotConfig");
+-            return new SpigotEnvironment();
+-         } catch (ClassNotFoundException var2) {
+-            return new CraftBukkitEnvironment();
+-         }
+-      }
+-   }
+-
+-   @Nonnull
+-   public static Environment getEnvironment() {
+-      return ENVIRONMENT;
+-   }
+-
+-   public static void setCustomEnvironment(@Nonnull Environment var0) {
+-      ENVIRONMENT = var0;
+-   }
+-
+-   @Nonnull
+-   public static CompletableFuture<Boolean> teleportAsync(@Nonnull Entity var0, @Nonnull Location var1) {
+-      return ENVIRONMENT.teleport(var0, var1, TeleportCause.PLUGIN);
+-   }
+-
+-   @Nonnull
+-   public static CompletableFuture<Boolean> teleportAsync(@Nonnull Entity var0, @Nonnull Location var1, TeleportCause var2) {
+-      return ENVIRONMENT.teleport(var0, var1, var2);
+-   }
+-
+-   @Nonnull
+-   public static CompletableFuture<Chunk> getChunkAtAsync(@Nonnull Location var0) {
+-      return getChunkAtAsync(var0.getWorld(), var0.getBlockX() >> 4, var0.getBlockZ() >> 4, true);
+-   }
+-
+-   @Nonnull
+-   public static CompletableFuture<Chunk> getChunkAtAsync(@Nonnull Location var0, boolean var1) {
+-      return getChunkAtAsync(var0.getWorld(), var0.getBlockX() >> 4, var0.getBlockZ() >> 4, var1);
+-   }
+-
+-   @Nonnull
+-   public static CompletableFuture<Chunk> getChunkAtAsync(@Nonnull World var0, int var1, int var2) {
+-      return getChunkAtAsync(var0, var1, var2, true);
+-   }
+-
+-   @Nonnull
+-   public static CompletableFuture<Chunk> getChunkAtAsync(@Nonnull World var0, int var1, int var2, boolean var3) {
+-      return ENVIRONMENT.getChunkAtAsync(var0, var1, var2, var3, false);
+-   }
+-
+-   @Nonnull
+-   public static CompletableFuture<Chunk> getChunkAtAsync(@Nonnull World var0, int var1, int var2, boolean var3, boolean var4) {
+-      return ENVIRONMENT.getChunkAtAsync(var0, var1, var2, var3, var4);
+-   }
+-
+-   @Nonnull
+-   public static CompletableFuture<Chunk> getChunkAtAsyncUrgently(@Nonnull World var0, int var1, int var2, boolean var3) {
+-      return ENVIRONMENT.getChunkAtAsync(var0, var1, var2, var3, true);
+-   }
+-
+-   public static boolean isChunkGenerated(@Nonnull Location var0) {
+-      return isChunkGenerated(var0.getWorld(), var0.getBlockX() >> 4, var0.getBlockZ() >> 4);
+-   }
+-
+-   public static boolean isChunkGenerated(@Nonnull World var0, int var1, int var2) {
+-      return ENVIRONMENT.isChunkGenerated(var0, var1, var2);
+-   }
+-
+-   @Nonnull
+-   public static BlockStateSnapshotResult getBlockState(@Nonnull Block var0, boolean var1) {
+-      return ENVIRONMENT.getBlockState(var0, var1);
+-   }
+-
+-   public static CompletableFuture<Location> getBedSpawnLocationAsync(@Nonnull Player var0, boolean var1) {
+-      return ENVIRONMENT.getBedSpawnLocationAsync(var0, var1);
+-   }
+-
+-   public static boolean isVersion(int var0) {
+-      return ENVIRONMENT.isVersion(var0);
+-   }
+-
+-   public static boolean isVersion(int var0, int var1) {
+-      return ENVIRONMENT.isVersion(var0, var1);
+-   }
+-
+-   public static int getMinecraftVersion() {
+-      return ENVIRONMENT.getMinecraftVersion();
+-   }
+-
+-   public static int getMinecraftPatchVersion() {
+-      return ENVIRONMENT.getMinecraftPatchVersion();
+-   }
+-
+-   public static int getMinecraftPreReleaseVersion() {
+-      return ENVIRONMENT.getMinecraftPreReleaseVersion();
+-   }
+-
+-   public static boolean isSpigot() {
+-      return ENVIRONMENT.isSpigot();
+-   }
+-
+-   public static boolean isPaper() {
+-      return ENVIRONMENT.isPaper();
+-   }
+-
+-   public static void suggestPaper(@Nonnull Plugin var0) {
+-      suggestPaper(var0, Level.INFO);
+-   }
+-
+-   public static void suggestPaper(@Nonnull Plugin var0, @Nonnull Level var1) {
+-      if (!isPaper()) {
+-         String var2 = "paperlib.shown-benefits";
+-         String var3 = var0.getDescription().getName();
+-         Logger var4 = var0.getLogger();
+-         var4.log(var1, "====================================================");
+-         var4.log(var1, " " + var3 + " works better if you use Paper ");
+-         var4.log(var1, " as your server software. ");
+-         if (System.getProperty("paperlib.shown-benefits") == null) {
+-            System.setProperty("paperlib.shown-benefits", "1");
+-            var4.log(var1, "  ");
+-            var4.log(var1, " Paper offers significant performance improvements,");
+-            var4.log(var1, " bug fixes, security enhancements and optional");
+-            var4.log(var1, " features for server owners to enhance their server.");
+-            var4.log(var1, "  ");
+-            var4.log(var1, " Paper includes Timings v2, which is significantly");
+-            var4.log(var1, " better at diagnosing lag problems over v1.");
+-            var4.log(var1, "  ");
+-            var4.log(var1, " All of your plugins should still work, and the");
+-            var4.log(var1, " Paper community will gladly help you fix any issues.");
+-            var4.log(var1, "  ");
+-            var4.log(var1, " Join the Paper Community @ https://papermc.io");
+-         }
+-
+-         var4.log(var1, "====================================================");
+-      }
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/environments/CraftBukkitEnvironment.java b/me/casperge/realisticseasons/paperlib/environments/CraftBukkitEnvironment.java
+deleted file mode 100644
+index e16724a..0000000
+--- a/me/casperge/realisticseasons/paperlib/environments/CraftBukkitEnvironment.java
++++ /dev/null
+@@ -1,8 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.environments;
+-
+-public class CraftBukkitEnvironment extends Environment {
+-   @Override
+-   public String getName() {
+-      return "CraftBukkit";
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/environments/Environment.java b/me/casperge/realisticseasons/paperlib/environments/Environment.java
+deleted file mode 100644
+index 17bda30..0000000
+--- a/me/casperge/realisticseasons/paperlib/environments/Environment.java
++++ /dev/null
+@@ -1,139 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.environments;
+-
+-import java.util.concurrent.CompletableFuture;
+-import java.util.regex.MatchResult;
+-import java.util.regex.Matcher;
+-import java.util.regex.Pattern;
+-import me.casperge.realisticseasons.paperlib.features.asyncchunks.AsyncChunks;
+-import me.casperge.realisticseasons.paperlib.features.asyncchunks.AsyncChunksSync;
+-import me.casperge.realisticseasons.paperlib.features.asyncteleport.AsyncTeleport;
+-import me.casperge.realisticseasons.paperlib.features.asyncteleport.AsyncTeleportSync;
+-import me.casperge.realisticseasons.paperlib.features.bedspawnlocation.BedSpawnLocation;
+-import me.casperge.realisticseasons.paperlib.features.bedspawnlocation.BedSpawnLocationSync;
+-import me.casperge.realisticseasons.paperlib.features.blockstatesnapshot.BlockStateSnapshot;
+-import me.casperge.realisticseasons.paperlib.features.blockstatesnapshot.BlockStateSnapshotBeforeSnapshots;
+-import me.casperge.realisticseasons.paperlib.features.blockstatesnapshot.BlockStateSnapshotNoOption;
+-import me.casperge.realisticseasons.paperlib.features.blockstatesnapshot.BlockStateSnapshotResult;
+-import me.casperge.realisticseasons.paperlib.features.chunkisgenerated.ChunkIsGenerated;
+-import me.casperge.realisticseasons.paperlib.features.chunkisgenerated.ChunkIsGeneratedApiExists;
+-import me.casperge.realisticseasons.paperlib.features.chunkisgenerated.ChunkIsGeneratedUnknown;
+-import org.bukkit.Bukkit;
+-import org.bukkit.Chunk;
+-import org.bukkit.Location;
+-import org.bukkit.World;
+-import org.bukkit.block.Block;
+-import org.bukkit.entity.Entity;
+-import org.bukkit.entity.Player;
+-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+-
+-public abstract class Environment {
+-   private final int minecraftVersion;
+-   private final int minecraftPatchVersion;
+-   private final int minecraftPreReleaseVersion;
+-   protected AsyncChunks asyncChunksHandler = new AsyncChunksSync();
+-   protected AsyncTeleport asyncTeleportHandler = new AsyncTeleportSync();
+-   protected ChunkIsGenerated isGeneratedHandler = new ChunkIsGeneratedUnknown();
+-   protected BlockStateSnapshot blockStateSnapshotHandler;
+-   protected BedSpawnLocation bedSpawnLocationHandler = new BedSpawnLocationSync();
+-
+-   public Environment() {
+-      Pattern var1 = Pattern.compile("(?i)\\(MC: (\\d)\\.(\\d+)\\.?(\\d+?)?(?: Pre-Release )?(\\d)?\\)");
+-      Matcher var2 = var1.matcher(Bukkit.getVersion());
+-      int var3 = 0;
+-      int var4 = 0;
+-      int var5 = 0;
+-      if (var2.find()) {
+-         MatchResult var6 = var2.toMatchResult();
+-
+-         try {
+-            var3 = Integer.parseInt(var6.group(2), 10);
+-         } catch (Exception var10) {
+-         }
+-
+-         if (var6.groupCount() >= 3) {
+-            try {
+-               var4 = Integer.parseInt(var6.group(3), 10);
+-            } catch (Exception var9) {
+-            }
+-         }
+-
+-         if (var6.groupCount() >= 4) {
+-            try {
+-               var5 = Integer.parseInt(var2.group(4));
+-            } catch (Exception var8) {
+-            }
+-         }
+-      }
+-
+-      this.minecraftVersion = var3;
+-      this.minecraftPatchVersion = var4;
+-      this.minecraftPreReleaseVersion = var5;
+-      if (this.isVersion(13, 1)) {
+-         this.isGeneratedHandler = new ChunkIsGeneratedApiExists();
+-      }
+-
+-      if (!this.isVersion(12)) {
+-         this.blockStateSnapshotHandler = new BlockStateSnapshotBeforeSnapshots();
+-      } else {
+-         this.blockStateSnapshotHandler = new BlockStateSnapshotNoOption();
+-      }
+-   }
+-
+-   public abstract String getName();
+-
+-   public CompletableFuture<Chunk> getChunkAtAsync(World var1, int var2, int var3, boolean var4) {
+-      return this.asyncChunksHandler.getChunkAtAsync(var1, var2, var3, var4, false);
+-   }
+-
+-   public CompletableFuture<Chunk> getChunkAtAsync(World var1, int var2, int var3, boolean var4, boolean var5) {
+-      return this.asyncChunksHandler.getChunkAtAsync(var1, var2, var3, var4, var5);
+-   }
+-
+-   public CompletableFuture<Chunk> getChunkAtAsyncUrgently(World var1, int var2, int var3, boolean var4) {
+-      return this.asyncChunksHandler.getChunkAtAsync(var1, var2, var3, var4, true);
+-   }
+-
+-   public CompletableFuture<Boolean> teleport(Entity var1, Location var2, TeleportCause var3) {
+-      return this.asyncTeleportHandler.teleportAsync(var1, var2, var3);
+-   }
+-
+-   public boolean isChunkGenerated(World var1, int var2, int var3) {
+-      return this.isGeneratedHandler.isChunkGenerated(var1, var2, var3);
+-   }
+-
+-   public BlockStateSnapshotResult getBlockState(Block var1, boolean var2) {
+-      return this.blockStateSnapshotHandler.getBlockState(var1, var2);
+-   }
+-
+-   public CompletableFuture<Location> getBedSpawnLocationAsync(Player var1, boolean var2) {
+-      return this.bedSpawnLocationHandler.getBedSpawnLocationAsync(var1, var2);
+-   }
+-
+-   public boolean isVersion(int var1) {
+-      return this.isVersion(var1, 0);
+-   }
+-
+-   public boolean isVersion(int var1, int var2) {
+-      return this.minecraftVersion > var1 || this.minecraftVersion >= var1 && this.minecraftPatchVersion >= var2;
+-   }
+-
+-   public int getMinecraftVersion() {
+-      return this.minecraftVersion;
+-   }
+-
+-   public int getMinecraftPatchVersion() {
+-      return this.minecraftPatchVersion;
+-   }
+-
+-   public int getMinecraftPreReleaseVersion() {
+-      return this.minecraftPreReleaseVersion;
+-   }
+-
+-   public boolean isSpigot() {
+-      return false;
+-   }
+-
+-   public boolean isPaper() {
+-      return false;
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/environments/PaperEnvironment.java b/me/casperge/realisticseasons/paperlib/environments/PaperEnvironment.java
+deleted file mode 100644
+index 4087c89..0000000
+--- a/me/casperge/realisticseasons/paperlib/environments/PaperEnvironment.java
++++ /dev/null
+@@ -1,50 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.environments;
+-
+-import me.casperge.realisticseasons.paperlib.features.asyncchunks.AsyncChunksPaper_13;
+-import me.casperge.realisticseasons.paperlib.features.asyncchunks.AsyncChunksPaper_15;
+-import me.casperge.realisticseasons.paperlib.features.asyncchunks.AsyncChunksPaper_9_12;
+-import me.casperge.realisticseasons.paperlib.features.asyncteleport.AsyncTeleportPaper;
+-import me.casperge.realisticseasons.paperlib.features.asyncteleport.AsyncTeleportPaper_13;
+-import me.casperge.realisticseasons.paperlib.features.bedspawnlocation.BedSpawnLocationPaper;
+-import me.casperge.realisticseasons.paperlib.features.blockstatesnapshot.BlockStateSnapshotOptionalSnapshots;
+-import me.casperge.realisticseasons.paperlib.features.chunkisgenerated.ChunkIsGeneratedApiExists;
+-import org.bukkit.Location;
+-import org.bukkit.World;
+-import org.bukkit.entity.HumanEntity;
+-
+-public class PaperEnvironment extends SpigotEnvironment {
+-   public PaperEnvironment() {
+-      if (this.isVersion(13, 1)) {
+-         this.asyncChunksHandler = new AsyncChunksPaper_13();
+-         this.asyncTeleportHandler = new AsyncTeleportPaper_13();
+-      } else if (this.isVersion(9) && !this.isVersion(13)) {
+-         this.asyncChunksHandler = new AsyncChunksPaper_9_12();
+-         this.asyncTeleportHandler = new AsyncTeleportPaper();
+-      }
+-
+-      if (this.isVersion(12)) {
+-         this.isGeneratedHandler = new ChunkIsGeneratedApiExists();
+-         this.blockStateSnapshotHandler = new BlockStateSnapshotOptionalSnapshots();
+-      }
+-
+-      if (this.isVersion(15, 2)) {
+-         try {
+-            World.class.getDeclaredMethod("getChunkAtAsyncUrgently", Location.class);
+-            this.asyncChunksHandler = new AsyncChunksPaper_15();
+-            HumanEntity.class.getDeclaredMethod("getPotentialBedLocation");
+-            this.bedSpawnLocationHandler = new BedSpawnLocationPaper();
+-         } catch (NoSuchMethodException var2) {
+-         }
+-      }
+-   }
+-
+-   @Override
+-   public String getName() {
+-      return "Paper";
+-   }
+-
+-   @Override
+-   public boolean isPaper() {
+-      return true;
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/environments/SpigotEnvironment.java b/me/casperge/realisticseasons/paperlib/environments/SpigotEnvironment.java
+deleted file mode 100644
+index 1c70729..0000000
+--- a/me/casperge/realisticseasons/paperlib/environments/SpigotEnvironment.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.environments;
+-
+-public class SpigotEnvironment extends CraftBukkitEnvironment {
+-   @Override
+-   public String getName() {
+-      return "Spigot";
+-   }
+-
+-   @Override
+-   public boolean isSpigot() {
+-      return true;
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunks.java b/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunks.java
+deleted file mode 100644
+index 43b17e5..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunks.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.asyncchunks;
+-
+-import java.util.concurrent.CompletableFuture;
+-import org.bukkit.Chunk;
+-import org.bukkit.World;
+-
+-public interface AsyncChunks {
+-   default CompletableFuture<Chunk> getChunkAtAsync(World world, int x, int z, boolean gen) {
+-      return this.getChunkAtAsync(world, x, z, gen, false);
+-   }
+-
+-   CompletableFuture<Chunk> getChunkAtAsync(World var1, int var2, int var3, boolean var4, boolean var5);
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksPaper_13.java b/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksPaper_13.java
+deleted file mode 100644
+index b146d7e..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksPaper_13.java
++++ /dev/null
+@@ -1,12 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.asyncchunks;
+-
+-import java.util.concurrent.CompletableFuture;
+-import org.bukkit.Chunk;
+-import org.bukkit.World;
+-
+-public class AsyncChunksPaper_13 implements AsyncChunks {
+-   @Override
+-   public CompletableFuture<Chunk> getChunkAtAsync(World var1, int var2, int var3, boolean var4, boolean var5) {
+-      return var1.getChunkAtAsync(var2, var3, var4);
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksPaper_15.java b/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksPaper_15.java
+deleted file mode 100644
+index f95b08a..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksPaper_15.java
++++ /dev/null
+@@ -1,12 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.asyncchunks;
+-
+-import java.util.concurrent.CompletableFuture;
+-import org.bukkit.Chunk;
+-import org.bukkit.World;
+-
+-public class AsyncChunksPaper_15 implements AsyncChunks {
+-   @Override
+-   public CompletableFuture<Chunk> getChunkAtAsync(World var1, int var2, int var3, boolean var4, boolean var5) {
+-      return var1.getChunkAtAsync(var2, var3, var4, var5);
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksPaper_9_12.java b/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksPaper_9_12.java
+deleted file mode 100644
+index 01cdf3a..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksPaper_9_12.java
++++ /dev/null
+@@ -1,22 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.asyncchunks;
+-
+-import java.util.concurrent.CompletableFuture;
+-import me.casperge.realisticseasons.paperlib.PaperLib;
+-import org.bukkit.Chunk;
+-import org.bukkit.World;
+-import org.bukkit.World.ChunkLoadCallback;
+-
+-public class AsyncChunksPaper_9_12 implements AsyncChunks {
+-   @Override
+-   public CompletableFuture<Chunk> getChunkAtAsync(World var1, int var2, int var3, boolean var4, boolean var5) {
+-      CompletableFuture var6 = new CompletableFuture();
+-      if (!var4 && PaperLib.getMinecraftVersion() >= 12 && !var1.isChunkGenerated(var2, var3)) {
+-         var6.complete(null);
+-      } else {
+-         ChunkLoadCallback var7 = var6::complete;
+-         var1.getChunkAtAsync(var2, var3, var7);
+-      }
+-
+-      return var6;
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksSync.java b/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksSync.java
+deleted file mode 100644
+index bacc8fb..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/asyncchunks/AsyncChunksSync.java
++++ /dev/null
+@@ -1,15 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.asyncchunks;
+-
+-import java.util.concurrent.CompletableFuture;
+-import me.casperge.realisticseasons.paperlib.PaperLib;
+-import org.bukkit.Chunk;
+-import org.bukkit.World;
+-
+-public class AsyncChunksSync implements AsyncChunks {
+-   @Override
+-   public CompletableFuture<Chunk> getChunkAtAsync(World var1, int var2, int var3, boolean var4, boolean var5) {
+-      return !var4 && !PaperLib.isChunkGenerated(var1, var2, var3)
+-         ? CompletableFuture.completedFuture(null)
+-         : CompletableFuture.completedFuture(var1.getChunkAt(var2, var3));
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleport.java b/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleport.java
+deleted file mode 100644
+index 5b9a2a2..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleport.java
++++ /dev/null
+@@ -1,10 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.asyncteleport;
+-
+-import java.util.concurrent.CompletableFuture;
+-import org.bukkit.Location;
+-import org.bukkit.entity.Entity;
+-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+-
+-public interface AsyncTeleport {
+-   CompletableFuture<Boolean> teleportAsync(Entity var1, Location var2, TeleportCause var3);
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleportPaper.java b/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleportPaper.java
+deleted file mode 100644
+index 9ff667f..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleportPaper.java
++++ /dev/null
+@@ -1,16 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.asyncteleport;
+-
+-import java.util.concurrent.CompletableFuture;
+-import me.casperge.realisticseasons.paperlib.PaperLib;
+-import org.bukkit.Location;
+-import org.bukkit.entity.Entity;
+-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+-
+-public class AsyncTeleportPaper implements AsyncTeleport {
+-   @Override
+-   public CompletableFuture<Boolean> teleportAsync(Entity var1, Location var2, TeleportCause var3) {
+-      int var4 = var2.getBlockX() >> 4;
+-      int var5 = var2.getBlockZ() >> 4;
+-      return PaperLib.getChunkAtAsyncUrgently(var2.getWorld(), var4, var5, true).thenApply(var3x -> var1.teleport(var2, var3));
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleportPaper_13.java b/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleportPaper_13.java
+deleted file mode 100644
+index ebb05aa..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleportPaper_13.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.asyncteleport;
+-
+-import java.util.concurrent.CompletableFuture;
+-import org.bukkit.Location;
+-import org.bukkit.entity.Entity;
+-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+-
+-public class AsyncTeleportPaper_13 implements AsyncTeleport {
+-   @Override
+-   public CompletableFuture<Boolean> teleportAsync(Entity var1, Location var2, TeleportCause var3) {
+-      return var1.teleportAsync(var2, var3);
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleportSync.java b/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleportSync.java
+deleted file mode 100644
+index 767cdec..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/asyncteleport/AsyncTeleportSync.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.asyncteleport;
+-
+-import java.util.concurrent.CompletableFuture;
+-import org.bukkit.Location;
+-import org.bukkit.entity.Entity;
+-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+-
+-public class AsyncTeleportSync implements AsyncTeleport {
+-   @Override
+-   public CompletableFuture<Boolean> teleportAsync(Entity var1, Location var2, TeleportCause var3) {
+-      return CompletableFuture.completedFuture(var1.teleport(var2, var3));
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/bedspawnlocation/BedSpawnLocation.java b/me/casperge/realisticseasons/paperlib/features/bedspawnlocation/BedSpawnLocation.java
+deleted file mode 100644
+index 378967e..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/bedspawnlocation/BedSpawnLocation.java
++++ /dev/null
+@@ -1,9 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.bedspawnlocation;
+-
+-import java.util.concurrent.CompletableFuture;
+-import org.bukkit.Location;
+-import org.bukkit.entity.Player;
+-
+-public interface BedSpawnLocation {
+-   CompletableFuture<Location> getBedSpawnLocationAsync(Player var1, boolean var2);
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/bedspawnlocation/BedSpawnLocationPaper.java b/me/casperge/realisticseasons/paperlib/features/bedspawnlocation/BedSpawnLocationPaper.java
+deleted file mode 100644
+index dbbf624..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/bedspawnlocation/BedSpawnLocationPaper.java
++++ /dev/null
+@@ -1,17 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.bedspawnlocation;
+-
+-import java.util.concurrent.CompletableFuture;
+-import me.casperge.realisticseasons.paperlib.PaperLib;
+-import org.bukkit.Location;
+-import org.bukkit.entity.Player;
+-
+-public class BedSpawnLocationPaper implements BedSpawnLocation {
+-   @Override
+-   public CompletableFuture<Location> getBedSpawnLocationAsync(Player var1, boolean var2) {
+-      Location var3 = var1.getPotentialBedLocation();
+-      return var3 != null && var3.getWorld() != null
+-         ? PaperLib.getChunkAtAsync(var3.getWorld(), var3.getBlockX() >> 4, var3.getBlockZ() >> 4, false, var2)
+-            .thenCompose(var1x -> CompletableFuture.completedFuture(var1.getBedSpawnLocation()))
+-         : CompletableFuture.completedFuture(null);
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/bedspawnlocation/BedSpawnLocationSync.java b/me/casperge/realisticseasons/paperlib/features/bedspawnlocation/BedSpawnLocationSync.java
+deleted file mode 100644
+index 2f83694..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/bedspawnlocation/BedSpawnLocationSync.java
++++ /dev/null
+@@ -1,12 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.bedspawnlocation;
+-
+-import java.util.concurrent.CompletableFuture;
+-import org.bukkit.Location;
+-import org.bukkit.entity.Player;
+-
+-public class BedSpawnLocationSync implements BedSpawnLocation {
+-   @Override
+-   public CompletableFuture<Location> getBedSpawnLocationAsync(Player var1, boolean var2) {
+-      return CompletableFuture.completedFuture(var1.getBedSpawnLocation());
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshot.java b/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshot.java
+deleted file mode 100644
+index 4750424..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshot.java
++++ /dev/null
+@@ -1,7 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.blockstatesnapshot;
+-
+-import org.bukkit.block.Block;
+-
+-public interface BlockStateSnapshot {
+-   BlockStateSnapshotResult getBlockState(Block var1, boolean var2);
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotBeforeSnapshots.java b/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotBeforeSnapshots.java
+deleted file mode 100644
+index cab24b8..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotBeforeSnapshots.java
++++ /dev/null
+@@ -1,10 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.blockstatesnapshot;
+-
+-import org.bukkit.block.Block;
+-
+-public class BlockStateSnapshotBeforeSnapshots implements BlockStateSnapshot {
+-   @Override
+-   public BlockStateSnapshotResult getBlockState(Block var1, boolean var2) {
+-      return new BlockStateSnapshotResult(false, var1.getState());
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotNoOption.java b/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotNoOption.java
+deleted file mode 100644
+index b70129b..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotNoOption.java
++++ /dev/null
+@@ -1,10 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.blockstatesnapshot;
+-
+-import org.bukkit.block.Block;
+-
+-public class BlockStateSnapshotNoOption implements BlockStateSnapshot {
+-   @Override
+-   public BlockStateSnapshotResult getBlockState(Block var1, boolean var2) {
+-      return new BlockStateSnapshotResult(true, var1.getState());
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotOptionalSnapshots.java b/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotOptionalSnapshots.java
+deleted file mode 100644
+index 7f083f8..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotOptionalSnapshots.java
++++ /dev/null
+@@ -1,10 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.blockstatesnapshot;
+-
+-import org.bukkit.block.Block;
+-
+-public class BlockStateSnapshotOptionalSnapshots implements BlockStateSnapshot {
+-   @Override
+-   public BlockStateSnapshotResult getBlockState(Block var1, boolean var2) {
+-      return new BlockStateSnapshotResult(var2, var1.getState(var2));
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotResult.java b/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotResult.java
+deleted file mode 100644
+index 07cdf6f..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/blockstatesnapshot/BlockStateSnapshotResult.java
++++ /dev/null
+@@ -1,21 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.blockstatesnapshot;
+-
+-import org.bukkit.block.BlockState;
+-
+-public class BlockStateSnapshotResult {
+-   private final boolean isSnapshot;
+-   private final BlockState state;
+-
+-   public BlockStateSnapshotResult(boolean var1, BlockState var2) {
+-      this.isSnapshot = var1;
+-      this.state = var2;
+-   }
+-
+-   public boolean isSnapshot() {
+-      return this.isSnapshot;
+-   }
+-
+-   public BlockState getState() {
+-      return this.state;
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/chunkisgenerated/ChunkIsGenerated.java b/me/casperge/realisticseasons/paperlib/features/chunkisgenerated/ChunkIsGenerated.java
+deleted file mode 100644
+index 9c9e7d9..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/chunkisgenerated/ChunkIsGenerated.java
++++ /dev/null
+@@ -1,7 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.chunkisgenerated;
+-
+-import org.bukkit.World;
+-
+-public interface ChunkIsGenerated {
+-   boolean isChunkGenerated(World var1, int var2, int var3);
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/chunkisgenerated/ChunkIsGeneratedApiExists.java b/me/casperge/realisticseasons/paperlib/features/chunkisgenerated/ChunkIsGeneratedApiExists.java
+deleted file mode 100644
+index cb13155..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/chunkisgenerated/ChunkIsGeneratedApiExists.java
++++ /dev/null
+@@ -1,10 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.chunkisgenerated;
+-
+-import org.bukkit.World;
+-
+-public class ChunkIsGeneratedApiExists implements ChunkIsGenerated {
+-   @Override
+-   public boolean isChunkGenerated(World var1, int var2, int var3) {
+-      return var1.isChunkGenerated(var2, var3);
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/paperlib/features/chunkisgenerated/ChunkIsGeneratedUnknown.java b/me/casperge/realisticseasons/paperlib/features/chunkisgenerated/ChunkIsGeneratedUnknown.java
+deleted file mode 100644
+index 45ac127..0000000
+--- a/me/casperge/realisticseasons/paperlib/features/chunkisgenerated/ChunkIsGeneratedUnknown.java
++++ /dev/null
+@@ -1,10 +0,0 @@
+-package me.casperge.realisticseasons.paperlib.features.chunkisgenerated;
+-
+-import org.bukkit.World;
+-
+-public class ChunkIsGeneratedUnknown implements ChunkIsGenerated {
+-   @Override
+-   public boolean isChunkGenerated(World var1, int var2, int var3) {
+-      return true;
+-   }
+-}
+diff --git a/me/casperge/realisticseasons/particle/ParticleManager.java b/me/casperge/realisticseasons/particle/ParticleManager.java
+index 29a44bb..5abd60c 100644
+--- a/me/casperge/realisticseasons/particle/ParticleManager.java
++++ b/me/casperge/realisticseasons/particle/ParticleManager.java
+@@ -13,6 +13,7 @@ import me.casperge.realisticseasons.particle.entity.FireworkBox;
+ import me.casperge.realisticseasons.particle.entity.Meteorite;
+ import me.casperge.realisticseasons.particle.entity.SeasonEntity;
+ import me.casperge.realisticseasons.particle.entity.SmallFallingLeaf;
++import me.casperge.realisticseasons.season.SeasonChunk;
+ import me.casperge.realisticseasons.utils.JavaUtils;
+ import org.bukkit.Bukkit;
+ import org.bukkit.Color;
+@@ -42,7 +43,7 @@ public class ParticleManager {
+       Bukkit.getScheduler().runTaskTimer(var1, new Runnable() {
+          @Override
+          public void run() {
+-            ArrayList var1x = new ArrayList();
++            ArrayList<SeasonEntity> var1x = new ArrayList<>(); // Luma - decompile
+ 
+             for (SeasonEntity var3 : ParticleManager.this.activeEntities.keySet()) {
+                if (var3.isDestroyed()) {
+@@ -230,7 +231,7 @@ public class ParticleManager {
+       DustOptions var4 = new DustOptions(Color.fromRGB(255, 255, 255), 1.0F);
+       final DustOptions var5 = new DustOptions(Color.fromRGB(255, 255, 255), 1.4F);
+       final DustOptions var6 = new DustOptions(Color.fromRGB(255, 255, 255), 1.8F);
+-      final ArrayList var7 = new ArrayList();
++      final ArrayList<Player> var7 = new ArrayList<>(); // Luma - decompile
+ 
+       for (Player var9 : var1.getWorld().getPlayers()) {
+          if (var9.getLocation().distance(var1.getLocation()) < 17.0
+diff --git a/me/casperge/realisticseasons/particle/ParticleSpawner.java b/me/casperge/realisticseasons/particle/ParticleSpawner.java
+index bcf5acf..4793d4c 100644
+--- a/me/casperge/realisticseasons/particle/ParticleSpawner.java
++++ b/me/casperge/realisticseasons/particle/ParticleSpawner.java
+@@ -82,7 +82,7 @@ public class ParticleSpawner extends BukkitRunnable {
+                }
+             }
+ 
+-            ArrayList var20 = new ArrayList();
++            ArrayList<UUID> var20 = new ArrayList<>(); // Luma - decompile
+ 
+             for (UUID var33 : this.lastSpawn.keySet()) {
+                if (System.currentTimeMillis() - this.lastSpawn.get(var33) > 300000L) {
+diff --git a/me/casperge/realisticseasons/runnables/ChunkRefresher.java b/me/casperge/realisticseasons/runnables/ChunkRefresher.java
+index 24e9983..dda0f29 100644
+--- a/me/casperge/realisticseasons/runnables/ChunkRefresher.java
++++ b/me/casperge/realisticseasons/runnables/ChunkRefresher.java
+@@ -32,9 +32,9 @@ public class ChunkRefresher {
+    public ChunkRefresher(final RealisticSeasons var1, World var2) {
+       this.w = var2;
+       this.main = var1;
+-      List var3 = var2.getPlayers();
++      List<Player> var3 = var2.getPlayers(); // Luma - decompile
+       this.viewDistance = Bukkit.getServer().getViewDistance();
+-      final ArrayList var4 = new ArrayList();
++      final ArrayList<String> var4 = new ArrayList<>(); // Luma - decompile
+ 
+       for (Player var6 : var3) {
+          Chunk var7 = var6.getLocation().getChunk();
+diff --git a/me/casperge/realisticseasons/runnables/FallBlockTicker.java b/me/casperge/realisticseasons/runnables/FallBlockTicker.java
+index c93af0f..a657ca9 100644
+--- a/me/casperge/realisticseasons/runnables/FallBlockTicker.java
++++ b/me/casperge/realisticseasons/runnables/FallBlockTicker.java
+@@ -113,7 +113,7 @@ public class FallBlockTicker extends BukkitRunnable {
+                   }
+ 
+                   if (var2 && var3.getWorld().isChunkLoaded(var3.getLocation().getBlockX() >> 4, var3.getLocation().getBlockZ() >> 4)) {
+-                     for (Chunk var6 : (List)ChunkUtils.around(var3.getLocation().getChunk(), 6, 6)) {
++                     for (Chunk var6 : ChunkUtils.around(var3.getLocation().getChunk(), 6, 6)) { // Luma - decompile
+                         if (this.main.hasSeasons(var6.getX(), var6.getZ(), var6.getWorld())
+                            && this.main.hasBlockChanges(var6.getX(), var6.getZ(), var6.getWorld())) {
+                            Block var7 = var3.getWorld().getHighestBlockAt(var6.getX() * 16 + this.r.nextInt(16), var6.getZ() * 16 + this.r.nextInt(16));
+@@ -129,8 +129,8 @@ public class FallBlockTicker extends BukkitRunnable {
+                   return;
+                }
+ 
+-               Iterator var8 = this.main.getSeasonManager().getQueue(var1, Season.FALL).iterator();
+-               LinkedHashSet var9 = new LinkedHashSet();
++               Iterator<SeasonChunk> var8 = this.main.getSeasonManager().getQueue(var1, Season.FALL).iterator(); // Luma - decompile
++               LinkedHashSet<SeasonChunk> var9 = new LinkedHashSet<>(); // Luma - decompile
+ 
+                while (var8.hasNext()) {
+                   SeasonChunk var11 = (SeasonChunk)var8.next();
+diff --git a/me/casperge/realisticseasons/runnables/RestoreWorldTicker.java b/me/casperge/realisticseasons/runnables/RestoreWorldTicker.java
+index 6f5f8d2..f0b26fa 100644
+--- a/me/casperge/realisticseasons/runnables/RestoreWorldTicker.java
++++ b/me/casperge/realisticseasons/runnables/RestoreWorldTicker.java
+@@ -81,8 +81,8 @@ public class RestoreWorldTicker extends BukkitRunnable {
+                return;
+             }
+ 
+-            Iterator var2 = this.main.getSeasonManager().getQueue(var1, Season.RESTORE).iterator();
+-            LinkedHashSet var3 = new LinkedHashSet();
++            Iterator<SeasonChunk> var2 = this.main.getSeasonManager().getQueue(var1, Season.RESTORE).iterator(); // Luma - decompile
++            LinkedHashSet<SeasonChunk> var3 = new LinkedHashSet<>(); // Luma - decompile
+ 
+             while (var2.hasNext()) {
+                SeasonChunk var4 = (SeasonChunk)var2.next();
+diff --git a/me/casperge/realisticseasons/runnables/SpringBlockTicker.java b/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
+index 0b1bcb3..e1a115c 100644
+--- a/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
++++ b/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
+@@ -110,8 +110,8 @@ public class SpringBlockTicker extends BukkitRunnable {
+                   return;
+                }
+ 
+-               Iterator var2 = this.main.getSeasonManager().getQueue(var1, Season.SPRING).iterator();
+-               LinkedHashSet var3 = new LinkedHashSet();
++               Iterator<SeasonChunk> var2 = this.main.getSeasonManager().getQueue(var1, Season.SPRING).iterator(); // Luma - decompile
++               LinkedHashSet<SeasonChunk> var3 = new LinkedHashSet<>(); // Luma - decompile
+ 
+                while (var2.hasNext()) {
+                   SeasonChunk var4 = (SeasonChunk)var2.next();
+diff --git a/me/casperge/realisticseasons/runnables/SummerBlockTicker.java b/me/casperge/realisticseasons/runnables/SummerBlockTicker.java
+index bc6924b..1180b48 100644
+--- a/me/casperge/realisticseasons/runnables/SummerBlockTicker.java
++++ b/me/casperge/realisticseasons/runnables/SummerBlockTicker.java
+@@ -105,8 +105,8 @@ public class SummerBlockTicker extends BukkitRunnable {
+                   return;
+                }
+ 
+-               Iterator var2 = this.main.getSeasonManager().getQueue(var1, Season.SUMMER).iterator();
+-               LinkedHashSet var3 = new LinkedHashSet();
++               Iterator<SeasonChunk> var2 = this.main.getSeasonManager().getQueue(var1, Season.SUMMER).iterator(); // Luma - decompile
++               LinkedHashSet<SeasonChunk> var3 = new LinkedHashSet<>(); // Luma - decompile
+ 
+                while (var2.hasNext()) {
+                   SeasonChunk var4 = (SeasonChunk)var2.next();
+diff --git a/me/casperge/realisticseasons/runnables/TemperatureUpdater.java b/me/casperge/realisticseasons/runnables/TemperatureUpdater.java
+index dcd1a1b..5dc9728 100644
+--- a/me/casperge/realisticseasons/runnables/TemperatureUpdater.java
++++ b/me/casperge/realisticseasons/runnables/TemperatureUpdater.java
+@@ -240,13 +240,13 @@ public class TemperatureUpdater extends BukkitRunnable {
+                            }
+                         } else if (this.tman.getTempData().getTempSettings().isActionbarWarningEnabled()) {
+                            if (var6) {
+-                              Object var28 = this.tman.getTempData().getTempSettings().getActionbarOverheatingWarning();
++                              String var28 = this.tman.getTempData().getTempSettings().getActionbarOverheatingWarning(); // Luma - decompile
+                               if (this.main.getActionbarListener().canReceiveTempBar(var21)) {
+                                  this.main.getActionbarListener().setWaitingForTempBar(var21, true);
+                                  var21.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(var11 + var28));
+                               }
+                            } else if (var7) {
+-                              Object var29 = this.tman.getTempData().getTempSettings().getActionbarFreezingWarning();
++                              String var29 = this.tman.getTempData().getTempSettings().getActionbarFreezingWarning(); // Luma - decompile
+                               if (this.main.getActionbarListener().canReceiveTempBar(var21)) {
+                                  this.main.getActionbarListener().setWaitingForTempBar(var21, true);
+                                  var21.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(var11 + var29));
+diff --git a/me/casperge/realisticseasons/runnables/WinterBlockTicker.java b/me/casperge/realisticseasons/runnables/WinterBlockTicker.java
+index 65c1e1e..9c704ef 100644
+--- a/me/casperge/realisticseasons/runnables/WinterBlockTicker.java
++++ b/me/casperge/realisticseasons/runnables/WinterBlockTicker.java
+@@ -135,7 +135,7 @@ public class WinterBlockTicker extends BukkitRunnable {
+                   return;
+                }
+ 
+-               Collection var17 = ChunkUtils.around(var3.getLocation().getChunk(), 9);
++               Collection<Chunk> var17 = ChunkUtils.around(var3.getLocation().getChunk(), 9); // Luma - decompile
+                int var18 = this.main.getSeasonManager().getSubSeason(var1).getPhase();
+ 
+                for (Chunk var7 : var17) {
+diff --git a/me/casperge/realisticseasons/season/SeasonCycle.java b/me/casperge/realisticseasons/season/SeasonCycle.java
+index 9a56629..b4556b0 100644
+--- a/me/casperge/realisticseasons/season/SeasonCycle.java
++++ b/me/casperge/realisticseasons/season/SeasonCycle.java
+@@ -26,7 +26,7 @@ public class SeasonCycle extends BukkitRunnable {
+          this.cancel();
+       }
+ 
+-      ArrayList var1 = new ArrayList();
++      ArrayList<World> var1 = new ArrayList<>(); // Luma - decompile
+ 
+       for (String var3 : this.main.getSettings().syncedWorlds) {
+          if (Bukkit.getWorld(var3) != null) {
+diff --git a/me/casperge/realisticseasons/seasonevent/EventManager.java b/me/casperge/realisticseasons/seasonevent/EventManager.java
+index 6730b6d..a423ae7 100644
+--- a/me/casperge/realisticseasons/seasonevent/EventManager.java
++++ b/me/casperge/realisticseasons/seasonevent/EventManager.java
+@@ -49,30 +49,30 @@ public class EventManager {
+                && var3 != null) {
+                for (CustomWeeklyEvent var5 : this.weekly) {
+                   if (var5.isToday(this.main.getTimeManager().getCalendar().getWeekDayAsInt(var3)) && var5.doDisplay()) {
+-                     Object var6;
++                     List<String> var6; // Luma - decompile
+                      if (this.activeEvents.containsKey(var2)) {
+                         var6 = this.activeEvents.get(var2);
+                      } else {
+-                        var6 = new ArrayList();
++                        var6 = new ArrayList<>(); // Luma - decompile
+                      }
+ 
+                      var6.add(var5.getName());
+-                     this.activeEvents.put(var2, (List<String>)var6);
++                     this.activeEvents.put(var2, var6); // Luma - decompile
+                   }
+                }
+ 
+                for (CustomDatedEvent var8 : this.dated) {
+                   if (var8.isActive(var3) && var8.hasEvent(var2)) {
+                      if (var8.doDisplay()) {
+-                        Object var9;
++                        List<String> var9; // Luma - decompile
+                         if (this.activeEvents.containsKey(var2)) {
+                            var9 = this.activeEvents.get(var2);
+                         } else {
+-                           var9 = new ArrayList();
++                           var9 = new ArrayList<>(); // Luma - decompile
+                         }
+ 
+                         var9.add(var8.getName());
+-                        this.activeEvents.put(var2, (List<String>)var9);
++                        this.activeEvents.put(var2, var9); // Luma - decompile
+                      }
+ 
+                      if (var8 instanceof DefaultEvent) {
+@@ -103,15 +103,15 @@ public class EventManager {
+       Bukkit.getPluginManager().callEvent(var4);
+       if (!var4.isCancelled()) {
+          if (var2.doDisplay()) {
+-            Object var5;
++            List<String> var5; // Luma - decompile
+             if (this.activeEvents.containsKey(var1)) {
+                var5 = this.activeEvents.get(var1);
+             } else {
+-               var5 = new ArrayList();
++               var5 = new ArrayList<>(); // Luma - decompile
+             }
+ 
+             var5.add(var2.getName());
+-            this.activeEvents.put(var1, (List<String>)var5);
++            this.activeEvents.put(var1, var5); // Luma - decompile
+          }
+ 
+          this.execute(var1, var2, true, var3);
+@@ -226,7 +226,7 @@ public class EventManager {
+    }
+ 
+    public String getNextEventsAsString(World var1) {
+-      List var2 = this.getNextEvent(var1);
++      List<CustomDatedEvent> var2 = this.getNextEvent(var1); // Luma - decompile
+       if (var2.size() == 0) {
+          return "-";
+       } else {
+diff --git a/me/casperge/realisticseasons/seasonevent/buildin/ChristmasEvent.java b/me/casperge/realisticseasons/seasonevent/buildin/ChristmasEvent.java
+index 1510689..e547cfe 100644
+--- a/me/casperge/realisticseasons/seasonevent/buildin/ChristmasEvent.java
++++ b/me/casperge/realisticseasons/seasonevent/buildin/ChristmasEvent.java
+@@ -156,7 +156,7 @@ public class ChristmasEvent extends CustomDatedEvent implements DefaultEvent {
+    public void presentOpened(Player var1, Location var2) {
+       var2 = var2.add(0.5, 0.0, 0.5);
+       this.main.getBlockStorage().logBreak(var2, StoredBlockType.PRESENT);
+-      List var3 = this.getPresentLoot();
++      List<ItemStack> var3 = this.getPresentLoot(); // Luma - decompile
+       var1.getWorld().playSound(var2, Sound.ENTITY_CHICKEN_EGG, 1.0F, this.r.nextFloat() / 3.0F + 0.3F);
+       var1.getWorld().spawnParticle(Particle.SMOKE_NORMAL, var2, 20, 0.0, 0.1, 0.0, 0.05);
+ 
+diff --git a/me/casperge/realisticseasons/seasonevent/buildin/EasterEvent.java b/me/casperge/realisticseasons/seasonevent/buildin/EasterEvent.java
+index ccb8fd9..cb74aa0 100644
+--- a/me/casperge/realisticseasons/seasonevent/buildin/EasterEvent.java
++++ b/me/casperge/realisticseasons/seasonevent/buildin/EasterEvent.java
+@@ -145,7 +145,7 @@ public class EasterEvent extends CustomDatedEvent implements DefaultEvent, Liste
+       var2 = var2.add(0.5, 0.0, 0.5);
+       this.main.getBlockStorage().logBreak(var2, StoredBlockType.EGG);
+       if (this.easterEggLoot.length != 0) {
+-         List var3 = this.getEggLoot();
++         List<ItemStack> var3 = this.getEggLoot(); // Luma - decompile
+          var1.getWorld().playSound(var2, Sound.ENTITY_CHICKEN_EGG, 1.0F, this.r.nextFloat() / 3.0F + 1.1F);
+          var1.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, var2, 20, 0.4, 0.6, 0.4, 1.0);
+ 
+diff --git a/me/casperge/realisticseasons/temperature/AnimalTemperature.java b/me/casperge/realisticseasons/temperature/AnimalTemperature.java
+index cfed17d..1a0756f 100644
+--- a/me/casperge/realisticseasons/temperature/AnimalTemperature.java
++++ b/me/casperge/realisticseasons/temperature/AnimalTemperature.java
+@@ -36,7 +36,7 @@ public class AnimalTemperature extends BukkitRunnable {
+                for (String var15 : this.toTick.keySet()) {
+                   World var3 = Bukkit.getWorld(var15);
+                   if (var3 != null) {
+-                     List var4 = this.toTick.get(var15);
++                     List<Entity> var4 = this.toTick.get(var15); // Luma - decompile
+                      if (!var4.isEmpty()) {
+                         int var5 = this.entityCount.get(var15) / this.refreshInterval;
+                         if (var5 > var4.size()) {
+@@ -47,7 +47,7 @@ public class AnimalTemperature extends BukkitRunnable {
+                            var5 = var4.size();
+                         }
+ 
+-                        List var6 = var4.subList(var4.size() - var5, var4.size());
++                        List<Entity> var6 = var4.subList(var4.size() - var5, var4.size()); // Luma - decompile
+ 
+                         for (Entity var8 : var6) {
+                            if (var8 instanceof LivingEntity
+diff --git a/me/casperge/realisticseasons/temperature/TempData.java b/me/casperge/realisticseasons/temperature/TempData.java
+index eb7fb3d..964b0bf 100644
+--- a/me/casperge/realisticseasons/temperature/TempData.java
++++ b/me/casperge/realisticseasons/temperature/TempData.java
+@@ -69,7 +69,7 @@ public class TempData {
+    public int getCustomEffectsModified(Player var1, int var2) {
+       int var3 = 0;
+       if (this.activeCustomEffects.containsKey(var1.getUniqueId())) {
+-         List var4 = this.activeCustomEffects.get(var1.getUniqueId());
++         List<TempData.CustomTemperatureEffect> var4 = this.activeCustomEffects.get(var1.getUniqueId()); // Luma - decompile
+          this.inActive.clear();
+ 
+          for (TempData.CustomTemperatureEffect var6 : var4) {
+diff --git a/me/casperge/realisticseasons/utils/ChunkUtils.java b/me/casperge/realisticseasons/utils/ChunkUtils.java
+index bb835b8..bfcddd5 100644
+--- a/me/casperge/realisticseasons/utils/ChunkUtils.java
++++ b/me/casperge/realisticseasons/utils/ChunkUtils.java
+@@ -187,7 +187,7 @@ public class ChunkUtils {
+    }
+ 
+    public HashMap<Material, Integer> getChunkPopulation(Chunk var1) {
+-      HashMap var2 = new HashMap();
++      HashMap<Material, Integer> var2 = new HashMap<>(); // Luma - decompile
+ 
+       for (int var3 = 0; var3 <= 15; var3++) {
+          for (int var4 = 0; var4 <= 15; var4++) {
+@@ -366,7 +366,7 @@ public class ChunkUtils {
+    }
+ 
+    public int[] getTotalPlantPopulation(Chunk var1) {
+-      HashMap var2 = this.getChunkPopulation(var1);
++      HashMap<Material, Integer> var2 = this.getChunkPopulation(var1); // Luma - decompile
+       int var3 = 0;
+       int var4 = 0;
+       int var5 = 0;
+@@ -374,7 +374,7 @@ public class ChunkUtils {
+       int var7 = 0;
+       int var8 = 0;
+ 
+-      for (Entry var10 : var2.entrySet()) {
++      for (var var10 : var2.entrySet()) { // Luma - decompile
+          if (var10.getKey() == Material.GRASS || var10.getKey() == Material.TALL_GRASS) {
+             var3 += var10.getValue();
+          } else if (flowers.contains(var10.getKey())) {
+@@ -695,7 +695,7 @@ public class ChunkUtils {
+       }
+    }
+ 
+-   public static Class<?> getCbClass(String var0) {
++   public static Class<?> getCbClass(String var0) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var0);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_18_R1/NmsCode_18_R1.java b/me/casperge/realisticseasons1_18_R1/NmsCode_18_R1.java
+index a9cf9e8..69560c7 100644
+--- a/me/casperge/realisticseasons1_18_R1/NmsCode_18_R1.java
++++ b/me/casperge/realisticseasons1_18_R1/NmsCode_18_R1.java
+@@ -114,11 +114,13 @@ public class NmsCode_18_R1 implements NmsCode {
+ 
+    @Override
+    public List<String> getCustomBiomes(String var1) {
+-      IRegistryWritable var2 = this.dedicatedserver.aV().b(IRegistry.aR);
+-      ArrayList var3 = new ArrayList();
++      // Luma start - decompile
++      IRegistryWritable<BiomeBase> var2 = this.dedicatedserver.aV().b(IRegistry.aR);
++      ArrayList<String> var3 = new ArrayList<>();
+ 
+-      for (Entry var5 : var2.e()) {
+-         MinecraftKey var6 = ((ResourceKey)var5.getKey()).a();
++      for (var var5 : var2.e()) {
++         MinecraftKey var6 = (var5.getKey()).a();
++         // Luma end - decompile
+          String var7 = var6.a();
+          String var8 = var6.b();
+          if (var8 != null && !var8.equals("minecraft") && !var8.equals(var1)) {
+@@ -131,11 +133,13 @@ public class NmsCode_18_R1 implements NmsCode {
+ 
+    @Override
+    public List<String> getBiomes(String var1) {
+-      IRegistryWritable var2 = this.dedicatedserver.aV().b(IRegistry.aR);
+-      ArrayList var3 = new ArrayList();
++      // Luma start - decompile
++      IRegistryWritable<BiomeBase> var2 = this.dedicatedserver.aV().b(IRegistry.aR);
++      ArrayList<String> var3 = new ArrayList<>();
+ 
+-      for (Entry var5 : var2.e()) {
+-         MinecraftKey var6 = ((ResourceKey)var5.getKey()).a();
++      for (var var5 : var2.e()) {
++         MinecraftKey var6 = (var5.getKey()).a();
++         // Luma end - decompile
+          String var7 = var6.a();
+          String var8 = var6.b();
+          if (var8 != null && var8.equals(var1)) {
+@@ -221,11 +225,13 @@ public class NmsCode_18_R1 implements NmsCode {
+ 
+    @Override
+    public List<String> getAllBiomes() {
+-      IRegistryWritable var1 = this.dedicatedserver.aV().b(IRegistry.aR);
+-      ArrayList var2 = new ArrayList();
++      // Luma start - decompile
++      IRegistryWritable<BiomeBase> var1 = this.dedicatedserver.aV().b(IRegistry.aR);
++      ArrayList<String> var2 = new ArrayList<>();
+ 
+-      for (Entry var4 : var1.e()) {
+-         MinecraftKey var5 = ((ResourceKey)var4.getKey()).a();
++      for (var var4 : var1.e()) {
++         MinecraftKey var5 = (var4.getKey()).a();
++         // Luma end - decompile
+          String var6 = var5.a();
+          String var7 = var5.b();
+          var2.add(var7 + ":" + var6);
+@@ -241,7 +247,7 @@ public class NmsCode_18_R1 implements NmsCode {
+       return var3.a();
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -293,7 +299,7 @@ public class NmsCode_18_R1 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_18_R1/ProtocolLibUtils1_18_R1.java b/me/casperge/realisticseasons1_18_R1/ProtocolLibUtils1_18_R1.java
+index 5689e32..d614445 100644
+--- a/me/casperge/realisticseasons1_18_R1/ProtocolLibUtils1_18_R1.java
++++ b/me/casperge/realisticseasons1_18_R1/ProtocolLibUtils1_18_R1.java
+@@ -121,8 +121,8 @@ public class ProtocolLibUtils1_18_R1 {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      // byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.b(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_18_R2/NmsCode_18_R2.java b/me/casperge/realisticseasons1_18_R2/NmsCode_18_R2.java
+index 4a66763..40e1fe1 100644
+--- a/me/casperge/realisticseasons1_18_R2/NmsCode_18_R2.java
++++ b/me/casperge/realisticseasons1_18_R2/NmsCode_18_R2.java
+@@ -105,11 +105,13 @@ public class NmsCode_18_R2 implements NmsCode {
+ 
+    @Override
+    public List<String> getBiomes(String var1) {
+-      IRegistry var2 = this.dedicatedserver.aU().b(IRegistry.aP);
+-      ArrayList var3 = new ArrayList();
++      // Luma start - decompile
++      IRegistry<BiomeBase> var2 = this.dedicatedserver.aU().b(IRegistry.aP);
++      ArrayList<String> var3 = new ArrayList<>();
+ 
+-      for (Entry var5 : var2.e()) {
+-         MinecraftKey var6 = ((ResourceKey)var5.getKey()).a();
++      for (var var5 : var2.e()) {
++         MinecraftKey var6 = (var5.getKey()).a();
++         // Luma end - decompile
+          String var7 = var6.a();
+          String var8 = var6.b();
+          if (var8 != null && var8.equals(var1)) {
+@@ -122,11 +124,13 @@ public class NmsCode_18_R2 implements NmsCode {
+ 
+    @Override
+    public List<String> getCustomBiomes(String var1) {
+-      IRegistry var2 = this.dedicatedserver.aU().b(IRegistry.aP);
+-      ArrayList var3 = new ArrayList();
++      // Luma start - decompile
++      IRegistry<BiomeBase> var2 = this.dedicatedserver.aU().b(IRegistry.aP);
++      ArrayList<String> var3 = new ArrayList<>();
+ 
+-      for (Entry var5 : var2.e()) {
+-         MinecraftKey var6 = ((ResourceKey)var5.getKey()).a();
++      for (var var5 : var2.e()) {
++         MinecraftKey var6 = (var5.getKey()).a();
++         // Luma end - decompile
+          String var7 = var6.a();
+          String var8 = var6.b();
+          if (var8 != null && !var8.equals("minecraft") && !var8.equals(var1)) {
+@@ -212,11 +216,13 @@ public class NmsCode_18_R2 implements NmsCode {
+ 
+    @Override
+    public List<String> getAllBiomes() {
+-      IRegistry var1 = this.dedicatedserver.aU().b(IRegistry.aP);
+-      ArrayList var2 = new ArrayList();
++      // Luma start - decompile
++      IRegistry<BiomeBase> var1 = this.dedicatedserver.aU().b(IRegistry.aP);
++      ArrayList<String> var2 = new ArrayList<>();
+ 
+-      for (Entry var4 : var1.e()) {
+-         MinecraftKey var5 = ((ResourceKey)var4.getKey()).a();
++      for (var var4 : var1.e()) {
++         MinecraftKey var5 = (var4.getKey()).a();
++         // Luma end - decompile
+          String var6 = var5.a();
+          String var7 = var5.b();
+          var2.add(var7 + ":" + var6);
+@@ -237,7 +243,7 @@ public class NmsCode_18_R2 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -289,7 +295,7 @@ public class NmsCode_18_R2 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_18_R2/ProtocolLibUtils1_18_R2.java b/me/casperge/realisticseasons1_18_R2/ProtocolLibUtils1_18_R2.java
+index da39133..31b6787 100644
+--- a/me/casperge/realisticseasons1_18_R2/ProtocolLibUtils1_18_R2.java
++++ b/me/casperge/realisticseasons1_18_R2/ProtocolLibUtils1_18_R2.java
+@@ -115,8 +115,8 @@ public class ProtocolLibUtils1_18_R2 {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.b(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_19_R1/NmsCode_19_R1.java b/me/casperge/realisticseasons1_19_R1/NmsCode_19_R1.java
+index 32a321b..4b9072e 100644
+--- a/me/casperge/realisticseasons1_19_R1/NmsCode_19_R1.java
++++ b/me/casperge/realisticseasons1_19_R1/NmsCode_19_R1.java
+@@ -180,11 +180,13 @@ public class NmsCode_19_R1 implements NmsCode {
+ 
+    @Override
+    public List<String> getBiomes(String var1) {
+-      IRegistry var2 = this.dedicatedserver.aX().b(IRegistry.aR);
+-      ArrayList var3 = new ArrayList();
++      // Luma start - decompile
++      IRegistry<BiomeBase> var2 = this.dedicatedserver.aX().b(IRegistry.aR);
++      ArrayList<String> var3 = new ArrayList<>();
+ 
+-      for (Entry var5 : var2.f()) {
+-         MinecraftKey var6 = ((ResourceKey)var5.getKey()).a();
++      for (var var5 : var2.f()) {
++         MinecraftKey var6 = (var5.getKey()).a();
++         // Luma end - decompile
+          String var7 = var6.a();
+          String var8 = var6.b();
+          if (var8 != null && var8.equals(var1)) {
+@@ -197,11 +199,13 @@ public class NmsCode_19_R1 implements NmsCode {
+ 
+    @Override
+    public List<String> getCustomBiomes(String var1) {
+-      IRegistry var2 = this.dedicatedserver.aX().b(IRegistry.aR);
+-      ArrayList var3 = new ArrayList();
++      // Luma start - decompile
++      IRegistry<BiomeBase> var2 = this.dedicatedserver.aX().b(IRegistry.aR);
++      ArrayList<String> var3 = new ArrayList<>();
+ 
+-      for (Entry var5 : var2.f()) {
+-         MinecraftKey var6 = ((ResourceKey)var5.getKey()).a();
++      for (var var5 : var2.f()) {
++         MinecraftKey var6 = (var5.getKey()).a();
++         // Luma end - decompile
+          String var7 = var6.a();
+          String var8 = var6.b();
+          if (var8 != null && !var8.equals("minecraft") && !var8.equals(var1)) {
+@@ -214,11 +218,13 @@ public class NmsCode_19_R1 implements NmsCode {
+ 
+    @Override
+    public List<String> getAllBiomes() {
+-      IRegistry var1 = this.dedicatedserver.aX().b(IRegistry.aR);
+-      ArrayList var2 = new ArrayList();
++      // Luma start - decompile
++      IRegistry<BiomeBase> var1 = this.dedicatedserver.aX().b(IRegistry.aR);
++      ArrayList<String> var2 = new ArrayList<>();
+ 
+-      for (Entry var4 : var1.f()) {
+-         MinecraftKey var5 = ((ResourceKey)var4.getKey()).a();
++      for (var var4 : var1.f()) {
++         MinecraftKey var5 = (var4.getKey()).a();
++         // Luma end - decompile
+          String var6 = var5.a();
+          String var7 = var5.b();
+          var2.add(var7 + ":" + var6);
+@@ -239,7 +245,7 @@ public class NmsCode_19_R1 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -291,7 +297,7 @@ public class NmsCode_19_R1 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_19_R1/ProtocolLibUtils1_19_R1.java b/me/casperge/realisticseasons1_19_R1/ProtocolLibUtils1_19_R1.java
+index 20ccd1d..b7202db 100644
+--- a/me/casperge/realisticseasons1_19_R1/ProtocolLibUtils1_19_R1.java
++++ b/me/casperge/realisticseasons1_19_R1/ProtocolLibUtils1_19_R1.java
+@@ -175,8 +175,8 @@ public class ProtocolLibUtils1_19_R1 {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ProtocolLibUtils1_19_R1.CustomChunkSection var8 = var1[var7];
+          var8.write(var6);
+       }
+@@ -310,8 +310,8 @@ public class ProtocolLibUtils1_19_R1 {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.b(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_19_R2/NmsCode_19_R2.java b/me/casperge/realisticseasons1_19_R2/NmsCode_19_R2.java
+index 3b1d0dd..364fe16 100644
+--- a/me/casperge/realisticseasons1_19_R2/NmsCode_19_R2.java
++++ b/me/casperge/realisticseasons1_19_R2/NmsCode_19_R2.java
+@@ -182,11 +182,13 @@ public class NmsCode_19_R2 implements NmsCode {
+ 
+    @Override
+    public List<String> getCustomBiomes(String var1) {
+-      IRegistry var2 = this.dedicatedserver.aW().d(Registries.al);
+-      ArrayList var3 = new ArrayList();
++      // Luma start - decompile
++      IRegistry<BiomeBase> var2 = this.dedicatedserver.aW().d(Registries.al);
++      ArrayList<String> var3 = new ArrayList<>();
+ 
+-      for (Entry var5 : var2.g()) {
+-         MinecraftKey var6 = ((ResourceKey)var5.getKey()).a();
++      for (var var5 : var2.g()) {
++         MinecraftKey var6 = (var5.getKey()).a();
++         // Luma end - decompile
+          String var7 = var6.a();
+          String var8 = var6.b();
+          if (var8 != null && !var8.equals("minecraft") && !var8.equals(var1)) {
+@@ -199,11 +201,13 @@ public class NmsCode_19_R2 implements NmsCode {
+ 
+    @Override
+    public List<String> getBiomes(String var1) {
+-      IRegistry var2 = this.dedicatedserver.aW().d(Registries.al);
+-      ArrayList var3 = new ArrayList();
++      // Luma start - decompile
++      IRegistry<BiomeBase> var2 = this.dedicatedserver.aW().d(Registries.al);
++      ArrayList<String> var3 = new ArrayList<>();
+ 
+-      for (Entry var5 : var2.g()) {
+-         MinecraftKey var6 = ((ResourceKey)var5.getKey()).a();
++      for (var var5 : var2.g()) {
++         MinecraftKey var6 = (var5.getKey()).a();
++         // Luma end - decompile
+          String var7 = var6.a();
+          String var8 = var6.b();
+          if (var8 != null && var8.equals(var1)) {
+@@ -216,11 +220,13 @@ public class NmsCode_19_R2 implements NmsCode {
+ 
+    @Override
+    public List<String> getAllBiomes() {
+-      IRegistry var1 = this.dedicatedserver.aW().d(Registries.al);
+-      ArrayList var2 = new ArrayList();
++      // Luma start - decompile
++      IRegistry<BiomeBase> var1 = this.dedicatedserver.aW().d(Registries.al);
++      ArrayList<String> var2 = new ArrayList<>();
+ 
+-      for (Entry var4 : var1.g()) {
+-         MinecraftKey var5 = ((ResourceKey)var4.getKey()).a();
++      for (var var4 : var1.g()) {
++         MinecraftKey var5 = (var4.getKey()).a();
++         // Luma end - decompile
+          String var6 = var5.a();
+          String var7 = var5.b();
+          var2.add(var7 + ":" + var6);
+@@ -241,7 +247,7 @@ public class NmsCode_19_R2 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -293,7 +299,7 @@ public class NmsCode_19_R2 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_19_R2/ProtocolLibUtils1_19_R2.java b/me/casperge/realisticseasons1_19_R2/ProtocolLibUtils1_19_R2.java
+index 270e28b..aba41b9 100644
+--- a/me/casperge/realisticseasons1_19_R2/ProtocolLibUtils1_19_R2.java
++++ b/me/casperge/realisticseasons1_19_R2/ProtocolLibUtils1_19_R2.java
+@@ -176,8 +176,8 @@ public class ProtocolLibUtils1_19_R2 {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ProtocolLibUtils1_19_R2.CustomChunkSection var8 = var1[var7];
+          var8.write(var6);
+       }
+@@ -311,8 +311,8 @@ public class ProtocolLibUtils1_19_R2 {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.b(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_19_R3/NmsCode_19_R3.java b/me/casperge/realisticseasons1_19_R3/NmsCode_19_R3.java
+index 99f6273..a94b61a 100644
+--- a/me/casperge/realisticseasons1_19_R3/NmsCode_19_R3.java
++++ b/me/casperge/realisticseasons1_19_R3/NmsCode_19_R3.java
+@@ -246,7 +246,7 @@ public class NmsCode_19_R3 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -298,7 +298,7 @@ public class NmsCode_19_R3 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_19_R3/ProtocolLibUtils1_19_R3.java b/me/casperge/realisticseasons1_19_R3/ProtocolLibUtils1_19_R3.java
+index caeb49f..e1025f1 100644
+--- a/me/casperge/realisticseasons1_19_R3/ProtocolLibUtils1_19_R3.java
++++ b/me/casperge/realisticseasons1_19_R3/ProtocolLibUtils1_19_R3.java
+@@ -7,14 +7,17 @@ import java.lang.reflect.Field;
+ import java.util.HashMap;
+ import java.util.List;
+ import me.casperge.interfaces.ProtocolLibUtils;
++import me.casperge.realisticseasons.biome.BiomeRegister;
+ import me.casperge.realisticseasons.biome.BiomeUtils;
+ import me.casperge.realisticseasons.biome.BlockReplacement;
+ import me.casperge.realisticseasons.biome.BlockReplacements;
+ import me.casperge.realisticseasons.biome.HeightAccessor;
+-import me.casperge.weather.WeatherPlugin;
+-import me.casperge.weather.interfaces.BiomePrecipitation;
+-import me.casperge.weather.interfaces.NMSUtils;
+-import me.casperge.weather.register.BiomeRegister;
++// Luma start - decompile: unfound dependency
++//import me.casperge.weather.WeatherPlugin;
++//import me.casperge.weather.interfaces.BiomePrecipitation;
++//import me.casperge.weather.interfaces.NMSUtils;
++//import me.casperge.weather.register.BiomeRegister;
++// Luma end - decompile: unfound dependency
+ import net.minecraft.core.Holder;
+ import net.minecraft.core.IRegistry;
+ import net.minecraft.core.registries.Registries;
+@@ -128,28 +131,30 @@ public class ProtocolLibUtils1_19_R3 implements ProtocolLibUtils {
+                }
+             }
+          } else {
+-            NMSUtils var37 = WeatherPlugin.getInstance().getNMSUtils();
+-            BiomePrecipitation var40 = null;
+-            if (var7 == 0) {
+-               var40 = BiomePrecipitation.NONE;
+-            } else if (var7 == 1) {
+-               var40 = BiomePrecipitation.RAIN;
+-            } else if (var7 == 2) {
+-               var40 = BiomePrecipitation.SNOW;
+-            } else if (var7 == 3) {
+-               var40 = BiomePrecipitation.SANDSTORM;
+-            }
+-
+-            for (int var43 = 0; var43 < 4; var43++) {
+-               for (int var46 = 0; var46 < 4; var46++) {
+-                  for (int var23 = 0; var23 < 4; var23++) {
+-                     int var24 = var13[var14];
+-                     int var25 = BiomeRegister.getReplacement(var24, var40);
+-                     var35.setBiome(var43, var46, var23, Holder.a((BiomeBase)this.getBiomeRegistry().a(var25)));
+-                     var14++;
+-                  }
+-               }
+-            }
++            // Luma start - decompile: unfound dependency
++//            NMSUtils var37 = WeatherPlugin.getInstance().getNMSUtils();
++//            BiomePrecipitation var40 = null;
++//            if (var7 == 0) {
++//               var40 = BiomePrecipitation.NONE;
++//            } else if (var7 == 1) {
++//               var40 = BiomePrecipitation.RAIN;
++//            } else if (var7 == 2) {
++//               var40 = BiomePrecipitation.SNOW;
++//            } else if (var7 == 3) {
++//               var40 = BiomePrecipitation.SANDSTORM;
++//            }
++
++//            for (int var43 = 0; var43 < 4; var43++) {
++//               for (int var46 = 0; var46 < 4; var46++) {
++//                  for (int var23 = 0; var23 < 4; var23++) {
++//                     int var24 = var13[var14];
++//                     int var25 = BiomeRegister.getReplacement(var24, var40);
++//                     var35.setBiome(var43, var46, var23, Holder.a((BiomeBase)this.getBiomeRegistry().a(var25)));
++//                     var14++;
++//                  }
++//               }
++//            }
++            // Luma end - decompile
+          }
+       }
+ 
+@@ -191,8 +196,8 @@ public class ProtocolLibUtils1_19_R3 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_20_R1/NmsCode_20_R1.java b/me/casperge/realisticseasons1_20_R1/NmsCode_20_R1.java
+index 90a62e6..d6f7cb1 100644
+--- a/me/casperge/realisticseasons1_20_R1/NmsCode_20_R1.java
++++ b/me/casperge/realisticseasons1_20_R1/NmsCode_20_R1.java
+@@ -234,7 +234,7 @@ public class NmsCode_20_R1 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -286,7 +286,7 @@ public class NmsCode_20_R1 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_20_R1/ProtocolLibUtils1_20_R1.java b/me/casperge/realisticseasons1_20_R1/ProtocolLibUtils1_20_R1.java
+index 167fdf1..11f26df 100644
+--- a/me/casperge/realisticseasons1_20_R1/ProtocolLibUtils1_20_R1.java
++++ b/me/casperge/realisticseasons1_20_R1/ProtocolLibUtils1_20_R1.java
+@@ -176,8 +176,8 @@ public class ProtocolLibUtils1_20_R1 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_20_R2/NmsCode_20_R2.java b/me/casperge/realisticseasons1_20_R2/NmsCode_20_R2.java
+index 034d68a..1d06788 100644
+--- a/me/casperge/realisticseasons1_20_R2/NmsCode_20_R2.java
++++ b/me/casperge/realisticseasons1_20_R2/NmsCode_20_R2.java
+@@ -234,7 +234,7 @@ public class NmsCode_20_R2 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -286,7 +286,7 @@ public class NmsCode_20_R2 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_20_R2/ProtocolLibUtils1_20_R2.java b/me/casperge/realisticseasons1_20_R2/ProtocolLibUtils1_20_R2.java
+index bff9d12..745dc89 100644
+--- a/me/casperge/realisticseasons1_20_R2/ProtocolLibUtils1_20_R2.java
++++ b/me/casperge/realisticseasons1_20_R2/ProtocolLibUtils1_20_R2.java
+@@ -176,8 +176,8 @@ public class ProtocolLibUtils1_20_R2 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_20_R3/NmsCode_20_R3.java b/me/casperge/realisticseasons1_20_R3/NmsCode_20_R3.java
+index 217ce6b..da5321f 100644
+--- a/me/casperge/realisticseasons1_20_R3/NmsCode_20_R3.java
++++ b/me/casperge/realisticseasons1_20_R3/NmsCode_20_R3.java
+@@ -236,7 +236,7 @@ public class NmsCode_20_R3 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -288,7 +288,7 @@ public class NmsCode_20_R3 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_20_R3/ProtocolLibUtils1_20_R3.java b/me/casperge/realisticseasons1_20_R3/ProtocolLibUtils1_20_R3.java
+index 1ca8e2b..170fe47 100644
+--- a/me/casperge/realisticseasons1_20_R3/ProtocolLibUtils1_20_R3.java
++++ b/me/casperge/realisticseasons1_20_R3/ProtocolLibUtils1_20_R3.java
+@@ -109,7 +109,7 @@ public class ProtocolLibUtils1_20_R3 implements ProtocolLibUtils {
+ 
+       for (ChunkSection var35 : var10) {
+          if (!var35.c() && var35.h() != null) {
+-            ArrayList var36 = new ArrayList();
++            ArrayList<ProtocolLibUtils1_20_R3.Vector3D> var36 = new ArrayList<>(); // Luma - decompile
+ 
+             for (int var38 = 0; var38 < 16; var38++) {
+                for (int var40 = 0; var40 < 16; var40++) {
+@@ -227,8 +227,8 @@ public class ProtocolLibUtils1_20_R3 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_20_R4/NmsCode_20_R4.java b/me/casperge/realisticseasons1_20_R4/NmsCode_20_R4.java
+index 68859f2..4058867 100644
+--- a/me/casperge/realisticseasons1_20_R4/NmsCode_20_R4.java
++++ b/me/casperge/realisticseasons1_20_R4/NmsCode_20_R4.java
+@@ -236,7 +236,7 @@ public class NmsCode_20_R4 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -288,7 +288,7 @@ public class NmsCode_20_R4 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_20_R4/ProtocolLibUtils1_20_R4.java b/me/casperge/realisticseasons1_20_R4/ProtocolLibUtils1_20_R4.java
+index c7d9c15..8bbb277 100644
+--- a/me/casperge/realisticseasons1_20_R4/ProtocolLibUtils1_20_R4.java
++++ b/me/casperge/realisticseasons1_20_R4/ProtocolLibUtils1_20_R4.java
+@@ -102,7 +102,7 @@ public class ProtocolLibUtils1_20_R4 implements ProtocolLibUtils {
+ 
+       for (ChunkSection var35 : var10) {
+          if (!var35.c() && var35.h() != null) {
+-            ArrayList var36 = new ArrayList();
++            ArrayList<ProtocolLibUtils1_20_R4.Vector3D> var36 = new ArrayList<>(); // Luma - decompile
+ 
+             for (int var38 = 0; var38 < 16; var38++) {
+                for (int var40 = 0; var40 < 16; var40++) {
+@@ -220,8 +220,8 @@ public class ProtocolLibUtils1_20_R4 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_21_R1/NmsCode_21_R1.java b/me/casperge/realisticseasons1_21_R1/NmsCode_21_R1.java
+index d32c674..76ffaeb 100644
+--- a/me/casperge/realisticseasons1_21_R1/NmsCode_21_R1.java
++++ b/me/casperge/realisticseasons1_21_R1/NmsCode_21_R1.java
+@@ -236,7 +236,7 @@ public class NmsCode_21_R1 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -288,7 +288,7 @@ public class NmsCode_21_R1 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_21_R1/ProtocolLibUtils1_21_R1.java b/me/casperge/realisticseasons1_21_R1/ProtocolLibUtils1_21_R1.java
+index a5daaee..40a93fe 100644
+--- a/me/casperge/realisticseasons1_21_R1/ProtocolLibUtils1_21_R1.java
++++ b/me/casperge/realisticseasons1_21_R1/ProtocolLibUtils1_21_R1.java
+@@ -102,7 +102,7 @@ public class ProtocolLibUtils1_21_R1 implements ProtocolLibUtils {
+ 
+       for (ChunkSection var35 : var10) {
+          if (!var35.c() && var35.h() != null) {
+-            ArrayList var36 = new ArrayList();
++            ArrayList<ProtocolLibUtils1_21_R1.Vector3D> var36 = new ArrayList<>(); // Luma - decompile
+ 
+             for (int var38 = 0; var38 < 16; var38++) {
+                for (int var40 = 0; var40 < 16; var40++) {
+@@ -220,8 +220,8 @@ public class ProtocolLibUtils1_21_R1 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_21_R2/NmsCode_21_R2.java b/me/casperge/realisticseasons1_21_R2/NmsCode_21_R2.java
+index dd15760..3bd698c 100644
+--- a/me/casperge/realisticseasons1_21_R2/NmsCode_21_R2.java
++++ b/me/casperge/realisticseasons1_21_R2/NmsCode_21_R2.java
+@@ -270,7 +270,7 @@ public class NmsCode_21_R2 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -322,7 +322,7 @@ public class NmsCode_21_R2 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_21_R2/ProtocolLibUtils1_21_R2.java b/me/casperge/realisticseasons1_21_R2/ProtocolLibUtils1_21_R2.java
+index bb52579..e40fcbc 100644
+--- a/me/casperge/realisticseasons1_21_R2/ProtocolLibUtils1_21_R2.java
++++ b/me/casperge/realisticseasons1_21_R2/ProtocolLibUtils1_21_R2.java
+@@ -109,7 +109,7 @@ public class ProtocolLibUtils1_21_R2 implements ProtocolLibUtils {
+ 
+       for (ChunkSection var35 : var10) {
+          if (!var35.c() && var35.h() != null) {
+-            ArrayList var36 = new ArrayList();
++            ArrayList<ProtocolLibUtils1_21_R2.Vector3D> var36 = new ArrayList<>(); // Luma - decompile
+ 
+             for (int var38 = 0; var38 < 16; var38++) {
+                for (int var40 = 0; var40 < 16; var40++) {
+@@ -227,8 +227,8 @@ public class ProtocolLibUtils1_21_R2 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_21_R3/NmsCode_21_R3.java b/me/casperge/realisticseasons1_21_R3/NmsCode_21_R3.java
+index b53a80c..73db9dd 100644
+--- a/me/casperge/realisticseasons1_21_R3/NmsCode_21_R3.java
++++ b/me/casperge/realisticseasons1_21_R3/NmsCode_21_R3.java
+@@ -270,7 +270,7 @@ public class NmsCode_21_R3 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -324,7 +324,7 @@ public class NmsCode_21_R3 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_21_R3/ProtocolLibUtils1_21_R3.java b/me/casperge/realisticseasons1_21_R3/ProtocolLibUtils1_21_R3.java
+index ceacf5a..21d680b 100644
+--- a/me/casperge/realisticseasons1_21_R3/ProtocolLibUtils1_21_R3.java
++++ b/me/casperge/realisticseasons1_21_R3/ProtocolLibUtils1_21_R3.java
+@@ -109,7 +109,7 @@ public class ProtocolLibUtils1_21_R3 implements ProtocolLibUtils {
+ 
+       for (ChunkSection var35 : var10) {
+          if (!var35.c() && var35.h() != null) {
+-            ArrayList var36 = new ArrayList();
++            ArrayList<ProtocolLibUtils1_21_R3.Vector3D> var36 = new ArrayList<>(); // Luma - decompile
+ 
+             for (int var38 = 0; var38 < 16; var38++) {
+                for (int var40 = 0; var40 < 16; var40++) {
+@@ -227,8 +227,8 @@ public class ProtocolLibUtils1_21_R3 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_21_R4/NmsCode_21_R4.java b/me/casperge/realisticseasons1_21_R4/NmsCode_21_R4.java
+index a3f6f42..a59664f 100644
+--- a/me/casperge/realisticseasons1_21_R4/NmsCode_21_R4.java
++++ b/me/casperge/realisticseasons1_21_R4/NmsCode_21_R4.java
+@@ -287,7 +287,7 @@ public class NmsCode_21_R4 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -341,7 +341,7 @@ public class NmsCode_21_R4 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_21_R4/ProtocolLibUtils1_21_R4.java b/me/casperge/realisticseasons1_21_R4/ProtocolLibUtils1_21_R4.java
+index ec27ce8..61cf7d5 100644
+--- a/me/casperge/realisticseasons1_21_R4/ProtocolLibUtils1_21_R4.java
++++ b/me/casperge/realisticseasons1_21_R4/ProtocolLibUtils1_21_R4.java
+@@ -109,7 +109,7 @@ public class ProtocolLibUtils1_21_R4 implements ProtocolLibUtils {
+ 
+       for (ChunkSection var35 : var10) {
+          if (!var35.c() && var35.h() != null) {
+-            ArrayList var36 = new ArrayList();
++            ArrayList<ProtocolLibUtils1_21_R4.Vector3D> var36 = new ArrayList<>(); // Luma - decompile
+ 
+             for (int var38 = 0; var38 < 16; var38++) {
+                for (int var40 = 0; var40 < 16; var40++) {
+@@ -227,8 +227,8 @@ public class ProtocolLibUtils1_21_R4 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_21_R5/NmsCode_21_R5.java b/me/casperge/realisticseasons1_21_R5/NmsCode_21_R5.java
+index ac9451d..0faaf68 100644
+--- a/me/casperge/realisticseasons1_21_R5/NmsCode_21_R5.java
++++ b/me/casperge/realisticseasons1_21_R5/NmsCode_21_R5.java
+@@ -287,7 +287,7 @@ public class NmsCode_21_R5 implements NmsCode {
+       return this.dedicatedserver.recentTps[0];
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -341,7 +341,7 @@ public class NmsCode_21_R5 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_21_R5/ProtocolLibUtils1_21_R5.java b/me/casperge/realisticseasons1_21_R5/ProtocolLibUtils1_21_R5.java
+index ea7b653..05be31d 100644
+--- a/me/casperge/realisticseasons1_21_R5/ProtocolLibUtils1_21_R5.java
++++ b/me/casperge/realisticseasons1_21_R5/ProtocolLibUtils1_21_R5.java
+@@ -109,7 +109,7 @@ public class ProtocolLibUtils1_21_R5 implements ProtocolLibUtils {
+ 
+       for (ChunkSection var35 : var10) {
+          if (!var35.c() && var35.h() != null) {
+-            ArrayList var36 = new ArrayList();
++            ArrayList<ProtocolLibUtils1_21_R5.Vector3D> var36 = new ArrayList<>(); // Luma - decompile
+ 
+             for (int var38 = 0; var38 < 16; var38++) {
+                for (int var40 = 0; var40 < 16; var40++) {
+@@ -227,8 +227,8 @@ public class ProtocolLibUtils1_21_R5 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_21_R6/NmsCode_21_R6.java b/me/casperge/realisticseasons1_21_R6/NmsCode_21_R6.java
+index b64f642..024cb1b 100644
+--- a/me/casperge/realisticseasons1_21_R6/NmsCode_21_R6.java
++++ b/me/casperge/realisticseasons1_21_R6/NmsCode_21_R6.java
+@@ -293,7 +293,7 @@ public class NmsCode_21_R6 implements NmsCode {
+       }
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -347,7 +347,7 @@ public class NmsCode_21_R6 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_21_R6/ProtocolLibUtils1_21_R6.java b/me/casperge/realisticseasons1_21_R6/ProtocolLibUtils1_21_R6.java
+index a19edfa..2da94c1 100644
+--- a/me/casperge/realisticseasons1_21_R6/ProtocolLibUtils1_21_R6.java
++++ b/me/casperge/realisticseasons1_21_R6/ProtocolLibUtils1_21_R6.java
+@@ -110,7 +110,7 @@ public class ProtocolLibUtils1_21_R6 implements ProtocolLibUtils {
+ 
+       for (ChunkSection var35 : var10) {
+          if (!var35.c() && var35.h() != null) {
+-            ArrayList var36 = new ArrayList();
++            ArrayList<ProtocolLibUtils1_21_R6.Vector3D> var36 = new ArrayList<>(); // Luma - decompile
+ 
+             for (int var38 = 0; var38 < 16; var38++) {
+                for (int var40 = 0; var40 < 16; var40++) {
+@@ -229,8 +229,8 @@ public class ProtocolLibUtils1_21_R6 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }
+diff --git a/me/casperge/realisticseasons1_21_R7/NmsCode_21_R7.java b/me/casperge/realisticseasons1_21_R7/NmsCode_21_R7.java
+index aaff640..cdc978b 100644
+--- a/me/casperge/realisticseasons1_21_R7/NmsCode_21_R7.java
++++ b/me/casperge/realisticseasons1_21_R7/NmsCode_21_R7.java
+@@ -312,7 +312,7 @@ public class NmsCode_21_R7 implements NmsCode {
+       }
+    }
+ 
+-   public Class<?> getCbClass(String var1) {
++   public Class<?> getCbClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + var1);
+    }
+ 
+@@ -366,7 +366,7 @@ public class NmsCode_21_R7 implements NmsCode {
+    }
+ 
+    @Override
+-   public Class<?> getNmsPacketClass(String var1) {
++   public Class<?> getNmsPacketClass(String var1) throws ClassNotFoundException { // Luma - decompile
+       return Class.forName("net.minecraft.network.protocol." + var1);
+    }
+ 
+diff --git a/me/casperge/realisticseasons1_21_R7/ProtocolLibUtils1_21_R7.java b/me/casperge/realisticseasons1_21_R7/ProtocolLibUtils1_21_R7.java
+index 7f98d2d..ae9cdfd 100644
+--- a/me/casperge/realisticseasons1_21_R7/ProtocolLibUtils1_21_R7.java
++++ b/me/casperge/realisticseasons1_21_R7/ProtocolLibUtils1_21_R7.java
+@@ -110,7 +110,7 @@ public class ProtocolLibUtils1_21_R7 implements ProtocolLibUtils {
+ 
+       for (ChunkSection var35 : var10) {
+          if (!var35.c() && var35.h() != null) {
+-            ArrayList var36 = new ArrayList();
++            ArrayList<ProtocolLibUtils1_21_R7.Vector3D> var36 = new ArrayList<>(); // Luma - decompile
+ 
+             for (int var38 = 0; var38 < 16; var38++) {
+                for (int var40 = 0; var40 < 16; var40++) {
+@@ -229,8 +229,8 @@ public class ProtocolLibUtils1_21_R7 implements ProtocolLibUtils {
+       var10.writerIndex(0);
+       PacketDataSerializer var6 = new PacketDataSerializer(var10);
+ 
+-      byte var3;
+-      for (int var7 = 0; var7 < var3; var7++) {
++      //byte var3; // Luma - decompile
++      for (int var7 = 0; var7 < var1.length; var7++) { // Luma - decompile
+          ChunkSection var8 = var1[var7];
+          var8.c(var6);
+       }

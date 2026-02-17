@@ -1,10 +1,12 @@
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import groovy.json.JsonSlurper
+import org.gradle.internal.extensions.core.serviceOf
 import java.net.URI
 import javax.inject.Inject
 import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
+import java.nio.file.Paths
 
 plugins {
     id("java-library")
@@ -12,12 +14,32 @@ plugins {
     id("com.gradleup.shadow") version "9.3.1"
 }
 
-// TODO: Configure
-group = "dev.lumas.decompile_patcher_template"
-version = "0.0.0"
+
+group = "me.casperge.realisticseasons"
+version = "11.10.3"
+
+allprojects {
+    apply(plugin = "java-library")
+
+    version = "11.10.3"
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven("https://hub.spigotmc.org/nexus/content/groups/public/")
+        maven("https://repo.papermc.io/repository/maven-public/")
+    }
+
+    dependencies {
+        compileOnly("net.dmulloy2:ProtocolLib:5.4.0")
+        compileOnly("org.apache.commons:commons-lang3:3.17.0")
+        implementation("io.papermc:paperlib:1.0.7")
+    }
+}
 
 repositories {
     // TODO: Configure
+    mavenCentral()
 }
 
 dependencies {
@@ -47,20 +69,74 @@ tasks {
     }
 }
 
-// TODO: Configure
+
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-// TODO: Configure
 val decompileConfig = DecompileConfig(
-    inputJar = "sources/Decompile-Patcher-Template.jar",
+    inputJar = "sources/RealisticSeasons.jar",
     packageMappings = mapOf(
-        "dev/lumas/decompile_patcher_template" to "."
+        "me/casperge/realisticseasons/biome" to ":common",
+        "me/casperge/enums" to ":common",
+        "me/casperge/interfaces" to ":common",
+        "world/ofunny/bpm/Floodgate" to ":core",
+        "me/casperge/realisticseasons" to ":core",
+//        "me/casperge/realisticseasons1_16_R2" to ":NMS:1_16_R2",
+//        "me/casperge/realisticseasons1_16_R3" to ":NMS:1_16_R3",
+//        "me/casperge/realisticseasons1_17_R1" to ":NMS:1_17_R1",
+        "me/casperge/realisticseasons1_18_R1" to ":NMS:1_18_R1",
+        "me/casperge/realisticseasons1_18_R2" to ":NMS:1_18_R2",
+        "me/casperge/realisticseasons1_19_R1" to ":NMS:1_19_R1",
+        "me/casperge/realisticseasons1_19_R2" to ":NMS:1_19_R2",
+        "me/casperge/realisticseasons1_19_R3" to ":NMS:1_19_R3",
+        "me/casperge/realisticseasons1_20_R1" to ":NMS:1_20_R1",
+        "me/casperge/realisticseasons1_20_R2" to ":NMS:1_20_R2",
+        "me/casperge/realisticseasons1_20_R3" to ":NMS:1_20_R3",
+        "me/casperge/realisticseasons1_20_R4" to ":NMS:1_20_R4",
+        "me/casperge/realisticseasons1_21_R1" to ":NMS:1_21_R1",
+        "me/casperge/realisticseasons1_21_R2" to ":NMS:1_21_R2",
+        "me/casperge/realisticseasons1_21_R3" to ":NMS:1_21_R3",
+        "me/casperge/realisticseasons1_21_R4" to ":NMS:1_21_R4",
+        "me/casperge/realisticseasons1_21_R5" to ":NMS:1_21_R5",
+        "me/casperge/realisticseasons1_21_R6" to ":NMS:1_21_R6",
+        "me/casperge/realisticseasons1_21_R7" to ":NMS:1_21_R7",
     ),
     resourceMappings = mapOf(
-        "plugin.yml" to ".",
-        //"config.yml" to "."
+        "BADLANDS.yml" to ":core",
+        "BEACH.yml" to ":core",
+        "BIRCH_FOREST.yml" to ":core",
+        "calendar.yml" to ":core",
+        "CAVES.yml" to ":core",
+        "chunkdata.yml" to ":core",
+        "config.yml" to ":core",
+        "crops.yml" to ":core",
+        "custom-events.yml" to ":core",
+        "CUSTOM_EXAMPLE.yml" to ":core",
+        "DARK_FOREST.yml" to ":core",
+        "data.yml" to ":core",
+        "DESERT.yml" to ":core",
+        "events.yml" to ":core",
+        "factions.yml" to ":core",
+        "FLOWER_FOREST.yml" to ":core",
+        "FOREST.yml" to ":core",
+        "FROZEN_BIOMES.yml" to ":core",
+        "FROZEN_MOUNTAINS.yml" to ":core",
+        "griefprevention.yml" to ":core",
+        "JUNGLE.yml" to ":core",
+        "lands.yml" to ":core",
+        "lang.yml" to ":core",
+        "MOUNTAINS.yml" to ":core",
+        "MUSHROOM_FIELDS.yml" to ":core",
+        "OCEAN.yml" to ":core",
+        "PALE_GARDEN.yml" to ":core",
+        "PLAINS.yml" to ":core",
+        "plugin.yml" to ":core",
+        "RIVER.yml" to ":core",
+        "SAVANNA.yml" to ":core",
+        "SWAMP.yml" to ":core",
+        "TAIGA.yml" to ":core",
+        "temperature.yml" to ":core",
     )
 )
 
@@ -80,6 +156,78 @@ val decompilerDir = layout.buildDirectory.dir(decompileConfig.decompilerDir.remo
 val inputJarFile = layout.projectDirectory.file(decompileConfig.inputJar)
 val generatedOutputDir = layout.projectDirectory.dir(decompileConfig.generatedDir)
 val patchesDirPath = layout.projectDirectory.dir(decompileConfig.patchesDir)
+val buildToolsDir = layout.buildDirectory.dir("buildtools")
+val buildToolsJar = buildToolsDir.get().file("BuildTools.jar")
+
+val nmsVersions = listOf(
+    "1.18.1",
+    "1.18.2",
+    "1.19.1",
+    "1.19.3",
+    "1.19.4",
+    "1.20.1",
+    "1.20.2",
+    "1.20.3",
+    "1.20.4",
+    "1.20.6",
+    "1.21.1",
+    "1.21.2",
+    "1.21.4",
+    "1.21.5",
+    "1.21.6",
+    "1.21.10",
+    "1.21.11"
+)
+
+val downloadBuildTools by tasks.registering {
+    val jar = buildToolsJar.asFile
+    onlyIf { !jar.exists() }
+    doLast {
+        mkdir(buildToolsDir)
+        val url = "https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar"
+        ant.invokeMethod("get", mapOf("src" to url, "dest" to jar))
+        println("Downloaded BuildTools.jar")
+    }
+}
+
+
+val jdk17 = javaToolchains.launcherFor {
+    languageVersion.set(JavaLanguageVersion.of(17))
+}.get().executablePath.asFile.absolutePath
+
+val jdk21 = javaToolchains.launcherFor {
+    languageVersion.set(JavaLanguageVersion.of(21))
+}.get().executablePath.asFile.absolutePath
+
+val installTasks = nmsVersions.map { version ->
+    val snapshotVersion = "$version-R0.1-SNAPSHOT"
+    tasks.register("installSpigot_$version") {
+        dependsOn(downloadBuildTools)
+
+        val m2Artifact = Paths.get(
+            System.getProperty("user.home"),
+            ".m2", "repository", "org", "spigotmc", "spigot",
+            snapshotVersion, "spigot-${snapshotVersion}.jar"
+        )
+
+        onlyIf { !Files.exists(m2Artifact) }
+
+        val execOps = serviceOf<ExecOperations>()
+
+        doLast {
+            execOps.exec {
+                workingDir(buildToolsDir)
+                val javaExec = if (version < "1.20.5") jdk17 else jdk21
+                commandLine(javaExec, "-jar", "BuildTools.jar", "--rev", version, "--remapped")
+            }
+            println("Spigot $snapshotVersion installed to local Maven repo")
+        }
+    }
+}
+
+val installAllSpigot by tasks.registering {
+    dependsOn(installTasks)
+}
 
 fun resolveModuleDir(moduleTarget: String): File? {
     if (moduleTarget == ".") return project.projectDir

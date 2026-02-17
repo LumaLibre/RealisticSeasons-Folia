@@ -22,9 +22,8 @@ build/decompiler/
 
 
 # Source code
-api/
+common/
 core/
-core21/
 nms/
 
 # OS files

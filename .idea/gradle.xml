@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -8,8 +9,28 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/NMS" />
+            <option value="$PROJECT_DIR$/NMS/1_18_R1" />
+            <option value="$PROJECT_DIR$/NMS/1_18_R2" />
+            <option value="$PROJECT_DIR$/NMS/1_19_R1" />
+            <option value="$PROJECT_DIR$/NMS/1_19_R2" />
+            <option value="$PROJECT_DIR$/NMS/1_19_R3" />
+            <option value="$PROJECT_DIR$/NMS/1_20_R1" />
+            <option value="$PROJECT_DIR$/NMS/1_20_R2" />
+            <option value="$PROJECT_DIR$/NMS/1_20_R3" />
+            <option value="$PROJECT_DIR$/NMS/1_20_R4" />
+            <option value="$PROJECT_DIR$/NMS/1_21_R1" />
+            <option value="$PROJECT_DIR$/NMS/1_21_R2" />
+            <option value="$PROJECT_DIR$/NMS/1_21_R3" />
+            <option value="$PROJECT_DIR$/NMS/1_21_R4" />
+            <option value="$PROJECT_DIR$/NMS/1_21_R5" />
+            <option value="$PROJECT_DIR$/NMS/1_21_R6" />
+            <option value="$PROJECT_DIR$/NMS/1_21_R7" />
+            <option value="$PROJECT_DIR$/common" />
+            <option value="$PROJECT_DIR$/core" />
           </set>
         </option>
+        <option name="resolveExternalAnnotations" value="true" />
       </GradleProjectSettings>
     </option>
   </component>

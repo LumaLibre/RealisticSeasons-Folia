@@ -1,0 +1,103 @@
+diff --git a/me/casperge/realisticseasons/Version.java b/me/casperge/realisticseasons/Version.java
+index a76097a..0457342 100644
+--- a/me/casperge/realisticseasons/Version.java
++++ b/me/casperge/realisticseasons/Version.java
+@@ -11,15 +11,17 @@ import me.casperge.realisticseasons.event.ChunkPacketEventProtocolLib1_19_R1;
+ import me.casperge.realisticseasons.event.ChunkPacketEventProtocolLib1_19_R2;
+ import me.casperge.realisticseasons.event.ChunkPacketEventProtocolLibAsync;
+ import me.casperge.realisticseasons.event.ChunkPacketProcessor;
+-import me.casperge.realisticseasons1_16_R2.CustomBiome1_16_R2;
+-import me.casperge.realisticseasons1_16_R2.FakeArmorStand_1_16_R2;
+-import me.casperge.realisticseasons1_16_R2.NmsCode_16_R2;
+-import me.casperge.realisticseasons1_16_R3.CustomBiome1_16_R3;
+-import me.casperge.realisticseasons1_16_R3.FakeArmorStand_1_16_R3;
+-import me.casperge.realisticseasons1_16_R3.NmsCode_16_R3;
+-import me.casperge.realisticseasons1_17_R1.CustomBiome1_17_R1;
+-import me.casperge.realisticseasons1_17_R1.FakeArmorStand_1_17_R1;
+-import me.casperge.realisticseasons1_17_R1.NmsCode_17_R1;
++// Luma start - remove old NMS
++//import me.casperge.realisticseasons1_16_R2.CustomBiome1_16_R2;
++//import me.casperge.realisticseasons1_16_R2.FakeArmorStand_1_16_R2;
++//import me.casperge.realisticseasons1_16_R2.NmsCode_16_R2;
++//import me.casperge.realisticseasons1_16_R3.CustomBiome1_16_R3;
++//import me.casperge.realisticseasons1_16_R3.FakeArmorStand_1_16_R3;
++//import me.casperge.realisticseasons1_16_R3.NmsCode_16_R3;
++//import me.casperge.realisticseasons1_17_R1.CustomBiome1_17_R1;
++//import me.casperge.realisticseasons1_17_R1.FakeArmorStand_1_17_R1;
++//import me.casperge.realisticseasons1_17_R1.NmsCode_17_R1;
++// Luma end - remove old NMS
+ import me.casperge.realisticseasons1_18_R1.CustomBiome1_18_R1;
+ import me.casperge.realisticseasons1_18_R1.FakeArmorStand_1_18_R1;
+ import me.casperge.realisticseasons1_18_R1.NmsCode_18_R1;
+@@ -93,13 +95,16 @@ public class Version {
+    }
+ 
+    public static NmsCode setupBiomeRegister() {
+-      if (version.equals("v1_16_R3")) {
+-         return new NmsCode_16_R3();
+-      } else if (version.equals("v1_16_R2")) {
+-         return new NmsCode_16_R2();
+-      } else if (version.equals("v1_17_R1")) {
+-         return new NmsCode_17_R1();
+-      } else if (version.equals("v1_18_R1")) {
++      // Luma start - remove old NMS
++//      if (version.equals("v1_16_R3")) {
++//         return new NmsCode_16_R3();
++//      } else if (version.equals("v1_16_R2")) {
++//         return new NmsCode_16_R2();
++//      } else if (version.equals("v1_17_R1")) {
++//         return new NmsCode_17_R1();
++//      } else
++      // Luma end - remove old NMS
++      if (version.equals("v1_18_R1")) {
+          return new NmsCode_18_R1();
+       } else if (version.equals("v1_18_R2")) {
+          return new NmsCode_18_R2();
+@@ -357,13 +362,16 @@ public class Version {
+    }
+ 
+    public static CustomBiome createCustomBiome(String var0, String var1, String var2) {
+-      if (version.equals("v1_16_R3")) {
+-         return new CustomBiome1_16_R3(var0, var1, var2);
+-      } else if (version.equals("v1_16_R2")) {
+-         return new CustomBiome1_16_R2(var0, var1, var2);
+-      } else if (version.equals("v1_17_R1")) {
+-         return new CustomBiome1_17_R1(var0, var1, var2);
+-      } else if (version.equals("v1_18_R1")) {
++      // Luma start - remove old NMS
++//      if (version.equals("v1_16_R3")) {
++//         return new CustomBiome1_16_R3(var0, var1, var2);
++//      } else if (version.equals("v1_16_R2")) {
++//         return new CustomBiome1_16_R2(var0, var1, var2);
++//      } else if (version.equals("v1_17_R1")) {
++//         return new CustomBiome1_17_R1(var0, var1, var2);
++//      } else
++      // Luma end - remove old NMS
++      if (version.equals("v1_18_R1")) {
+          return new CustomBiome1_18_R1(var0, var1, var2);
+       } else if (version.equals("v1_18_R2")) {
+          return new CustomBiome1_18_R2(var0, var1, var2);
+@@ -401,13 +409,16 @@ public class Version {
+    public static FakeArmorStand createFakeArmorStand(
+            World var0, double var1, double var3, double var5, double var7, boolean var9, boolean var10, boolean var11, boolean var12
+    ) {
+-      if (version.equals("v1_16_R3")) {
+-         return new FakeArmorStand_1_16_R3(var0, var1, var3, var5, var7, var9, var10, var11, var12);
+-      } else if (version.equals("v1_16_R2")) {
+-         return new FakeArmorStand_1_16_R2(var0, var1, var3, var5, var7, var9, var10, var11, var12);
+-      } else if (version.equals("v1_17_R1")) {
+-         return new FakeArmorStand_1_17_R1(var0, var1, var3, var5, var7, var9, var10, var11, var12);
+-      } else if (version.equals("v1_18_R1")) {
++      // Luma start - remove old NMS
++//      if (version.equals("v1_16_R3")) {
++//         return new FakeArmorStand_1_16_R3(var0, var1, var3, var5, var7, var9, var10, var11, var12);
++//      } else if (version.equals("v1_16_R2")) {
++//         return new FakeArmorStand_1_16_R2(var0, var1, var3, var5, var7, var9, var10, var11, var12);
++//      } else if (version.equals("v1_17_R1")) {
++//         return new FakeArmorStand_1_17_R1(var0, var1, var3, var5, var7, var9, var10, var11, var12);
++//      } else
++      // Luma end - remove old NMS
++      if (version.equals("v1_18_R1")) {
+          return new FakeArmorStand_1_18_R1(var0, var1, var3, var5, var7, var9, var10, var11, var12);
+       } else if (version.equals("v1_18_R2")) {
+          return new FakeArmorStand_1_18_R2(var0, var1, var3, var5, var7, var9, var10, var11, var12);

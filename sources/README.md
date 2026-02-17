@@ -1,3 +1,3 @@
 ### In this folder...
 
-Place your `Example.jar` file(s) and then run `./gradlew setupVineFlower` and then `./gradlew decompileAndApplyPatches`.
+Place your `RealisticSeasons.jar` file(s) and then run `./gradlew installAllSpigot`, `./gradlew setupVineFlower`, and then `./gradlew decompileAndApplyPatches`.
