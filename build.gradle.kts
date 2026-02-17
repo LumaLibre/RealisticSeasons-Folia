@@ -263,6 +263,82 @@ fun resolveModuleResourcesDir(moduleTarget: String): File? {
 }
 
 // ============================================================================
+// CHILD-AWARE COPY HELPERS
+// ============================================================================
+
+/**
+ * Returns the set of child package prefixes that have their own mapping,
+ * i.e. more-specific sub-packages that should be excluded when copying
+ * a parent package.
+ */
+fun getChildMappedPrefixes(packagePath: String): List<String> {
+    return decompileConfig.packageMappings.keys.filter {
+        it != packagePath && it.startsWith("$packagePath/")
+    }
+}
+
+/**
+ * Copy files from sourceDir to targetDir, excluding files that belong to
+ * a more-specific child mapping.
+ */
+fun copyExcludingChildren(sourceDir: File, targetDir: File, packagePath: String) {
+    if (!sourceDir.exists()) return
+    val childPrefixes = getChildMappedPrefixes(packagePath)
+
+    sourceDir.walkTopDown().forEach { file ->
+        if (file.isFile) {
+            val relativePath = file.relativeTo(sourceDir)
+            // Check if this file belongs to a child mapping
+            val fullRelPath = "$packagePath/${relativePath.path}".replace("\\", "/")
+            val belongsToChild = childPrefixes.any { fullRelPath.startsWith("$it/") }
+            if (!belongsToChild) {
+                val targetFile = targetDir.resolve(relativePath)
+                targetFile.parentFile.mkdirs()
+                file.copyTo(targetFile, overwrite = true)
+            }
+        }
+    }
+}
+
+/**
+ * Delete files in a directory but preserve subdirectories that belong to child mappings.
+ * For example, deleting me/casperge/realisticseasons in the git dir should NOT
+ * delete me/casperge/realisticseasons/biome if biome has its own mapping.
+ */
+fun deleteExcludingChildren(dir: File, packagePath: String) {
+    if (!dir.exists()) return
+    val childPrefixes = getChildMappedPrefixes(packagePath)
+    if (childPrefixes.isEmpty()) {
+        dir.deleteRecursively()
+        return
+    }
+
+    // Delete files and subdirs that don't belong to child mappings (deepest first)
+    dir.walkTopDown()
+        .sortedByDescending { it.path.length }
+        .forEach { file ->
+            if (file == dir) return@forEach
+            val relativePath = file.relativeTo(dir).path.replace("\\", "/")
+            val fullPath = "$packagePath/$relativePath"
+            val belongsToChild = childPrefixes.any {
+                fullPath.startsWith("$it/") || fullPath == it
+            }
+            if (!belongsToChild) {
+                if (file.isFile) {
+                    file.delete()
+                } else if (file.isDirectory && (file.listFiles()?.isEmpty() == true)) {
+                    file.delete()
+                }
+            }
+        }
+    // Delete the dir itself only if it's now empty
+    if (dir.isDirectory && (dir.listFiles()?.isEmpty() == true)) {
+        dir.delete()
+    }
+}
+
+
+// ============================================================================
 // GIT-BASED PATCH MANAGEMENT SYSTEM
 // ============================================================================
 
@@ -339,6 +415,26 @@ abstract class GitOperationsService @Inject constructor(
     }
 
     fun apply(workingDir: File, patchFile: File, verbose: Boolean = false): Pair<Int, String> {
+        // Pre-delete files that the patch creates as "new file" to avoid "already exists" errors
+        val newFiles = mutableListOf<String>()
+        var inNewFile = false
+        patchFile.readLines().forEach { line ->
+            if (line.startsWith("diff --git")) {
+                inNewFile = false
+            }
+            if (line.startsWith("new file mode")) {
+                inNewFile = true
+            }
+            if (inNewFile && line.startsWith("+++ b/")) {
+                val path = line.removePrefix("+++ b/")
+                newFiles.add(path)
+            }
+        }
+        newFiles.forEach { path ->
+            val file = File(workingDir, path)
+            if (file.exists()) file.delete()
+        }
+
         val errorOutput = ByteArrayOutputStream()
         val stdOutput = ByteArrayOutputStream()
         val args = mutableListOf("git", "apply")
@@ -438,7 +534,10 @@ tasks.register("distributeSources") {
         println("Distributing decompiled sources to modules...")
 
 
-        decompileConfig.packageMappings.forEach { (packagePath, moduleTarget) ->
+        val sortedMappings = decompileConfig.packageMappings.entries.sortedByDescending { it.key.count { c -> c == '/' } }
+        val allMappedPrefixes = decompileConfig.packageMappings.keys.toSet()
+
+        sortedMappings.forEach { (packagePath, moduleTarget) ->
             val sourcePackageDir = generatedDir.resolve(packagePath)
 
             if (!sourcePackageDir.exists()) {
@@ -455,14 +554,24 @@ tasks.register("distributeSources") {
             println("📦 Copying $packagePath -> $moduleTarget")
             targetSrcDir.mkdirs()
 
+            // Find sub-packages that have their own mapping
+            val childMappedPrefixes = allMappedPrefixes.filter {
+                it != packagePath && it.startsWith("$packagePath/")
+            }
+
             var fileCount = 0
             sourcePackageDir.walkTopDown().forEach { sourceFile ->
                 if (sourceFile.isFile && sourceFile.extension == "java") {
-                    val relativePath = sourceFile.relativeTo(sourcePackageDir)
-                    val targetFile = targetSrcDir.resolve(relativePath)
-                    targetFile.parentFile.mkdirs()
-                    sourceFile.copyTo(targetFile, overwrite = true)
-                    fileCount++
+                    val relativeToGenerated = sourceFile.relativeTo(generatedDir).path.replace("\\", "/")
+                    // Skip files that belong to a more-specific child mapping
+                    val belongsToChild = childMappedPrefixes.any { relativeToGenerated.startsWith("$it/") }
+                    if (!belongsToChild) {
+                        val relativePath = sourceFile.relativeTo(sourcePackageDir)
+                        val targetFile = targetSrcDir.resolve(relativePath)
+                        targetFile.parentFile.mkdirs()
+                        sourceFile.copyTo(targetFile, overwrite = true)
+                        fileCount++
+                    }
                 }
             }
             println("✓ Copied $fileCount files to $moduleTarget")
@@ -587,7 +696,8 @@ tasks.register("createPatch") {
                 val sourceDir = generatedOutputDir.asFile.resolve(packagePath)
                 if (sourceDir.exists()) {
                     val targetDir = gitDir.resolve(packagePath)
-                    sourceDir.copyRecursively(targetDir, overwrite = true)
+                    targetDir.mkdirs()
+                    copyExcludingChildren(sourceDir, targetDir, packagePath)
                 }
             }
             decompileConfig.resourceMappings.forEach { (resourceName, _) -> // resources into __resources__ subdir
@@ -611,10 +721,10 @@ tasks.register("createPatch") {
                 val moduleSrcDir = resolveModuleSrcDir(moduleTarget, packagePath)
                 val targetDir = gitDir.resolve(packagePath)
 
-                if (targetDir.exists()) targetDir.deleteRecursively()
-
+                deleteExcludingChildren(targetDir, packagePath)
                 if (moduleSrcDir != null && moduleSrcDir.exists() && moduleSrcDir.walkTopDown().any { it.isFile }) {
-                    moduleSrcDir.copyRecursively(targetDir, overwrite = true)
+                    targetDir.mkdirs()
+                    copyExcludingChildren(moduleSrcDir, targetDir, packagePath)
                 }
             }
             decompileConfig.resourceMappings.forEach { (resourceName, moduleTarget) -> // compare module resources
@@ -653,12 +763,12 @@ tasks.register("createPatch") {
                 val moduleSrcDir = resolveModuleSrcDir(moduleTarget, packagePath)
                 val generatedTargetDir = generatedOutputDir.asFile.resolve(packagePath)
 
-                if (generatedTargetDir.exists()) generatedTargetDir.deleteRecursively()
-
+                deleteExcludingChildren(generatedTargetDir, packagePath)
                 if (moduleSrcDir != null && moduleSrcDir.exists() && moduleSrcDir.walkTopDown().any { it.isFile }) {
-                    moduleSrcDir.copyRecursively(generatedTargetDir, overwrite = true)
+                    generatedTargetDir.mkdirs()
+                    copyExcludingChildren(moduleSrcDir, generatedTargetDir, packagePath)
                     println("  ✓ Updated generated: $packagePath")
-                } else if (generatedTargetDir.exists()) {
+                } else if (!generatedTargetDir.exists()) {
                     println("  ✓ Removed from generated: $packagePath")
                 }
             }
@@ -727,7 +837,8 @@ tasks.register("applyPatch") {
                 val moduleSrcDir = resolveModuleSrcDir(moduleTarget, packagePath) ?: return@forEach
                 if (!moduleSrcDir.exists()) return@forEach
                 val targetDir = gitDir.resolve(packagePath)
-                moduleSrcDir.copyRecursively(targetDir, overwrite = true)
+                targetDir.mkdirs()
+                copyExcludingChildren(moduleSrcDir, targetDir, packagePath)
             }
             decompileConfig.resourceMappings.forEach { (resourceName, moduleTarget) -> // setup resources
                 val moduleResourcesDir = resolveModuleResourcesDir(moduleTarget) ?: return@forEach
@@ -760,12 +871,17 @@ tasks.register("applyPatch") {
                 val moduleTargetDir = resolveModuleSrcDir(moduleTarget, packagePath) ?: return@forEach
                 val generatedTargetDir = generatedOutputDir.asFile.resolve(packagePath)
 
-                if (moduleTargetDir.exists()) moduleTargetDir.deleteRecursively()
-                if (gitSourceDir.exists()) gitSourceDir.copyRecursively(moduleTargetDir, overwrite = true)
-
-                if (generatedTargetDir.exists()) generatedTargetDir.deleteRecursively()
+                // Delete only files belonging to this mapping (preserve child dirs)
+                deleteExcludingChildren(moduleTargetDir, packagePath)
                 if (gitSourceDir.exists()) {
-                    gitSourceDir.copyRecursively(generatedTargetDir, overwrite = true)
+                    moduleTargetDir.mkdirs()
+                    copyExcludingChildren(gitSourceDir, moduleTargetDir, packagePath)
+                }
+
+                deleteExcludingChildren(generatedTargetDir, packagePath)
+                if (gitSourceDir.exists()) {
+                    generatedTargetDir.mkdirs()
+                    copyExcludingChildren(gitSourceDir, generatedTargetDir, packagePath)
                     println("  ✓ Updated $moduleTarget (+ generated sources)")
                 } else {
                     println("  ✓ Updated $moduleTarget (package deleted)")
@@ -848,7 +964,8 @@ tasks.register("applyAllPatches") {
                         val moduleSrcDir = resolveModuleSrcDir(moduleTarget, packagePath) ?: return@forEach
                         if (moduleSrcDir.exists()) {
                             val targetDir = gitDir.resolve(packagePath)
-                            moduleSrcDir.copyRecursively(targetDir, overwrite = true)
+                            targetDir.mkdirs()
+                            copyExcludingChildren(moduleSrcDir, targetDir, packagePath)
                         }
                     }
                     decompileConfig.resourceMappings.forEach { (resourceName, moduleTarget) ->
@@ -880,11 +997,18 @@ tasks.register("applyAllPatches") {
                             val moduleTargetDir = resolveModuleSrcDir(moduleTarget, packagePath) ?: return@forEach
                             val generatedTargetDir = generatedOutputDir.asFile.resolve(packagePath)
 
-                            if (moduleTargetDir.exists()) moduleTargetDir.deleteRecursively()
-                            if (gitSourceDir.exists()) gitSourceDir.copyRecursively(moduleTargetDir, overwrite = true)
+                            // Delete only files belonging to this mapping (preserve child dirs)
+                            deleteExcludingChildren(moduleTargetDir, packagePath)
+                            if (gitSourceDir.exists()) {
+                                moduleTargetDir.mkdirs()
+                                copyExcludingChildren(gitSourceDir, moduleTargetDir, packagePath)
+                            }
 
-                            if (generatedTargetDir.exists()) generatedTargetDir.deleteRecursively()
-                            if (gitSourceDir.exists()) gitSourceDir.copyRecursively(generatedTargetDir, overwrite = true)
+                            deleteExcludingChildren(generatedTargetDir, packagePath)
+                            if (gitSourceDir.exists()) {
+                                generatedTargetDir.mkdirs()
+                                copyExcludingChildren(gitSourceDir, generatedTargetDir, packagePath)
+                            }
                         }
                         decompileConfig.resourceMappings.forEach { (resourceName, moduleTarget) ->
                             val gitResource = gitDir.resolve("__resources__/$resourceName")
