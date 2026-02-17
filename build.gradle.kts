@@ -10,7 +10,6 @@ import java.nio.file.Paths
 
 plugins {
     id("java-library")
-    id("io.freefair.lombok") version "9.2.0"
     id("com.gradleup.shadow") version "9.3.1"
 }
 
@@ -95,9 +94,11 @@ val decompileConfig = DecompileConfig(
         "me/casperge/interfaces" to ":common",
         "world/ofunny/bpm/Floodgate" to ":core",
         "me/casperge/realisticseasons" to ":core",
-//        "me/casperge/realisticseasons1_16_R2" to ":NMS:1_16_R2",
-//        "me/casperge/realisticseasons1_16_R3" to ":NMS:1_16_R3",
-//        "me/casperge/realisticseasons1_17_R1" to ":NMS:1_17_R1",
+        // Remove old NMS
+        /*"me/casperge/realisticseasons1_16_R2" to ":NMS:1_16_R2",
+        "me/casperge/realisticseasons1_16_R3" to ":NMS:1_16_R3",
+        "me/casperge/realisticseasons1_17_R1" to ":NMS:1_17_R1",*/
+        // Remove old NMS
         "me/casperge/realisticseasons1_18_R1" to ":NMS:1_18_R1",
         "me/casperge/realisticseasons1_18_R2" to ":NMS:1_18_R2",
         "me/casperge/realisticseasons1_19_R1" to ":NMS:1_19_R1",
@@ -150,6 +151,7 @@ val decompileConfig = DecompileConfig(
         "SWAMP.yml" to ":core",
         "TAIGA.yml" to ":core",
         "temperature.yml" to ":core",
+        "terralith2.0" to ":core",
     )
 )
 
