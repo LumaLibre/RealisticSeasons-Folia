@@ -1,0 +1,538 @@
+diff --git a/me/casperge/realisticseasons/runnables/FallBlockTicker.java b/me/casperge/realisticseasons/runnables/FallBlockTicker.java
+index bce7dab..3b616e1 100644
+--- a/me/casperge/realisticseasons/runnables/FallBlockTicker.java
++++ b/me/casperge/realisticseasons/runnables/FallBlockTicker.java
+@@ -60,29 +60,31 @@ public class FallBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma -
+             var0.getChunk().thenAccept(var4 -> {
+                if (var4 != null) {
+                   var4.load();
+-                  if (!var1.getChunkUtils().affectFlora(var4)) {
+-                     if (var1.hasBlockChanges(var4.getX(), var4.getZ(), var4.getWorld()) && var1.hasSeasons(var4.getX(), var4.getZ(), var4.getWorld())) {
+-                        var1.getChunkUtils().unfreezeChunk(var4);
+-                     }
+-                  } else {
+-                     if (!var1.hasSeasons(var4.getX(), var4.getZ(), var4.getWorld())) {
+-                        return;
+-                     }
++                  var1.getChunkUtils().affectFlora(var4).thenAccept(affectsFlora -> {
++                     if (!affectsFlora) {
++                        if (var1.hasBlockChanges(var4.getX(), var4.getZ(), var4.getWorld()) && var1.hasSeasons(var4.getX(), var4.getZ(), var4.getWorld())) {
++                           var1.getChunkUtils().unfreezeChunk(var4);
++                        }
++                     } else {
++                        if (!var1.hasSeasons(var4.getX(), var4.getZ(), var4.getWorld())) {
++                           return;
++                        }
+ 
+-                     if (var1.hasBlockChanges(var4.getX(), var4.getZ(), var4.getWorld())) {
+-                        var1.getChunkUtils().unfreezeChunk(var4).thenAccept(unfroze -> {
+-                           boolean changed = unfroze;
+-                           if (var1.getSettings().regrowGrass) {
+-                              changed = true;
+-                           }
+-                           var1.getChunkUtils().checkPopulation(var4, 4.0F, 0.1F, 1, 1, Season.FALL, changed);
+-                        });
+-                     }
++                        if (var1.hasBlockChanges(var4.getX(), var4.getZ(), var4.getWorld())) {
++                           var1.getChunkUtils().unfreezeChunk(var4).thenAccept(unfroze -> {
++                              boolean changed = unfroze;
++                              if (var1.getSettings().regrowGrass) {
++                                 changed = true;
++                              }
++                              var1.getChunkUtils().checkPopulation(var4, 4.0F, 0.1F, 1, 1, Season.FALL, changed);
++                           });
++                        }
+ 
+-                     if (var1.getSettings().spawnEntities && var1.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var2)) {
+-                        var1.getAnimalUtils().updateAnimalSpawns(Season.FALL, var4);
++                        if (var1.getSettings().spawnEntities && var1.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var2)) {
++                           var1.getAnimalUtils().updateAnimalSpawns(Season.FALL, var4);
++                        }
+                      }
+-                  }
++                  });
+                }
+             });
+          }
+@@ -173,33 +175,35 @@ public class FallBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma -
+                      var11.getChunk().thenAccept(var14 -> {
+                         if (var14 == null) return;
+ 
+-                        if (!this.main.getChunkUtils().affectFlora(var14)) {
+-                           if (this.main.hasBlockChanges(var14.getX(), var14.getZ(), var14.getWorld())
+-                                   && this.main.hasSeasons(var14.getX(), var14.getZ(), var14.getWorld())) {
+-                              this.main.getChunkUtils().unfreezeChunk(var14);
+-                              this.main.getAsyncChunkHandler().remove(var11);
++                        this.main.getChunkUtils().affectFlora(var14).thenAccept(affectsFlora -> {
++                           if (!affectsFlora) {
++                              if (this.main.hasBlockChanges(var14.getX(), var14.getZ(), var14.getWorld())
++                                      && this.main.hasSeasons(var14.getX(), var14.getZ(), var14.getWorld())) {
++                                 this.main.getChunkUtils().unfreezeChunk(var14);
++                                 this.main.getAsyncChunkHandler().remove(var11);
++                              }
++                              return;
+                            }
+-                           return;
+-                        }
+ 
+-                        if (!this.main.hasSeasons(var14.getX(), var14.getZ(), var14.getWorld())) {
+-                           return;
+-                        }
++                           if (!this.main.hasSeasons(var14.getX(), var14.getZ(), var14.getWorld())) {
++                              return;
++                           }
+ 
+-                        if (this.main.hasBlockChanges(var14.getX(), var14.getZ(), var14.getWorld())) {
+-                           this.main.getChunkUtils().unfreezeChunk(var14).thenAccept(unfroze -> {
+-                              boolean changed = unfroze;
+-                              if (this.main.getSettings().regrowGrass) {
+-                                 changed = true;
+-                              }
+-                              this.main.getChunkUtils().checkPopulation(var14, 4.0F, 0.1F, 1, 1, Season.FALL, changed);
+-                           });
+-                           this.main.getAsyncChunkHandler().remove(var11);
+-                        }
++                           if (this.main.hasBlockChanges(var14.getX(), var14.getZ(), var14.getWorld())) {
++                              this.main.getChunkUtils().unfreezeChunk(var14).thenAccept(unfroze -> {
++                                 boolean changed = unfroze;
++                                 if (this.main.getSettings().regrowGrass) {
++                                    changed = true;
++                                 }
++                                 this.main.getChunkUtils().checkPopulation(var14, 4.0F, 0.1F, 1, 1, Season.FALL, changed);
++                              });
++                              this.main.getAsyncChunkHandler().remove(var11);
++                           }
+ 
+-                        if (this.main.getSettings().spawnEntities && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
+-                           this.main.getAnimalUtils().updateAnimalSpawns(Season.FALL, var14);
+-                        }
++                           if (this.main.getSettings().spawnEntities && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
++                              this.main.getAnimalUtils().updateAnimalSpawns(Season.FALL, var14);
++                           }
++                        });
+                      });
+ 
+                   } else {
+diff --git a/me/casperge/realisticseasons/runnables/RestoreWorldTicker.java b/me/casperge/realisticseasons/runnables/RestoreWorldTicker.java
+index c12420c..5bf8a4e 100644
+--- a/me/casperge/realisticseasons/runnables/RestoreWorldTicker.java
++++ b/me/casperge/realisticseasons/runnables/RestoreWorldTicker.java
+@@ -44,25 +44,27 @@ public class RestoreWorldTicker extends Scheduler.RealisticSeasonsTask { // Luma
+             var1.getAsyncChunkHandler().remove(var0);
+             World var4 = var0.getWorld();
+             if (var4 != null) {
+-               if (!var1.getChunkUtils().affectFlora(var3)) {
+-                  if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld()) && var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
+-                     var1.getChunkUtils().unfreezeChunk(var3);
+-                  }
+-               } else {
+-                  if (!var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
+-                     return;
+-                  }
++               var1.getChunkUtils().affectFlora(var3).thenAccept(affectsFlora -> {
++                  if (!affectsFlora) {
++                     if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld()) && var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
++                        var1.getChunkUtils().unfreezeChunk(var3);
++                     }
++                  } else {
++                     if (!var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
++                        return;
++                     }
+ 
+-                  if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld())) {
+-                     var1.getChunkUtils().unfreezeChunk(var3).thenAccept(unfroze -> {
+-                        boolean changed = unfroze;
+-                        if (var1.getSettings().regrowGrass) {
+-                           changed = true;
+-                        }
+-                        var1.getChunkUtils().checkPopulation(var3, 4.0F, 0.1F, 1, 1, Season.RESTORE, changed);
+-                     });
++                     if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld())) {
++                        var1.getChunkUtils().unfreezeChunk(var3).thenAccept(unfroze -> {
++                           boolean changed = unfroze;
++                           if (var1.getSettings().regrowGrass) {
++                              changed = true;
++                           }
++                           var1.getChunkUtils().checkPopulation(var3, 4.0F, 0.1F, 1, 1, Season.RESTORE, changed);
++                        });
++                     }
+                   }
+-               }
++               });
+             }
+          }
+       });
+@@ -108,29 +110,31 @@ public class RestoreWorldTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                   var4.getChunk().thenAccept(var5 -> {
+                      if (var5 == null) return;
+ 
+-                     if (!this.main.getChunkUtils().affectFlora(var5)) {
+-                        if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())
+-                                && this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
+-                           this.main.getChunkUtils().unfreezeChunk(var5);
+-                           this.main.getAsyncChunkHandler().remove(var4);
++                     this.main.getChunkUtils().affectFlora(var5).thenAccept(affectsFlora -> {
++                        if (!affectsFlora) {
++                           if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())
++                                   && this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
++                              this.main.getChunkUtils().unfreezeChunk(var5);
++                              this.main.getAsyncChunkHandler().remove(var4);
++                           }
++                           return;
+                         }
+-                        return;
+-                     }
+ 
+-                     if (!this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
+-                        return;
+-                     }
++                        if (!this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
++                           return;
++                        }
+ 
+-                     if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())) {
+-                        this.main.getChunkUtils().unfreezeChunk(var5).thenAccept(unfroze -> {
+-                           boolean changed = unfroze;
+-                           if (this.main.getSettings().regrowGrass) {
+-                              changed = true;
+-                           }
+-                           this.main.getChunkUtils().checkPopulation(var5, 4.0F, 0.1F, 1, 1, Season.RESTORE, changed);
+-                        });
+-                        this.main.getAsyncChunkHandler().remove(var4);
+-                     }
++                        if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())) {
++                           this.main.getChunkUtils().unfreezeChunk(var5).thenAccept(unfroze -> {
++                              boolean changed = unfroze;
++                              if (this.main.getSettings().regrowGrass) {
++                                 changed = true;
++                              }
++                              this.main.getChunkUtils().checkPopulation(var5, 4.0F, 0.1F, 1, 1, Season.RESTORE, changed);
++                           });
++                           this.main.getAsyncChunkHandler().remove(var4);
++                        }
++                     });
+                   });
+ 
+                } else {
+diff --git a/me/casperge/realisticseasons/runnables/SpringBlockTicker.java b/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
+index f9dc875..745b5cf 100644
+--- a/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
++++ b/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
+@@ -43,62 +43,62 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+       RealisticSeasons var1 = RealisticSeasons.getInstance();
+       if (var1.getSettings().modifyBlocks || var1.getSettings().springAnimals.size() != 0) {
+          var1.getAsyncChunkHandler().remove(var0);
+-         // Luma start - Folia
+          if (var0.getWorld().isChunkGenerated(var0.getX(), var0.getZ())) {
+             var0.getChunk().thenAccept(var3 -> {
+                if (var3 != null) {
+                   World var4 = var0.getWorld();
+                   if (var4 != null) {
+-                     if (!var1.getChunkUtils().affectFlora(var3)) {
+-                        if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld()) && var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
+-                           if (var1.getSeasonManager().getSubSeason(var4).getPhase() > 1) {
+-                              var1.getChunkUtils().unfreezeChunk(var3);
+-                           } else {
+-                              var1.getChunkUtils().unfreezeChunk(var3, 0.14);
++                     var1.getChunkUtils().affectFlora(var3).thenAccept(affectsFlora -> {
++                        if (!affectsFlora) {
++                           if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld()) && var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
++                              if (var1.getSeasonManager().getSubSeason(var4).getPhase() > 1) {
++                                 var1.getChunkUtils().unfreezeChunk(var3);
++                              } else {
++                                 var1.getChunkUtils().unfreezeChunk(var3, 0.14);
++                              }
++                           }
++                        } else {
++                           if (!var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
++                              return;
+                            }
+-                        }
+-                     } else {
+-                        if (!var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
+-                           return;
+-                        }
+ 
+-                        if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld())) {
+-                           if (var1.getSeasonManager().getSubSeason(var4).getPhase() > 1) {
+-                              var1.getChunkUtils().unfreezeChunk(var3).thenAccept(unfroze -> {
+-                                 boolean changed = unfroze;
+-                                 if (var1.getSettings().regrowGrass) {
+-                                    changed = true;
+-                                 }
+-                                 var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring, 3, 3, Season.SPRING, changed);
+-                              });
+-                           } else if (var1.getSeasonManager().getSubSeason(var4).getPhase() == 0) {
+-                              var1.getChunkUtils().unfreezeChunk(var3, 0.14).thenAccept(unfroze -> {
+-                                 boolean changed = unfroze;
+-                                 if (var1.getSettings().regrowGrass) {
+-                                    changed = true;
+-                                 }
+-                                 var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring / 4.0F, 3, 3, Season.SPRING, changed);
+-                              });
+-                           } else {
+-                              var1.getChunkUtils().unfreezeChunk(var3, 0.14).thenAccept(unfroze -> {
+-                                 boolean changed = unfroze;
+-                                 if (var1.getSettings().regrowGrass) {
+-                                    changed = true;
+-                                 }
+-                                 var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring / 2.0F, 3, 3, Season.SPRING, changed);
+-                              });
++                           if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld())) {
++                              if (var1.getSeasonManager().getSubSeason(var4).getPhase() > 1) {
++                                 var1.getChunkUtils().unfreezeChunk(var3).thenAccept(unfroze -> {
++                                    boolean changed = unfroze;
++                                    if (var1.getSettings().regrowGrass) {
++                                       changed = true;
++                                    }
++                                    var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring, 3, 3, Season.SPRING, changed);
++                                 });
++                              } else if (var1.getSeasonManager().getSubSeason(var4).getPhase() == 0) {
++                                 var1.getChunkUtils().unfreezeChunk(var3, 0.14).thenAccept(unfroze -> {
++                                    boolean changed = unfroze;
++                                    if (var1.getSettings().regrowGrass) {
++                                       changed = true;
++                                    }
++                                    var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring / 4.0F, 3, 3, Season.SPRING, changed);
++                                 });
++                              } else {
++                                 var1.getChunkUtils().unfreezeChunk(var3, 0.14).thenAccept(unfroze -> {
++                                    boolean changed = unfroze;
++                                    if (var1.getSettings().regrowGrass) {
++                                       changed = true;
++                                    }
++                                    var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring / 2.0F, 3, 3, Season.SPRING, changed);
++                                 });
++                              }
+                            }
+-                        }
+ 
+-                        if (var1.getSettings().spawnEntities && var1.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var4)) {
+-                           var1.getAnimalUtils().updateAnimalSpawns(Season.SPRING, var3);
++                           if (var1.getSettings().spawnEntities && var1.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var4)) {
++                              var1.getAnimalUtils().updateAnimalSpawns(Season.SPRING, var3);
++                           }
+                         }
+-                     }
++                     });
+                   }
+                }
+             });
+          }
+-         // Luma end - Folia
+       }
+    }
+ 
+@@ -154,8 +154,8 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                         var4.getChunk().thenAccept(var5 -> {
+                            if (var5 == null) return;
+ 
+-                           Scheduler.runSync(var5, () -> {
+-                              if (!this.main.getChunkUtils().affectFlora(var5)) { // TODO: ?
++                           this.main.getChunkUtils().affectFlora(var5).thenAccept(affectsFlora -> {
++                              if (!affectsFlora) {
+                                  if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())
+                                          && this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
+                                     if (phaseOver1) {
+diff --git a/me/casperge/realisticseasons/runnables/SummerBlockTicker.java b/me/casperge/realisticseasons/runnables/SummerBlockTicker.java
+index ee9702f..a35e088 100644
+--- a/me/casperge/realisticseasons/runnables/SummerBlockTicker.java
++++ b/me/casperge/realisticseasons/runnables/SummerBlockTicker.java
+@@ -48,44 +48,46 @@ public class SummerBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                var3.load();
+                World var4 = var0.getWorld();
+                if (var4 != null) {
+-                  if (!var1.getChunkUtils().affectFlora(var3)) {
+-                     if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld()) && var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
+-                        var1.getChunkUtils().unfreezeChunk(var3);
+-                     }
+-                  } else {
+-                     if (!var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
+-                        return;
+-                     }
++                  var1.getChunkUtils().affectFlora(var3).thenAccept(affectsFlora -> {
++                     if (!affectsFlora) {
++                        if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld()) && var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
++                           var1.getChunkUtils().unfreezeChunk(var3);
++                        }
++                     } else {
++                        if (!var1.hasSeasons(var3.getX(), var3.getZ(), var3.getWorld())) {
++                           return;
++                        }
+ 
+-                     if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld())) {
+-                        var1.getChunkUtils().unfreezeChunk(var3).thenAccept(unfroze -> {
+-                           boolean changed = unfroze;
+-                           if (var1.getSettings().regrowGrass) {
+-                              changed = true;
+-                           }
++                        if (var1.hasBlockChanges(var3.getX(), var3.getZ(), var3.getWorld())) {
++                           var1.getChunkUtils().unfreezeChunk(var3).thenAccept(unfroze -> {
++                              boolean changed = unfroze;
++                              if (var1.getSettings().regrowGrass) {
++                                 changed = true;
++                              }
+ 
+-                           if (var1.getSettings().flowerchanceinspring > 0.1F) {
+-                              if (var1.getSeasonManager().getSubSeason(var4) == SubSeason.START) {
+-                                 var1.getChunkUtils().checkPopulation(var3, 4.0F, (0.1F + var1.getSettings().flowerchanceinspring) / 2.0F, 1, 1, Season.SUMMER, changed);
+-                              } else if (var1.getSeasonManager().getSubSeason(var4) == SubSeason.EARLY) {
+-                                 float var5 = (0.1F + var1.getSettings().flowerchanceinspring) / 4.0F;
+-                                 if (var5 < 0.1F) {
+-                                    var5 = 0.1F;
++                              if (var1.getSettings().flowerchanceinspring > 0.1F) {
++                                 if (var1.getSeasonManager().getSubSeason(var4) == SubSeason.START) {
++                                    var1.getChunkUtils().checkPopulation(var3, 4.0F, (0.1F + var1.getSettings().flowerchanceinspring) / 2.0F, 1, 1, Season.SUMMER, changed);
++                                 } else if (var1.getSeasonManager().getSubSeason(var4) == SubSeason.EARLY) {
++                                    float var5 = (0.1F + var1.getSettings().flowerchanceinspring) / 4.0F;
++                                    if (var5 < 0.1F) {
++                                       var5 = 0.1F;
++                                    }
++                                    var1.getChunkUtils().checkPopulation(var3, 4.0F, var5, 1, 1, Season.SUMMER, changed);
++                                 } else {
++                                    var1.getChunkUtils().checkPopulation(var3, 4.0F, 0.1F, 1, 1, Season.SUMMER, changed);
+                                  }
+-                                 var1.getChunkUtils().checkPopulation(var3, 4.0F, var5, 1, 1, Season.SUMMER, changed);
+                               } else {
+                                  var1.getChunkUtils().checkPopulation(var3, 4.0F, 0.1F, 1, 1, Season.SUMMER, changed);
+                               }
+-                           } else {
+-                              var1.getChunkUtils().checkPopulation(var3, 4.0F, 0.1F, 1, 1, Season.SUMMER, changed);
+-                           }
+-                        });
+-                     }
++                           });
++                        }
+ 
+-                     if (var1.getSettings().spawnEntities && var1.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var4)) {
+-                        var1.getAnimalUtils().updateAnimalSpawns(Season.SUMMER, var3);
++                        if (var1.getSettings().spawnEntities && var1.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var4)) {
++                           var1.getAnimalUtils().updateAnimalSpawns(Season.SUMMER, var3);
++                        }
+                      }
+-                  }
++                  });
+                }
+             }
+          });
+@@ -138,48 +140,50 @@ public class SummerBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                      var4.getChunk().thenAccept(var5 -> {
+                         if (var5 == null) return;
+ 
+-                        if (!this.main.getChunkUtils().affectFlora(var5)) {
+-                           if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())
+-                                   && this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
+-                              this.main.getChunkUtils().unfreezeChunk(var5);
+-                              this.main.getAsyncChunkHandler().remove(var4);
++                        this.main.getChunkUtils().affectFlora(var5).thenAccept(affectsFlora -> {
++                           if (!affectsFlora) {
++                              if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())
++                                      && this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
++                                 this.main.getChunkUtils().unfreezeChunk(var5);
++                                 this.main.getAsyncChunkHandler().remove(var4);
++                              }
++                              return;
+                            }
+-                           return;
+-                        }
+ 
+-                        if (!this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
+-                           return;
+-                        }
++                           if (!this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
++                              return;
++                           }
+ 
+-                        if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())) {
+-                           this.main.getChunkUtils().unfreezeChunk(var5).thenAccept(unfroze -> {
+-                              boolean changed = unfroze;
+-                              if (this.main.getSettings().regrowGrass) {
+-                                 changed = true;
+-                              }
++                           if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())) {
++                              this.main.getChunkUtils().unfreezeChunk(var5).thenAccept(unfroze -> {
++                                 boolean changed = unfroze;
++                                 if (this.main.getSettings().regrowGrass) {
++                                    changed = true;
++                                 }
+ 
+-                              if (this.main.getSettings().flowerchanceinspring > 0.1F) {
+-                                 if (this.main.getSeasonManager().getSubSeason(var1) == SubSeason.START) {
+-                                    this.main.getChunkUtils().checkPopulation(var5, 4.0F, (0.1F + this.main.getSettings().flowerchanceinspring) / 2.0F, 1, 1, Season.SUMMER, changed);
+-                                 } else if (this.main.getSeasonManager().getSubSeason(var1) == SubSeason.EARLY) {
+-                                    float var6 = (0.1F + this.main.getSettings().flowerchanceinspring) / 4.0F;
+-                                    if (var6 < 0.1F) {
+-                                       var6 = 0.1F;
++                                 if (this.main.getSettings().flowerchanceinspring > 0.1F) {
++                                    if (this.main.getSeasonManager().getSubSeason(var1) == SubSeason.START) {
++                                       this.main.getChunkUtils().checkPopulation(var5, 4.0F, (0.1F + this.main.getSettings().flowerchanceinspring) / 2.0F, 1, 1, Season.SUMMER, changed);
++                                    } else if (this.main.getSeasonManager().getSubSeason(var1) == SubSeason.EARLY) {
++                                       float var6 = (0.1F + this.main.getSettings().flowerchanceinspring) / 4.0F;
++                                       if (var6 < 0.1F) {
++                                          var6 = 0.1F;
++                                       }
++                                       this.main.getChunkUtils().checkPopulation(var5, 4.0F, var6, 1, 1, Season.SUMMER, changed);
++                                    } else {
++                                       this.main.getChunkUtils().checkPopulation(var5, 4.0F, 0.1F, 1, 1, Season.SUMMER, changed);
+                                     }
+-                                    this.main.getChunkUtils().checkPopulation(var5, 4.0F, var6, 1, 1, Season.SUMMER, changed);
+                                  } else {
+                                     this.main.getChunkUtils().checkPopulation(var5, 4.0F, 0.1F, 1, 1, Season.SUMMER, changed);
+                                  }
+-                              } else {
+-                                 this.main.getChunkUtils().checkPopulation(var5, 4.0F, 0.1F, 1, 1, Season.SUMMER, changed);
+-                              }
+-                           });
+-                           this.main.getAsyncChunkHandler().remove(var4);
+-                        }
++                              });
++                              this.main.getAsyncChunkHandler().remove(var4);
++                           }
+ 
+-                        if (this.main.getSettings().spawnEntities && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
+-                           this.main.getAnimalUtils().updateAnimalSpawns(Season.SUMMER, var5);
+-                        }
++                           if (this.main.getSettings().spawnEntities && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
++                              this.main.getAnimalUtils().updateAnimalSpawns(Season.SUMMER, var5);
++                           }
++                        });
+                      });
+ 
+                   } else {
+diff --git a/me/casperge/realisticseasons/utils/ChunkUtils.java b/me/casperge/realisticseasons/utils/ChunkUtils.java
+index 0ade268..db9bed3 100644
+--- a/me/casperge/realisticseasons/utils/ChunkUtils.java
++++ b/me/casperge/realisticseasons/utils/ChunkUtils.java
+@@ -590,17 +590,25 @@ public class ChunkUtils {
+       return Math.sqrt((var2 - var0) * (var2 - var0) + (var3 - var1) * (var3 - var1));
+    }
+ 
+-   public boolean affectFlora(Chunk var1) {
+-      String var2 = this.main
+-         .getNMSUtils()
+-         .getBiomeName(var1.getX() * 16, var1.getWorld().getHighestBlockYAt(var1.getX() * 16, var1.getZ() * 16), var1.getZ() * 16, var1.getWorld());
+-      return !checkBiome(ChunkUtils.BiomeType.AFFECTFLORA, var2);
++   // Luma start - Folia
++   public CompletableFuture<Boolean> affectFlora(Chunk chunk) {
++      CompletableFuture<Boolean> future = new CompletableFuture<>();
++      Scheduler.runSync(chunk, (task) -> {
++         String string = this.main
++                 .getNMSUtils()
++                 .getBiomeName(chunk.getX() * 16, chunk.getWorld().getHighestBlockYAt(chunk.getX() * 16, chunk.getZ() * 16), chunk.getZ() * 16, chunk.getWorld());
++         future.complete(!checkBiome(ChunkUtils.BiomeType.AFFECTFLORA, string));
++      });
++      return future;
+    }
++   // Luma end - Folia
+ 
+-   public boolean dontAffectInWinter(int var1, int var2, World var3) {
++   // Luma start - Folia
++   /*public boolean dontAffectInWinter(int var1, int var2, World var3) {
+       String var4 = this.main.getNMSUtils().getBiomeName(var1 * 16, var3.getHighestBlockYAt(var1 * 16, var2 * 16), var2 * 16, var3);
+       return checkBiome(ChunkUtils.BiomeType.AFFECTINWINTER, var4);
+-   }
++   }*/
++   // Luma end - Folia
+ 
+    // Luma start - Folia
+    public CompletableFuture<Boolean> unfreezeChunk(Chunk var1) {
