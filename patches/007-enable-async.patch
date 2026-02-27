@@ -1,0 +1,14 @@
+diff --git a/me/casperge/realisticseasons/RealisticSeasons.java b/me/casperge/realisticseasons/RealisticSeasons.java
+index 5859283..2697bab 100644
+--- a/me/casperge/realisticseasons/RealisticSeasons.java
++++ b/me/casperge/realisticseasons/RealisticSeasons.java
+@@ -160,7 +160,8 @@ public class RealisticSeasons extends JavaPlugin {
+       short var1 = 15602;
+       this.metrics = new Metrics(this, var1);
+       new SeasonsAPI(this);
+-      Scheduler.runGlobal(new Runnable() { // Luma - Folia
++      System.out.println(Thread.currentThread().getName());
++      Scheduler.runAsync(new Runnable() { // Luma - Folia
+          @Override
+          public void run() {
+             RealisticSeasons.this.enable();
