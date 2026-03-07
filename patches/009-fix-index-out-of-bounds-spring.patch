@@ -1,0 +1,296 @@
+diff --git a/me/casperge/realisticseasons/runnables/SpringBlockTicker.java b/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
+index 5d51041..426c1e5 100644
+--- a/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
++++ b/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
+@@ -2,9 +2,12 @@ package me.casperge.realisticseasons.runnables;
+ 
+ import java.lang.ref.WeakReference;
+ import java.util.ArrayList;
++import java.util.Iterator;
+ import java.util.LinkedHashSet;
+ import java.util.List;
++import java.util.Set;
+ import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ConcurrentLinkedQueue;
+ 
+ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+ import me.casperge.enums.GameRuleType;
+@@ -118,148 +121,154 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+    // Luma start - Folia
+    @Override // Luma - decompile
+    public void consume(ScheduledTask task) {
+-      if (this.wr.get() == null) {
++      World var1 = this.wr.get();
++      if (var1 == null) {
+          task.cancel();
+-      } else {
+-         World var1 = this.wr.get();
+-         if (this.main.getSeasonManager().getSeason(var1) == Season.SPRING
+-                 && var1.getEnvironment() != Environment.NETHER
+-                 && var1.getEnvironment() != Environment.THE_END) {
+-            if (!this.main.getSettings().modifyBlocks && this.main.getSettings().springAnimals.size() == 0) {
+-               return;
+-            }
++         return;
++      }
+ 
+-            if (!this.main.getSeasonManager().getQueue(var1, Season.SPRING).isEmpty()) {
+-               if (this.main.getNMSUtils().getTPS() < this.main.getSettings().minTPS && this.main.getSettings().prioritiseTPS) {
+-                  return;
+-               }
++      if (this.main.getSeasonManager().getSeason(var1) != Season.SPRING
++              || var1.getEnvironment() == Environment.NETHER
++              || var1.getEnvironment() == Environment.THE_END) {
++         this.main.getSeasonManager().clearChunkCheckedList(var1, Season.SPRING);
++         this.main.getSeasonManager().clearChunkQueue(var1, Season.SPRING);
++         task.cancel();
++         return;
++      }
+ 
+-               // Luma start - iterate safely
+-               LinkedHashSet<SeasonChunk> queue = this.main.getSeasonManager().getQueue(var1, Season.SPRING);
+-               List<SeasonChunk> snapshot;
+-               synchronized (queue) {
+-                  snapshot = new ArrayList<>(queue);
+-               }
+-               LinkedHashSet<SeasonChunk> toRemove = new LinkedHashSet<>();
+-               LinkedHashSet<SeasonChunk> toMoveBack = new LinkedHashSet<>();
++      if (!this.main.getSettings().modifyBlocks && this.main.getSettings().springAnimals.size() == 0) {
++         return;
++      }
+ 
+-               for (SeasonChunk var4 : snapshot) {
+-                  if (var4 == null) continue; // maybe null
++      ConcurrentLinkedQueue<SeasonChunk> queue = new ConcurrentLinkedQueue<>(this.main.getSeasonManager().getQueue(var1, Season.SPRING));
++      if (queue.isEmpty()) {
++         return;
++      }
+ 
+-                  if (var4.getWorld() != var1) {
+-                     toMoveBack.add(var4);
+-                  } else if (System.currentTimeMillis() - var4.getLoadTime() < 10000L) {
+-                     toMoveBack.add(var4);
+-                  } else if (this.main.getSeasonManager().getCheckedList(var1, Season.SPRING).contains(var4)
+-                          && this.main.getSeasonManager().getSubSeason(var1).getPhase() > 1) {
+-                     toRemove.add(var4);
+-                  } else if (!var1.isChunkLoaded(var4.getX(), var4.getZ())) {
+-                     toRemove.add(var4);
+-                  } else if (var4.getX() <= 1875000 && var4.getX() >= -1875000) {
+-                     if (var1.isChunkLoaded(var4.getX() + 1, var4.getZ())
+-                             && var1.isChunkLoaded(var4.getX() - 1, var4.getZ())
+-                             && var1.isChunkLoaded(var4.getX(), var4.getZ() + 1)
+-                             && var1.isChunkLoaded(var4.getX(), var4.getZ() - 1)) {
++      if (this.main.getNMSUtils().getTPS() < this.main.getSettings().minTPS && this.main.getSettings().prioritiseTPS) {
++         return;
++      }
+ 
+-                        boolean phaseOver1 = this.main.getSeasonManager().getSubSeason(var1).getPhase() > 1;
+-                        if (phaseOver1) {
+-                           toRemove.add(var4);
+-                           this.main.getSeasonManager().getCheckedList(var1, Season.SPRING).add(var4);
+-                        } else {
+-                           toMoveBack.add(var4);
+-                        }
++      Set<SeasonChunk> checkedList = this.main.getSeasonManager().getCheckedList(var1, Season.SPRING);
+ 
+-                        // Now schedule the async chunk work
+-                        var4.getChunk().thenAccept(var5 -> {
+-                           if (var5 == null) return;
++      Iterator<SeasonChunk> it = queue.iterator();
++      while (it.hasNext()) {
++         SeasonChunk var4 = it.next();
++         if (var4 == null) {
++            it.remove();
++            continue;
++         }
+ 
+-                           this.main.getChunkUtils().affectFlora(var5).thenAccept(affectsFlora -> {
+-                              if (!affectsFlora) {
+-                                 if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())
+-                                         && this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
+-                                    if (phaseOver1) {
+-                                       this.main.getChunkUtils().unfreezeChunk(var5);
+-                                       this.main.getAsyncChunkHandler().remove(var4);
+-                                    } else {
+-                                       this.main.getChunkUtils().unfreezeChunk(var5, 0.14);
+-                                    }
+-                                 }
+-                                 return;
+-                              }
++         // Different world - skip, will be picked up by that world's ticker
++         if (var4.getWorld() != var1) {
++            continue;
++         }
+ 
+-                              if (!this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
+-                                 return;
+-                              }
++         // Too recently loaded - skip for now
++         if (System.currentTimeMillis() - var4.getLoadTime() < 10000L) {
++            continue;
++         }
+ 
+-                              if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())) {
+-                                 if (phaseOver1) {
+-                                    this.main.getChunkUtils().unfreezeChunk(var5).thenAccept(unfroze -> {
+-                                       boolean changed = unfroze;
+-                                       if (this.main.getSettings().regrowGrass) {
+-                                          changed = true;
+-                                       }
+-                                       // Luma - run checkPopulation async to avoid blocking on expensive block lookups
+-                                       final boolean changedFinal = changed;
+-                                       CompletableFuture.runAsync(() -> {
+-                                          this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring, 3, 3, Season.SPRING, changedFinal);
+-                                       });
+-                                    });
+-                                    this.main.getAsyncChunkHandler().remove(var4);
+-                                 } else if (this.main.getSeasonManager().getSubSeason(var1).getPhase() == 0) {
+-                                    this.main.getChunkUtils().unfreezeChunk(var5, 0.14).thenAccept(unfroze -> {
+-                                       boolean changed = unfroze;
+-                                       if (this.main.getSettings().regrowGrass) {
+-                                          changed = true;
+-                                       }
+-                                       // Luma - run checkPopulation async to avoid blocking on expensive block lookups
+-                                       final boolean changedFinal = changed;
+-                                       CompletableFuture.runAsync(() -> {
+-                                          this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring / 4.0F, 3, 3, Season.SPRING, changedFinal);
+-                                       });
+-                                    });
+-                                 } else {
+-                                    this.main.getChunkUtils().unfreezeChunk(var5, 0.14).thenAccept(unfroze -> {
+-                                       boolean changed = unfroze;
+-                                       if (this.main.getSettings().regrowGrass) {
+-                                          changed = true;
+-                                       }
+-                                       // Luma - run checkPopulation async to avoid blocking on expensive block lookups
+-                                       final boolean changedFinal = changed;
+-                                       CompletableFuture.runAsync(() -> {
+-                                          this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring / 2.0F, 3, 3, Season.SPRING, changedFinal);
+-                                       });
+-                                    });
+-                                 }
+-                              }
++         // Already checked and phase > 1 - done with this chunk
++         if (checkedList.contains(var4) && this.main.getSeasonManager().getSubSeason(var1).getPhase() > 1) {
++            it.remove();
++            continue;
++         }
+ 
+-                              if (!this.main.getSeasonManager().getCheckedList(var1, Season.SPRING).contains(var4)
+-                                      && this.main.getSettings().spawnEntities
+-                                      && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
+-                                 this.main.getAnimalUtils().updateAnimalSpawns(Season.SPRING, var5);
+-                              }
+-                           });
+-                        });
+-                        // Luma end - iterate safely
++         // Chunk no longer loaded - discard
++         if (!var1.isChunkLoaded(var4.getX(), var4.getZ())) {
++            it.remove();
++            continue;
++         }
++
++         // Out of bounds - discard
++         if (var4.getX() > 1875000 || var4.getX() < -1875000) {
++            it.remove();
++            continue;
++         }
++
++         // All 4 neighbors must be loaded
++         if (!var1.isChunkLoaded(var4.getX() + 1, var4.getZ())
++                 || !var1.isChunkLoaded(var4.getX() - 1, var4.getZ())
++                 || !var1.isChunkLoaded(var4.getX(), var4.getZ() + 1)
++                 || !var1.isChunkLoaded(var4.getX(), var4.getZ() - 1)) {
++            continue; // skip, retry next tick
++         }
++
++         boolean phaseOver1 = this.main.getSeasonManager().getSubSeason(var1).getPhase() > 1;
++         if (phaseOver1) {
++            it.remove();
++            checkedList.add(var4);
++         }
++         // else: leave in queue for reprocessing in later phases
++
++         // Schedule async chunk work
++         var4.getChunk().thenAccept(var5 -> {
++            if (var5 == null) return;
++
++            this.main.getChunkUtils().affectFlora(var5).thenAccept(affectsFlora -> {
++               if (!affectsFlora) {
++                  if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())
++                          && this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
++                     if (phaseOver1) {
++                        this.main.getChunkUtils().unfreezeChunk(var5);
++                        this.main.getAsyncChunkHandler().remove(var4);
+                      } else {
+-                        toMoveBack.add(var4);
++                        this.main.getChunkUtils().unfreezeChunk(var5, 0.14);
+                      }
+-                  } else {
+-                     toRemove.add(var4);
+                   }
++                  return;
+                }
+ 
+-               // Apply mutations AFTER iteration
+-               queue.removeAll(toRemove);
+-               for (SeasonChunk var7 : toMoveBack) {
+-                  JavaUtils.moveToBack(queue, var7);
++               if (!this.main.hasSeasons(var5.getX(), var5.getZ(), var5.getWorld())) {
++                  return;
+                }
+ 
+-            }
+-         } else {
+-            this.main.getSeasonManager().clearChunkCheckedList(var1, Season.SPRING);
+-            this.main.getSeasonManager().clearChunkQueue(var1, Season.SPRING);
+-            task.cancel();
+-         }
++               if (this.main.hasBlockChanges(var5.getX(), var5.getZ(), var5.getWorld())) {
++                  if (phaseOver1) {
++                     this.main.getChunkUtils().unfreezeChunk(var5).thenAccept(unfroze -> {
++                        boolean changed = unfroze;
++                        if (this.main.getSettings().regrowGrass) {
++                           changed = true;
++                        }
++                        final boolean changedFinal = changed;
++                        CompletableFuture.runAsync(() -> {
++                           this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring, 3, 3, Season.SPRING, changedFinal);
++                        });
++                     });
++                     this.main.getAsyncChunkHandler().remove(var4);
++                  } else if (this.main.getSeasonManager().getSubSeason(var1).getPhase() == 0) {
++                     this.main.getChunkUtils().unfreezeChunk(var5, 0.14).thenAccept(unfroze -> {
++                        boolean changed = unfroze;
++                        if (this.main.getSettings().regrowGrass) {
++                           changed = true;
++                        }
++                        final boolean changedFinal = changed;
++                        CompletableFuture.runAsync(() -> {
++                           this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring / 4.0F, 3, 3, Season.SPRING, changedFinal);
++                        });
++                     });
++                  } else {
++                     this.main.getChunkUtils().unfreezeChunk(var5, 0.14).thenAccept(unfroze -> {
++                        boolean changed = unfroze;
++                        if (this.main.getSettings().regrowGrass) {
++                           changed = true;
++                        }
++                        final boolean changedFinal = changed;
++                        CompletableFuture.runAsync(() -> {
++                           this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring / 2.0F, 3, 3, Season.SPRING, changedFinal);
++                        });
++                     });
++                  }
++               }
++
++               if (!checkedList.contains(var4)
++                       && this.main.getSettings().spawnEntities
++                       && this.main.getGameRuleGetter().GetBooleanGameRule(GameRuleType.DO_MOB_SPAWNING, var1)) {
++                  this.main.getAnimalUtils().updateAnimalSpawns(Season.SPRING, var5);
++               }
++            });
++         });
+       }
+    }
+    // Luma end - Folia
