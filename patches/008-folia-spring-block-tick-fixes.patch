@@ -1,0 +1,364 @@
+diff --git a/me/casperge/realisticseasons/runnables/SpringBlockTicker.java b/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
+index 745b5cf..5d51041 100644
+--- a/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
++++ b/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
+@@ -1,9 +1,10 @@
+ package me.casperge.realisticseasons.runnables;
+ 
+ import java.lang.ref.WeakReference;
+-import java.util.Iterator;
++import java.util.ArrayList;
+ import java.util.LinkedHashSet;
+-import java.util.Random;
++import java.util.List;
++import java.util.concurrent.CompletableFuture;
+ 
+ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+ import me.casperge.enums.GameRuleType;
+@@ -34,8 +35,8 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+ 
+       for (Chunk var6 : var2.getLoadedChunks()) {
+          var1.getSeasonManager()
+-            .getQueue(var2, Season.SPRING)
+-            .add(new SeasonChunk(var6.getWorld().getName(), var6.getX(), var6.getZ(), System.currentTimeMillis()));
++                 .getQueue(var2, Season.SPRING)
++                 .add(new SeasonChunk(var6.getWorld().getName(), var6.getX(), var6.getZ(), System.currentTimeMillis()));
+       }
+    }
+ 
+@@ -69,7 +70,11 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                                     if (var1.getSettings().regrowGrass) {
+                                        changed = true;
+                                     }
+-                                    var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring, 3, 3, Season.SPRING, changed);
++                                    // Luma - run checkPopulation async to avoid blocking on expensive block lookups
++                                    final boolean changedFinal = changed;
++                                    CompletableFuture.runAsync(() -> {
++                                       var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring, 3, 3, Season.SPRING, changedFinal);
++                                    });
+                                  });
+                               } else if (var1.getSeasonManager().getSubSeason(var4).getPhase() == 0) {
+                                  var1.getChunkUtils().unfreezeChunk(var3, 0.14).thenAccept(unfroze -> {
+@@ -77,7 +82,11 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                                     if (var1.getSettings().regrowGrass) {
+                                        changed = true;
+                                     }
+-                                    var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring / 4.0F, 3, 3, Season.SPRING, changed);
++                                    // Luma - run checkPopulation async to avoid blocking on expensive block lookups
++                                    final boolean changedFinal = changed;
++                                    CompletableFuture.runAsync(() -> {
++                                       var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring / 4.0F, 3, 3, Season.SPRING, changedFinal);
++                                    });
+                                  });
+                               } else {
+                                  var1.getChunkUtils().unfreezeChunk(var3, 0.14).thenAccept(unfroze -> {
+@@ -85,7 +94,11 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                                     if (var1.getSettings().regrowGrass) {
+                                        changed = true;
+                                     }
+-                                    var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring / 2.0F, 3, 3, Season.SPRING, changed);
++                                    // Luma - run checkPopulation async to avoid blocking on expensive block lookups
++                                    final boolean changedFinal = changed;
++                                    CompletableFuture.runAsync(() -> {
++                                       var1.getChunkUtils().checkPopulation(var3, 4.0F, var1.getSettings().flowerchanceinspring / 2.0F, 3, 3, Season.SPRING, changedFinal);
++                                    });
+                                  });
+                               }
+                            }
+@@ -121,33 +134,39 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                   return;
+                }
+ 
+-               Iterator<SeasonChunk> var2 = this.main.getSeasonManager().getQueue(var1, Season.SPRING).iterator();
+-               LinkedHashSet<SeasonChunk> var3 = new LinkedHashSet<>();
++               // Luma start - iterate safely
++               LinkedHashSet<SeasonChunk> queue = this.main.getSeasonManager().getQueue(var1, Season.SPRING);
++               List<SeasonChunk> snapshot;
++               synchronized (queue) {
++                  snapshot = new ArrayList<>(queue);
++               }
++               LinkedHashSet<SeasonChunk> toRemove = new LinkedHashSet<>();
++               LinkedHashSet<SeasonChunk> toMoveBack = new LinkedHashSet<>();
++
++               for (SeasonChunk var4 : snapshot) {
++                  if (var4 == null) continue; // maybe null
+ 
+-               while (var2.hasNext()) {
+-                  SeasonChunk var4 = (SeasonChunk) var2.next();
+                   if (var4.getWorld() != var1) {
+-                     var3.add(var4);
++                     toMoveBack.add(var4);
+                   } else if (System.currentTimeMillis() - var4.getLoadTime() < 10000L) {
+-                     var3.add(var4);
++                     toMoveBack.add(var4);
+                   } else if (this.main.getSeasonManager().getCheckedList(var1, Season.SPRING).contains(var4)
+                           && this.main.getSeasonManager().getSubSeason(var1).getPhase() > 1) {
+-                     var2.remove();
++                     toRemove.add(var4);
+                   } else if (!var1.isChunkLoaded(var4.getX(), var4.getZ())) {
+-                     var2.remove();
+-                  } else if (var4.getX() <= 1875000 && var4.getX() <= 1875000 && var4.getX() >= -1875000 && var4.getX() >= -1875000) {
++                     toRemove.add(var4);
++                  } else if (var4.getX() <= 1875000 && var4.getX() >= -1875000) {
+                      if (var1.isChunkLoaded(var4.getX() + 1, var4.getZ())
+                              && var1.isChunkLoaded(var4.getX() - 1, var4.getZ())
+                              && var1.isChunkLoaded(var4.getX(), var4.getZ() + 1)
+                              && var1.isChunkLoaded(var4.getX(), var4.getZ() - 1)) {
+ 
+-                        // Decide iterator fate NOW, before async work
+                         boolean phaseOver1 = this.main.getSeasonManager().getSubSeason(var1).getPhase() > 1;
+                         if (phaseOver1) {
+-                           var2.remove();
++                           toRemove.add(var4);
+                            this.main.getSeasonManager().getCheckedList(var1, Season.SPRING).add(var4);
+                         } else {
+-                           var3.add(var4);
++                           toMoveBack.add(var4);
+                         }
+ 
+                         // Now schedule the async chunk work
+@@ -179,7 +198,11 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                                        if (this.main.getSettings().regrowGrass) {
+                                           changed = true;
+                                        }
+-                                       this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring, 3, 3, Season.SPRING, changed);
++                                       // Luma - run checkPopulation async to avoid blocking on expensive block lookups
++                                       final boolean changedFinal = changed;
++                                       CompletableFuture.runAsync(() -> {
++                                          this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring, 3, 3, Season.SPRING, changedFinal);
++                                       });
+                                     });
+                                     this.main.getAsyncChunkHandler().remove(var4);
+                                  } else if (this.main.getSeasonManager().getSubSeason(var1).getPhase() == 0) {
+@@ -188,7 +211,11 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                                        if (this.main.getSettings().regrowGrass) {
+                                           changed = true;
+                                        }
+-                                       this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring / 4.0F, 3, 3, Season.SPRING, changed);
++                                       // Luma - run checkPopulation async to avoid blocking on expensive block lookups
++                                       final boolean changedFinal = changed;
++                                       CompletableFuture.runAsync(() -> {
++                                          this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring / 4.0F, 3, 3, Season.SPRING, changedFinal);
++                                       });
+                                     });
+                                  } else {
+                                     this.main.getChunkUtils().unfreezeChunk(var5, 0.14).thenAccept(unfroze -> {
+@@ -196,7 +223,11 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                                        if (this.main.getSettings().regrowGrass) {
+                                           changed = true;
+                                        }
+-                                       this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring / 2.0F, 3, 3, Season.SPRING, changed);
++                                       // Luma - run checkPopulation async to avoid blocking on expensive block lookups
++                                       final boolean changedFinal = changed;
++                                       CompletableFuture.runAsync(() -> {
++                                          this.main.getChunkUtils().checkPopulation(var5, 4.0F, this.main.getSettings().flowerchanceinspring / 2.0F, 3, 3, Season.SPRING, changedFinal);
++                                       });
+                                     });
+                                  }
+                               }
+@@ -208,18 +239,21 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+                               }
+                            });
+                         });
+-
++                        // Luma end - iterate safely
+                      } else {
+-                        var3.add(var4);
++                        toMoveBack.add(var4);
+                      }
+                   } else {
+-                     var2.remove();
++                     toRemove.add(var4);
+                   }
+                }
+ 
+-               for (SeasonChunk var7 : var3) {
+-                  JavaUtils.moveToBack(this.main.getSeasonManager().getQueue(var1, Season.SPRING), var7);
++               // Apply mutations AFTER iteration
++               queue.removeAll(toRemove);
++               for (SeasonChunk var7 : toMoveBack) {
++                  JavaUtils.moveToBack(queue, var7);
+                }
++
+             }
+          } else {
+             this.main.getSeasonManager().clearChunkCheckedList(var1, Season.SPRING);
+@@ -229,4 +263,4 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+       }
+    }
+    // Luma end - Folia
+-}
++}
+\ No newline at end of file
+diff --git a/me/casperge/realisticseasons/utils/ChunkUtils.java b/me/casperge/realisticseasons/utils/ChunkUtils.java
+index db9bed3..52c3cbf 100644
+--- a/me/casperge/realisticseasons/utils/ChunkUtils.java
++++ b/me/casperge/realisticseasons/utils/ChunkUtils.java
+@@ -199,67 +199,76 @@ public class ChunkUtils {
+ 
+       for (int var3 = 0; var3 <= 15; var3++) {
+          for (int var4 = 0; var4 <= 15; var4++) {
+-            Block var5 = var1.getWorld().getHighestBlockAt(var1.getX() * 16 + var3, var1.getZ() * 16 + var4);
+-            Block var6 = var5.getRelative(0, 1, 0);
+-            boolean var7 = false;
+-            if (naturalplants.contains(var6.getType())) {
+-               var7 = true;
+-               if (this.logPlaceAndBreak.contains(var6.getType()) && this.main.getBlockStorage().isStored(var6.getLocation(), StoredBlockType.FLOWER)) {
+-                  continue;
+-               }
+ 
+-               if (var2.containsKey(var6.getType())) {
+-                  var2.put(var6.getType(), (Integer)var2.get(var6.getType()) + 1);
+-               } else {
+-                  var2.put(var6.getType(), 1);
++            int blockX = var1.getX() * 16 + var3;
++            int blockZ = var1.getZ() * 16 + var4;
++
++            int chunkX = blockX >> 4;
++            int chunkZ = blockZ >> 4;
++
++            Scheduler.runSync(var1.getWorld(), chunkX, chunkZ, () -> {
++               Block var5 = var1.getWorld().getHighestBlockAt(blockX, blockZ);
++               Block var6 = var5.getRelative(0, 1, 0);
++               boolean var7 = false;
++               if (naturalplants.contains(var6.getType())) {
++                  var7 = true;
++                  if (this.logPlaceAndBreak.contains(var6.getType()) && this.main.getBlockStorage().isStored(var6.getLocation(), StoredBlockType.FLOWER)) {
++                     return;
++                  }
++
++                  if (var2.containsKey(var6.getType())) {
++                     var2.put(var6.getType(), (Integer)var2.get(var6.getType()) + 1);
++                  } else {
++                     var2.put(var6.getType(), 1);
++                  }
+                }
+-            }
+ 
+-            if (var6.getRelative(0, -1, 0).getType() == Material.GRASS_BLOCK && var6.getType() != Material.SNOW) {
+-               var7 = true;
+-               if (var2.containsKey(Material.GRASS_BLOCK)) {
+-                  var2.put(Material.GRASS_BLOCK, (Integer)var2.get(Material.GRASS_BLOCK) + 1);
+-               } else {
+-                  var2.put(Material.GRASS_BLOCK, 1);
++               if (var6.getRelative(0, -1, 0).getType() == Material.GRASS_BLOCK && var6.getType() != Material.SNOW) {
++                  var7 = true;
++                  if (var2.containsKey(Material.GRASS_BLOCK)) {
++                     var2.put(Material.GRASS_BLOCK, (Integer)var2.get(Material.GRASS_BLOCK) + 1);
++                  } else {
++                     var2.put(Material.GRASS_BLOCK, 1);
++                  }
+                }
+-            }
+ 
+-            if (!var7 && var5.getType().toString().contains("LEAVE")) {
+-               for (int var8 = -1; var8 + var5.getLocation().getBlockY() > this.main.getNMSUtils().getMinHeight(var5.getLocation().getWorld()) + 1; var8--) {
+-                  Block var9 = var5.getRelative(0, var8, 0);
+-                  Block var10 = var9.getRelative(0, 1, 0);
+-                  if (naturalplants.contains(var10.getType())) {
+-                     var7 = true;
+-                     if (this.logPlaceAndBreak.contains(var10.getType()) && this.main.getBlockStorage().isStored(var10.getLocation(), StoredBlockType.FLOWER)) {
+-                        continue;
+-                     }
++               if (!var7 && var5.getType().toString().contains("LEAVE")) {
++                  for (int var8 = -1; var8 + var5.getLocation().getBlockY() > this.main.getNMSUtils().getMinHeight(var5.getLocation().getWorld()) + 1; var8--) {
++                     Block var9 = var5.getRelative(0, var8, 0);
++                     Block var10 = var9.getRelative(0, 1, 0);
++                     if (naturalplants.contains(var10.getType())) {
++                        var7 = true;
++                        if (this.logPlaceAndBreak.contains(var10.getType()) && this.main.getBlockStorage().isStored(var10.getLocation(), StoredBlockType.FLOWER)) {
++                           continue;
++                        }
+ 
+-                     if (var2.containsKey(var10.getType())) {
+-                        var2.put(var10.getType(), (Integer)var2.get(var10.getType()) + 1);
+-                     } else {
+-                        var2.put(var10.getType(), 1);
++                        if (var2.containsKey(var10.getType())) {
++                           var2.put(var10.getType(), (Integer)var2.get(var10.getType()) + 1);
++                        } else {
++                           var2.put(var10.getType(), 1);
++                        }
+                      }
+-                  }
+ 
+-                  if (var10.getRelative(0, -1, 0).getType() == Material.GRASS_BLOCK && var10.getType() != Material.SNOW) {
+-                     var7 = true;
+-                     if (var2.containsKey(Material.GRASS_BLOCK)) {
+-                        var2.put(Material.GRASS_BLOCK, (Integer)var2.get(Material.GRASS_BLOCK) + 1);
+-                     } else {
+-                        var2.put(Material.GRASS_BLOCK, 1);
++                     if (var10.getRelative(0, -1, 0).getType() == Material.GRASS_BLOCK && var10.getType() != Material.SNOW) {
++                        var7 = true;
++                        if (var2.containsKey(Material.GRASS_BLOCK)) {
++                           var2.put(Material.GRASS_BLOCK, (Integer)var2.get(Material.GRASS_BLOCK) + 1);
++                        } else {
++                           var2.put(Material.GRASS_BLOCK, 1);
++                        }
+                      }
+-                  }
+ 
+-                  if (var7
+-                     || !var5.getRelative(0, var8, 0).getType().toString().contains("LEAVE")
+-                        && !this.logs.contains(var5.getRelative(0, var8, 0).getType())
+-                        && var5.getRelative(0, var8, 0).getType() != Material.AIR
+-                        && var5.getRelative(0, var8, 0).getType() != Material.VINE
+-                        && !naturalplants.contains(var9.getType())) {
+-                     break;
++                     if (var7
++                             || !var5.getRelative(0, var8, 0).getType().toString().contains("LEAVE")
++                             && !this.logs.contains(var5.getRelative(0, var8, 0).getType())
++                             && var5.getRelative(0, var8, 0).getType() != Material.AIR
++                             && var5.getRelative(0, var8, 0).getType() != Material.VINE
++                             && !naturalplants.contains(var9.getType())) {
++                        break;
++                     }
+                   }
+                }
+-            }
++            });
+          }
+       }
+ 
+diff --git a/me/casperge/realisticseasons/utils/LitterGeneration.java b/me/casperge/realisticseasons/utils/LitterGeneration.java
+index 39aadd1..1330f0f 100644
+--- a/me/casperge/realisticseasons/utils/LitterGeneration.java
++++ b/me/casperge/realisticseasons/utils/LitterGeneration.java
+@@ -76,9 +76,11 @@ public class LitterGeneration {
+    }
+ 
+    public void removeLeafLitter(Chunk var1) {
+-      for (Block var4 : this.getLeafLitterBlocks(var1)) {
+-         var4.setType(Material.AIR);
+-      }
++      Scheduler.runSync(var1, () -> {
++         for (Block var4 : this.getLeafLitterBlocks(var1)) {
++            var4.setType(Material.AIR);
++         }
++      });
+    }
+ 
+    public void spawnLeafLitter(Location var1) {
+diff --git a/me/casperge/realisticseasons/utils/Scheduler.java b/me/casperge/realisticseasons/utils/Scheduler.java
+index ea94019..d3321cb 100644
+--- a/me/casperge/realisticseasons/utils/Scheduler.java
++++ b/me/casperge/realisticseasons/utils/Scheduler.java
+@@ -6,6 +6,7 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+ import me.casperge.realisticseasons.RealisticSeasons;
+ import org.bukkit.Chunk;
+ import org.bukkit.Location;
++import org.bukkit.World;
+ import org.bukkit.entity.Entity;
+ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+ 
+@@ -44,6 +45,10 @@ public class Scheduler {
+         return INSTANCE.getServer().getRegionScheduler().run(INSTANCE, chunk.getWorld(), chunk.getX(), chunk.getZ(), t -> runnable.run());
+     }
+ 
++    public static ScheduledTask runSync(World world, int chunkX, int chunkZ, Runnable runnable) {
++        return INSTANCE.getServer().getRegionScheduler().run(INSTANCE, world, chunkX, chunkZ, t -> runnable.run());
++    }
++
+     public static ScheduledTask runSyncDelayed(Location location, Runnable runnable, long delay) {
+         return INSTANCE.getServer().getRegionScheduler().runDelayed(INSTANCE, location, t -> runnable.run(), Math.max(delay, MIN_DELAY));
+     }
