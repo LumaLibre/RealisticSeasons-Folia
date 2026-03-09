@@ -1,0 +1,20 @@
+diff --git a/me/casperge/realisticseasons/runnables/SpringBlockTicker.java b/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
+index 426c1e5..6ac1183 100644
+--- a/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
++++ b/me/casperge/realisticseasons/runnables/SpringBlockTicker.java
+@@ -140,7 +140,14 @@ public class SpringBlockTicker extends Scheduler.RealisticSeasonsTask { // Luma
+          return;
+       }
+ 
+-      ConcurrentLinkedQueue<SeasonChunk> queue = new ConcurrentLinkedQueue<>(this.main.getSeasonManager().getQueue(var1, Season.SPRING));
++      // Luma start - sync spring queue
++      ConcurrentLinkedQueue<SeasonChunk> queue;
++      Set<SeasonChunk> source = this.main.getSeasonManager().getQueue(var1, Season.SPRING);
++      synchronized (source) {
++         queue = new ConcurrentLinkedQueue<>(source);
++      }
++      // Luma end - sync spring queue
++
+       if (queue.isEmpty()) {
+          return;
+       }
