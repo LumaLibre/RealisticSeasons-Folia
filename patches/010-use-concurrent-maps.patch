@@ -1,0 +1,49 @@
+diff --git a/me/casperge/realisticseasons/season/SeasonManager.java b/me/casperge/realisticseasons/season/SeasonManager.java
+index 5a2b9d9..7e7bc4b 100644
+--- a/me/casperge/realisticseasons/season/SeasonManager.java
++++ b/me/casperge/realisticseasons/season/SeasonManager.java
+@@ -2,7 +2,11 @@ package me.casperge.realisticseasons.season;
+ 
+ import java.util.HashSet;
+ import java.util.LinkedHashSet;
++import java.util.Map;
+ import java.util.WeakHashMap;
++import java.util.concurrent.ConcurrentMap;
++
++import com.google.common.collect.MapMaker;
+ import me.casperge.enums.GameRuleType;
+ import me.casperge.realisticseasons.RealisticSeasons;
+ import me.casperge.realisticseasons.api.SeasonChangeEvent;
+@@ -30,19 +34,21 @@ import org.bukkit.entity.Player;
+ 
+ public class SeasonManager {
+    public RealisticSeasons main;
+-   public WeakHashMap<World, Season> worldData = new WeakHashMap<>();
+-   public WeakHashMap<World, SubSeason> worldDataSubSeasons = new WeakHashMap<>();
+-   public WeakHashMap<World, ChunkRefresher> refreshers = new WeakHashMap<>();
+-   private WeakHashMap<World, LinkedHashSet<SeasonChunk>> fallqueue = new WeakHashMap<>();
+-   private WeakHashMap<World, LinkedHashSet<SeasonChunk>> fallchecked = new WeakHashMap<>();
+-   private WeakHashMap<World, LinkedHashSet<SeasonChunk>> springqueue = new WeakHashMap<>();
+-   private WeakHashMap<World, LinkedHashSet<SeasonChunk>> springchecked = new WeakHashMap<>();
++   // Luma start - use concurrent maps
++   public ConcurrentMap<World, Season> worldData = new MapMaker().weakKeys().makeMap();
++   public ConcurrentMap<World, SubSeason> worldDataSubSeasons = new MapMaker().weakKeys().makeMap();
++   public ConcurrentMap<World, ChunkRefresher> refreshers = new MapMaker().weakKeys().makeMap();
++   private ConcurrentMap<World, LinkedHashSet<SeasonChunk>> fallqueue = new MapMaker().weakKeys().makeMap();
++   private ConcurrentMap<World, LinkedHashSet<SeasonChunk>> fallchecked = new MapMaker().weakKeys().makeMap();
++   private ConcurrentMap<World, LinkedHashSet<SeasonChunk>> springqueue = new MapMaker().weakKeys().makeMap();
++   private ConcurrentMap<World, LinkedHashSet<SeasonChunk>> springchecked = new MapMaker().weakKeys().makeMap();
+    private TimeHandler thandler;
+    private AnimalRemover remover;
+-   private WeakHashMap<World, LinkedHashSet<SeasonChunk>> summerqueue = new WeakHashMap<>();
+-   private WeakHashMap<World, LinkedHashSet<SeasonChunk>> summerchecked = new WeakHashMap<>();
+-   private WeakHashMap<World, LinkedHashSet<SeasonChunk>> restorequeue = new WeakHashMap<>();
+-   private WeakHashMap<World, LinkedHashSet<SeasonChunk>> restorechecked = new WeakHashMap<>();
++   private ConcurrentMap<World, LinkedHashSet<SeasonChunk>> summerqueue = new MapMaker().weakKeys().makeMap();
++   private ConcurrentMap<World, LinkedHashSet<SeasonChunk>> summerchecked = new MapMaker().weakKeys().makeMap();
++   private ConcurrentMap<World, LinkedHashSet<SeasonChunk>> restorequeue = new MapMaker().weakKeys().makeMap();
++   private ConcurrentMap<World, LinkedHashSet<SeasonChunk>> restorechecked = new MapMaker().weakKeys().makeMap();
++   // Luma end - use concurrent maps
+ 
+    public SeasonManager(final RealisticSeasons var1) {
+       this.main = var1;
