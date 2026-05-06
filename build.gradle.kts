@@ -1,6 +1,5 @@
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
-import groovy.json.JsonSlurper
 import org.gradle.internal.extensions.core.serviceOf
 import java.net.URI
 import javax.inject.Inject
@@ -19,7 +18,7 @@ group = "me.casperge.realisticseasons"
 allprojects {
     apply(plugin = "java-library")
 
-    version = "11.10.3"
+    version = "11.11.0"
 
     repositories {
         mavenLocal()
@@ -36,7 +35,6 @@ allprojects {
 }
 
 repositories {
-    // TODO: Configure
     mavenCentral()
 }
 
@@ -82,11 +80,11 @@ tasks {
 
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
 val decompileConfig = DecompileConfig(
-    inputJar = "sources/RealisticSeasons.jar",
+    inputJar = "sources/RealisticSeasons-11.11.0.jar",
     packageMappings = mapOf(
         "me/casperge/realisticseasons/biome" to ":common",
         "me/casperge/enums" to ":common",
@@ -114,6 +112,7 @@ val decompileConfig = DecompileConfig(
         "me/casperge/realisticseasons1_21_R5" to ":NMS:1_21_R5",
         "me/casperge/realisticseasons1_21_R6" to ":NMS:1_21_R6",
         "me/casperge/realisticseasons1_21_R7" to ":NMS:1_21_R7",
+        "me/casperge/realisticseasons26_R1" to ":NMS:26_R1",
     ),
     resourceMappings = mapOf(
         "BADLANDS.yml" to ":core",
@@ -164,6 +163,7 @@ data class DecompileConfig(
     val patchesDir: String = "patches",
     val packageMappings: Map<String, String> = emptyMap(),
     val resourceMappings: Map<String, String> = emptyMap(),
+    val vineflowerVersion: String = "1.12.0",
 )
 
 val decompilerDir = layout.buildDirectory.dir(decompileConfig.decompilerDir.removePrefix("build/"))
@@ -190,7 +190,8 @@ val nmsVersions = listOf(
     "1.21.5",
     "1.21.6",
     "1.21.10",
-    "1.21.11"
+    "1.21.11",
+    "26.1.2"
 )
 
 val downloadBuildTools by tasks.registering {
@@ -213,6 +214,10 @@ val jdk21 = javaToolchains.launcherFor {
     languageVersion.set(JavaLanguageVersion.of(21))
 }.get().executablePath.asFile.absolutePath
 
+val jdk25  = javaToolchains.launcherFor {
+    languageVersion.set(JavaLanguageVersion.of(25))
+}.get().executablePath.asFile.absolutePath
+
 val installTasks = nmsVersions.map { version ->
     val snapshotVersion = "$version-R0.1-SNAPSHOT"
     tasks.register("installSpigot_$version") {
@@ -231,7 +236,13 @@ val installTasks = nmsVersions.map { version ->
         doLast {
             execOps.exec {
                 workingDir(buildToolsDir)
-                val javaExec = if (version < "1.20.5") jdk17 else jdk21
+                val javaExec = if (version < "1.20.5") {
+                    jdk17
+                } else if (version < "26.1.2") {
+                    jdk21
+                } else {
+                    jdk25
+                }
                 commandLine(javaExec, "-jar", "BuildTools.jar", "--rev", version, "--remapped")
             }
             println("Spigot $snapshotVersion installed to local Maven repo")
@@ -414,20 +425,78 @@ abstract class GitOperationsService @Inject constructor(
         }
     }
 
-    fun apply(workingDir: File, patchFile: File, verbose: Boolean = false): Pair<Int, String> {
-        // Pre-delete files that the patch creates as "new file" to avoid "already exists" errors
+    /**
+     * Result of an apply attempt.
+     *   - SUCCESS:   patch applied cleanly, no manual work needed.
+     *   - PARTIAL:   patch applied with rejects or conflict markers; manual
+     *                resolution required but the build can continue.
+     *   - FAIL:      patch could not be applied at all.
+     */
+    enum class ApplyStatus { SUCCESS, PARTIAL, FAIL }
+
+    data class ApplyResult(
+        val status: ApplyStatus,
+        val message: String,
+        val rejectFiles: List<String> = emptyList(),
+        val conflictedFiles: List<String> = emptyList(),
+        val strategyUsed: String = "",
+    )
+
+    /**
+     * Repair common patch-file corruption in place (writes a temp file, returns it).
+     * Currently handles: CRLF line endings, missing trailing newline. These are
+     * the two things that cause git's "corrupt patch at line N" error.
+     */
+    private fun repairPatch(patchFile: File): Pair<File, List<String>> {
+        val bytes = patchFile.readBytes()
+        val notes = mutableListOf<String>()
+        var fixed = bytes
+
+        if (bytes.contains('\r'.code.toByte())) {
+            // Strip lone CRs (CRLF -> LF). Bare CR also stripped.
+            fixed = fixed.filter { it != '\r'.code.toByte() }.toByteArray()
+            notes += "stripped CR/CRLF"
+        }
+        if (fixed.isNotEmpty() && fixed.last() != '\n'.code.toByte()) {
+            fixed = fixed + '\n'.code.toByte()
+            notes += "added trailing newline"
+        }
+
+        if (notes.isEmpty()) return Pair(patchFile, emptyList())
+
+        val repaired = File.createTempFile("repaired-", ".patch")
+        repaired.deleteOnExit()
+        repaired.writeBytes(fixed)
+        return Pair(repaired, notes)
+    }
+
+    /**
+     * Apply a patch using one of three modes:
+     *   - "strict"  (default): exact context match required, no fallbacks.
+     *   - "reject":  apply with --reject — what fits is applied, the rest is
+     *                left in <file>.rej for manual resolution. Build continues.
+     *   - "3way":    use git am --3way to produce real conflict markers in the
+     *                affected files, just like a normal merge conflict. Requires
+     *                the patch to contain index lines (which `git diff` produces).
+     */
+    fun apply(
+        workingDir: File,
+        patchFile: File,
+        mode: String = "strict",
+        verbose: Boolean = false,
+    ): ApplyResult {
+        // Auto-repair common corruption (CRLF, missing trailing newline) before applying.
+        val (effectivePatch, repairNotes) = repairPatch(patchFile)
+        val repairTag = if (repairNotes.isEmpty()) "" else " [auto-repaired: ${repairNotes.joinToString(", ")}]"
+
+        // Pre-delete files that the patch creates as "new file" to avoid "already exists" errors.
         val newFiles = mutableListOf<String>()
         var inNewFile = false
-        patchFile.readLines().forEach { line ->
-            if (line.startsWith("diff --git")) {
-                inNewFile = false
-            }
-            if (line.startsWith("new file mode")) {
-                inNewFile = true
-            }
+        effectivePatch.readLines().forEach { line ->
+            if (line.startsWith("diff --git")) inNewFile = false
+            if (line.startsWith("new file mode")) inNewFile = true
             if (inNewFile && line.startsWith("+++ b/")) {
-                val path = line.removePrefix("+++ b/")
-                newFiles.add(path)
+                newFiles.add(line.removePrefix("+++ b/"))
             }
         }
         newFiles.forEach { path ->
@@ -435,20 +504,153 @@ abstract class GitOperationsService @Inject constructor(
             if (file.exists()) file.delete()
         }
 
-        val errorOutput = ByteArrayOutputStream()
-        val stdOutput = ByteArrayOutputStream()
-        val args = mutableListOf("git", "apply")
-        if (verbose) args.add("--verbose")
-        args.add(patchFile.absolutePath)
+        return when (mode) {
+            "3way" -> apply3Way(workingDir, effectivePatch, verbose, repairTag)
+            "reject" -> applyReject(workingDir, effectivePatch, verbose, repairTag)
+            else -> applyStrict(workingDir, effectivePatch, verbose, repairTag)
+        }
+    }
 
+    private fun runGit(workingDir: File, args: List<String>): Pair<Int, String> {
+        val out = ByteArrayOutputStream()
+        val err = ByteArrayOutputStream()
         val result = execOps.exec {
             this.workingDir = workingDir
             commandLine(args)
-            standardOutput = stdOutput
-            this.errorOutput = errorOutput
+            standardOutput = out
+            errorOutput = err
             isIgnoreExitValue = true
         }
-        return Pair(result.exitValue, errorOutput.toString() + stdOutput.toString())
+        return Pair(result.exitValue, err.toString() + out.toString())
+    }
+
+    private fun applyStrict(workingDir: File, patchFile: File, verbose: Boolean, repairTag: String): ApplyResult {
+        val args = mutableListOf("git", "apply")
+        if (verbose) args.add("--verbose")
+        args.add(patchFile.absolutePath)
+        val (code, output) = runGit(workingDir, args)
+        return if (code == 0) {
+            ApplyResult(ApplyStatus.SUCCESS, output + repairTag, strategyUsed = "strict")
+        } else {
+            ApplyResult(ApplyStatus.FAIL, output + repairTag, strategyUsed = "strict")
+        }
+    }
+
+    private fun applyReject(workingDir: File, patchFile: File, verbose: Boolean, repairTag: String): ApplyResult {
+        val args = mutableListOf("git", "apply", "--reject")
+        if (verbose) args.add("--verbose")
+        args.add(patchFile.absolutePath)
+        val (_, output) = runGit(workingDir, args)
+
+        // With --reject, git applies what it can and writes .rej files for the rest.
+        // Exit code is non-zero when there are rejects, but the partial apply still
+        // happens — that's exactly what we want.
+        val rejects = workingDir.walkTopDown()
+            .filter { it.isFile && it.name.endsWith(".rej") }
+            .map { it.relativeTo(workingDir).path }
+            .toList()
+
+        return if (rejects.isEmpty()) {
+            ApplyResult(ApplyStatus.SUCCESS, output + repairTag, strategyUsed = "reject")
+        } else {
+            ApplyResult(
+                ApplyStatus.PARTIAL,
+                output + "\n" + rejects.size + " hunk(s) rejected — see .rej files:\n  " +
+                        rejects.joinToString("\n  ") + repairTag,
+                rejectFiles = rejects,
+                strategyUsed = "reject",
+            )
+        }
+    }
+
+    /**
+     * 3-way merge mode. We can't use `git apply --3way` directly because it needs
+     * the patch's pre-image blobs in the object DB. Instead we use `git am --3way`,
+     * which:
+     *   1. Reads the patch's `index <hash1>..<hash2>` lines.
+     *   2. If hash1 isn't in the repo, it constructs a virtual base by reverse-
+     *      applying the patch to current files. This is fragile but works often.
+     *   3. Performs a real 3-way merge, leaving <<<<<<< / ======= / >>>>>>> markers
+     *      in conflicted files when context can't be matched.
+     *
+     * We need to wrap the patch in mailbox format (`From ... Subject: ...`) for `am`.
+     */
+    private fun apply3Way(workingDir: File, patchFile: File, verbose: Boolean, repairTag: String): ApplyResult {
+        // 1. Wrap raw `git diff` output in mailbox format that `git am` accepts.
+        val mbox = File.createTempFile("mbox-", ".patch")
+        mbox.deleteOnExit()
+        val patchContent = patchFile.readText()
+        mbox.writeText(
+            buildString {
+                append("From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001\n")
+                append("From: Patcher <patch@local>\n")
+                append("Date: Mon, 1 Jan 2024 00:00:00 +0000\n")
+                append("Subject: [PATCH] ${patchFile.nameWithoutExtension}\n")
+                append("\n")
+                append("---\n")
+                append(patchContent)
+                if (!patchContent.endsWith("\n")) append("\n")
+            }
+        )
+
+        // 2. Try `git am --3way`. If it fails to construct a base, fall back
+        //    to a manual reverse-apply emulation.
+        val (code, output) = runGit(
+            workingDir,
+            buildList {
+                add("git"); add("am"); add("--3way"); add("--keep-cr")
+                if (verbose) add("--verbose")
+                add(mbox.absolutePath)
+            },
+        )
+
+        // After `git am`, if there were conflicts the working tree has merge
+        // markers and the index is in a "halfway" state. We always want to
+        // exit `am` cleanly (so subsequent patches don't see leftover state)
+        // and surface the conflicts to the caller.
+        val conflicted = mutableListOf<String>()
+        if (code != 0) {
+            // Check whether the failure was conflicts (recoverable) or genuine
+            // failure to apply at all (e.g. couldn't construct a base).
+            val (_, statusOut) = runGit(workingDir, listOf("git", "status", "--porcelain"))
+            statusOut.lines().forEach { line ->
+                // "UU" = both modified (conflict); "AA" = both added.
+                if (line.startsWith("UU ") || line.startsWith("AA ") ||
+                    line.startsWith("AU ") || line.startsWith("UA ") ||
+                    line.startsWith("DU ") || line.startsWith("UD ")
+                ) {
+                    conflicted.add(line.substring(3).trim())
+                }
+            }
+
+            // Abort the `am` so the index is clean, but keep the working tree
+            // changes (the conflict markers).
+            runGit(workingDir, listOf("git", "am", "--abort"))
+
+            if (conflicted.isEmpty()) {
+                // No conflict markers were left — patch genuinely couldn't apply.
+                // Try a final `git apply --reject` so we still produce *something*
+                // useful for manual resolution.
+                return applyReject(workingDir, patchFile, verbose, repairTag).let {
+                    it.copy(message = it.message + "\n(3way couldn't construct a base; fell back to reject)")
+                }
+            }
+
+            // Re-apply with --reject to produce the actual conflict markers,
+            // since `git am --abort` reverted them.
+            applyReject(workingDir, patchFile, verbose, repairTag).let { rejectResult ->
+                return ApplyResult(
+                    ApplyStatus.PARTIAL,
+                    output + "\nFiles with conflicts (resolve manually):\n  " +
+                            conflicted.joinToString("\n  ") + repairTag,
+                    rejectFiles = rejectResult.rejectFiles,
+                    conflictedFiles = conflicted,
+                    strategyUsed = "3way",
+                )
+            }
+        }
+
+        return ApplyResult(ApplyStatus.SUCCESS, output + repairTag, strategyUsed = "3way")
     }
 
     fun setupRepo(workingDir: File) {
@@ -472,26 +674,28 @@ tasks.register("setupVineFlower") {
             return@doLast
         }
 
-        println("Fetching latest VineFlower release info...")
+        val version = decompileConfig.vineflowerVersion
+        val jarName = "vineflower-$version.jar"
+        val vineflowerJar = decompilerDir.get().file(jarName).asFile
 
-        val apiUrl = URI("https://api.github.com/repos/Vineflower/vineflower/releases/latest").toURL()
-        val json = JsonSlurper().parse(apiUrl)
-
-        @Suppress("UNCHECKED_CAST")
-        val assets = (json as Map<String, Any>)["assets"] as List<Map<String, Any>>
-        val jarAsset = assets.firstOrNull { it["name"].toString().endsWith(".jar") }
-            ?: error("Could not find Vineflower jar in latest release")
-
-        val downloadUrl = jarAsset["browser_download_url"].toString()
-        val vineflowerJar = decompilerDir.get().file(jarAsset["name"].toString()).asFile
+        // Remove any other vineflower jars so the `decompile` task picks the
+        // pinned one even if a previous "latest" download is still on disk.
+        decompilerDir.get().asFile.listFiles()
+            ?.filter { it.name.endsWith(".jar") && it.name != jarName }
+            ?.forEach {
+                println("Removing stale Vineflower jar: ${it.name}")
+                it.delete()
+            }
 
         if (!vineflowerJar.exists()) {
-            println("Downloading Vineflower...")
+            println("Downloading Vineflower $version (pinned) from Maven Central...")
+            val downloadUrl =
+                "https://repo1.maven.org/maven2/org/vineflower/vineflower/$version/vineflower-$version.jar"
             URI(downloadUrl).toURL().openStream().use { input ->
                 Files.copy(input, vineflowerJar.toPath(), StandardCopyOption.REPLACE_EXISTING)
             }
         } else {
-            println("Vineflower already downloaded.")
+            println("Vineflower $version already downloaded.")
         }
 
         println("Vineflower jar: ${vineflowerJar.name}")
@@ -522,7 +726,7 @@ val decompile by tasks.registering(Exec::class) {
 }
 
 tasks.register("distributeSources") {
-    dependsOn(decompile)
+    //dependsOn(decompile)
 
     doLast {
         val generatedDir = generatedOutputDir.asFile
@@ -856,13 +1060,30 @@ tasks.register("applyPatch") {
             gitOps.add(gitDir)
             gitOps.commit(gitDir, "Current state")
 
-            println("📝 Applying patch...")
-            val (exitCode, output) = gitOps.apply(gitDir, patchFile, verbose = true)
+            // Mode is selected via -PpatchMode=strict|reject|3way (default: strict)
+            val mode = (project.findProperty("patchMode") as String?) ?: "strict"
+            println("📝 Applying patch (mode: $mode)...")
+            val result = gitOps.apply(gitDir, patchFile, mode = mode, verbose = true)
 
-            if (exitCode != 0) {
-                println("❌ Failed to apply patch:")
-                println(output)
-                return@doLast
+            when (result.status) {
+                GitOperationsService.ApplyStatus.FAIL -> {
+                    println("❌ Failed to apply patch:")
+                    println(result.message)
+                    println("\n💡 Try: ./gradlew applyPatch -PpatchName=\"$patchNameValue\" -PpatchMode=reject")
+                    println("   or: ./gradlew applyPatch -PpatchName=\"$patchNameValue\" -PpatchMode=3way")
+                    return@doLast
+                }
+                GitOperationsService.ApplyStatus.PARTIAL -> {
+                    println("⚠️  Patch applied with manual resolution required:")
+                    println(result.message)
+                    println("\n👉 Files copied back to modules anyway — open them, resolve markers/.rej files,")
+                    println("   then run: ./gradlew createPatch -PpatchName=\"$patchNameValue\"")
+                }
+                GitOperationsService.ApplyStatus.SUCCESS -> {
+                    if (result.strategyUsed != "strict") {
+                        println("✓ Applied with strategy: ${result.strategyUsed}")
+                    }
+                }
             }
 
             println("📦 Copying patched files back to modules and generated sources...")
@@ -944,8 +1165,16 @@ tasks.register("applyAllPatches") {
         println("=".repeat(60))
 
         var successCount = 0
+        var partialCount = 0
         var failedCount = 0
         val failedPatches = mutableListOf<String>()
+        val partialPatches = mutableListOf<Pair<String, GitOperationsService.ApplyResult>>()
+
+        // Mode is selected via -PpatchMode=strict|reject|3way (default: strict).
+        val mode = (project.findProperty("patchMode") as String?) ?: "strict"
+        if (mode != "strict") {
+            println("Mode: $mode (manual resolution may be required)")
+        }
 
         patchesDirFile.listFiles()
             ?.filter { it.extension == "patch" }
@@ -985,13 +1214,16 @@ tasks.register("applyAllPatches") {
                     gitOps.add(gitDir)
                     gitOps.commit(gitDir, "Current state")
 
-                    val (exitCode, errorMsg) = gitOps.apply(gitDir, patchFile)
+                    val result = gitOps.apply(gitDir, patchFile, mode = mode)
 
-                    if (exitCode != 0) {
-                        println("  ❌ Failed: ${errorMsg.take(200)}")
+                    if (result.status == GitOperationsService.ApplyStatus.FAIL) {
+                        println("  ❌ Failed: ${result.message.lines().take(3).joinToString(" | ").take(300)}")
                         failedPatches.add(patchFile.nameWithoutExtension)
                         failedCount++
                     } else {
+                        // SUCCESS or PARTIAL — copy files back either way.
+                        // For PARTIAL, the working tree contains conflict markers
+                        // and/or .rej files which we deliberately propagate.
                         decompileConfig.packageMappings.forEach { (packagePath, moduleTarget) ->
                             val gitSourceDir = gitDir.resolve(packagePath)
                             val moduleTargetDir = resolveModuleSrcDir(moduleTarget, packagePath) ?: return@forEach
@@ -1038,8 +1270,21 @@ tasks.register("applyAllPatches") {
                             }
                         }
 
-                        println("  ✓ Success (+ updated generated sources)")
-                        successCount++
+                        if (result.status == GitOperationsService.ApplyStatus.PARTIAL) {
+                            val rej = result.rejectFiles.size
+                            val conf = result.conflictedFiles.size
+                            val tag = listOfNotNull(
+                                if (rej > 0) "$rej rejects" else null,
+                                if (conf > 0) "$conf conflicted" else null,
+                            ).joinToString(", ")
+                            println("  ⚠️  Partial: $tag — manual resolution needed")
+                            partialPatches.add(patchFile.nameWithoutExtension to result)
+                            partialCount++
+                        } else {
+                            val tag = if (result.strategyUsed != "strict") " (${result.strategyUsed})" else ""
+                            println("  ✓ Success$tag (+ updated generated sources)")
+                            successCount++
+                        }
                     }
                 } catch (e: Exception) {
                     println("  ❌ Error: ${e.message}")
@@ -1051,11 +1296,31 @@ tasks.register("applyAllPatches") {
             }
 
         println("\n" + "=".repeat(60))
-        println("✨ Applied: $successCount | Failed: $failedCount")
+        println("✨ Applied: $successCount | Partial: $partialCount | Failed: $failedCount")
+
+        if (partialPatches.isNotEmpty()) {
+            println("\n⚠️  Patches that applied with manual work needed:")
+            partialPatches.forEach { (name, result) ->
+                val rej = result.rejectFiles.size
+                val conf = result.conflictedFiles.size
+                val parts = listOfNotNull(
+                    if (rej > 0) "$rej .rej file(s)" else null,
+                    if (conf > 0) "$conf conflicted file(s)" else null,
+                ).joinToString(", ")
+                println("  - $name ($parts)")
+                result.rejectFiles.forEach { println("      .rej: $it") }
+                result.conflictedFiles.forEach { println("      conflict: $it") }
+            }
+            println("\n💡 Resolve markers/.rej files in your module sources, then:")
+            println("   ./gradlew createPatch -PpatchName=\"<patch-name>\"  # to regenerate the patch")
+        }
 
         if (failedPatches.isNotEmpty()) {
-            println("\n❌ Failed patches:")
+            println("\n❌ Failed patches (could not apply at all):")
             failedPatches.forEach { println("  - $it") }
+            println("\n💡 Retry with a forgiving mode:")
+            println("   ./gradlew applyAllPatches -PpatchMode=reject   # leave .rej files for manual fixup")
+            println("   ./gradlew applyAllPatches -PpatchMode=3way     # produce git conflict markers in files")
         }
     }
 }
@@ -1228,6 +1493,74 @@ tasks.register("patchStatus") {
             println("\n💡 Run './gradlew createPatch -PpatchName=\"name\"' to save these changes")
         } else {
             println("\nℹ️  No modifications detected")
+        }
+    }
+}
+
+tasks.register("validatePatches") {
+    doLast {
+        val patchesDirFile = patchesDirPath.asFile
+        if (!patchesDirFile.exists() || patchesDirFile.listFiles()?.isEmpty() != false) {
+            println("❌ No patches found in ${decompileConfig.patchesDir}/")
+            return@doLast
+        }
+
+        println("\n🔎 Validating patch files for structural problems...")
+        println("=".repeat(60))
+
+        var problems = 0
+
+        patchesDirFile.listFiles()
+            ?.filter { it.extension == "patch" }
+            ?.sortedBy { it.name }
+            ?.forEach { patchFile ->
+                val issues = mutableListOf<String>()
+                val bytes = patchFile.readBytes()
+
+                // 1. CRLF line endings — git apply tolerates them in some cases
+                //    but a stray CR inside a hunk body can manifest as
+                //    "corrupt patch at line N".
+                if (bytes.contains('\r'.code.toByte())) {
+                    issues += "Contains CRLF / CR line endings (git apply often reports this as 'corrupt patch')"
+                }
+
+                // 2. Missing trailing newline — also a common 'corrupt patch'
+                //    cause.
+                if (bytes.isNotEmpty() && bytes.last() != '\n'.code.toByte()) {
+                    issues += "Missing trailing newline"
+                }
+
+                // 3. Hunk header sanity check.
+                val text = bytes.toString(Charsets.UTF_8)
+                val lines = text.lines()
+                val hunkHeaderRe = Regex("^@@ -\\d+(?:,\\d+)? \\+\\d+(?:,\\d+)? @@.*")
+                lines.forEachIndexed { i, line ->
+                    if (line.startsWith("@@") && !hunkHeaderRe.matches(line)) {
+                        issues += "Malformed hunk header at line ${i + 1}: $line"
+                    }
+                }
+
+                // 4. Quick check: any "diff --git" should be followed by index/mode/+++ lines.
+                val diffStarts = lines.withIndex().filter { it.value.startsWith("diff --git") }
+                if (diffStarts.isEmpty() && bytes.isNotEmpty()) {
+                    issues += "No 'diff --git' headers found — patch may be empty or malformed"
+                }
+
+                if (issues.isNotEmpty()) {
+                    problems++
+                    println("\n❌ ${patchFile.name}")
+                    issues.forEach { println("   • $it") }
+                } else {
+                    println("✓ ${patchFile.name}")
+                }
+            }
+
+        println("\n" + "=".repeat(60))
+        if (problems == 0) {
+            println("✨ All patches look structurally valid")
+        } else {
+            println("⚠️  $problems patch(es) have structural problems — fix these first")
+            println("   Tip: convert CRLF to LF with: sed -i 's/\\r//' patches/*.patch")
         }
     }
 }
